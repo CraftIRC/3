@@ -1,15 +1,9 @@
 package com.ensifera.animosity.craftirc;
 
-import java.lang.Exception;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 public class CraftIRCListener implements Listener {
 
@@ -18,97 +12,118 @@ public class CraftIRCListener implements Listener {
     public CraftIRCListener(CraftIRC plugin) {
         this.plugin = plugin;
     }
-    
-    @EventHandler(priority=EventPriority.MONITOR)
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         try {
-            String[] split = event.getMessage().split(" ");
+            final String[] split = event.getMessage().split(" ");
             // ACTION/EMOTE can't be claimed, so use onPlayerCommandPreprocess
             if (split[0].equalsIgnoreCase("/me")) {
-                RelayedMessage msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "action");
-                if (msg == null) return;
+                final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "action");
+                if (msg == null) {
+                    return;
+                }
                 msg.setField("sender", event.getPlayer().getDisplayName());
                 msg.setField("message", Util.combineSplit(1, split, " "));
                 msg.setField("world", event.getPlayer().getWorld().getName());
                 msg.setField("realSender", event.getPlayer().getName());
-                msg.setField("prefix", plugin.getPrefix(event.getPlayer()));
-                msg.setField("suffix", plugin.getSuffix(event.getPlayer()));
+                msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+                msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
                 msg.doNotColor("message");
                 msg.post();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
-    } 
-    
-    @EventHandler(priority=EventPriority.MONITOR)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(PlayerChatEvent event) {
-        if (this.plugin.isHeld(CraftIRC.HoldType.CHAT)) return;
+        if (this.plugin.isHeld(CraftIRC.HoldType.CHAT)) {
+            return;
+        }
         try {
-            if (plugin.cCancelChat()) event.setCancelled(true);
+            if (this.plugin.cCancelChat()) {
+                event.setCancelled(true);
+            }
             RelayedMessage msg;
-            if (event.isCancelled())
-                msg = plugin.newMsg(plugin.getEndPoint(plugin.cCancelledTag()), null, "chat");
-            else 
-                msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "chat");
-            if (msg == null) return;
+            if (event.isCancelled()) {
+                msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cCancelledTag()), null, "chat");
+            } else {
+                msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "chat");
+            }
+            if (msg == null) {
+                return;
+            }
             msg.setField("sender", event.getPlayer().getDisplayName());
             msg.setField("message", event.getMessage());
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", plugin.getSuffix(event.getPlayer()));
+            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
             msg.doNotColor("message");
             msg.post();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) return;
+        if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
+            return;
+        }
         try {
-            RelayedMessage msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "join");
-            if (msg == null) return;
+            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "join");
+            if (msg == null) {
+                return;
+            }
             msg.setField("sender", event.getPlayer().getDisplayName());
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", plugin.getSuffix(event.getPlayer()));
+            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
             msg.post();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) return;
+        if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) {
+            return;
+        }
         try {
-            RelayedMessage msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "quit");
-            if (msg == null) return;
+            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "quit");
+            if (msg == null) {
+                return;
+            }
             msg.setField("sender", event.getPlayer().getDisplayName());
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", plugin.getSuffix(event.getPlayer()));
+            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
             msg.post();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
-        if (this.plugin.isHeld(CraftIRC.HoldType.KICKS)) return;
-        RelayedMessage msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "kick");
-        if (msg == null) return;
+        if (this.plugin.isHeld(CraftIRC.HoldType.KICKS)) {
+            return;
+        }
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "kick");
+        if (msg == null) {
+            return;
+        }
         msg.setField("sender", event.getPlayer().getDisplayName());
         msg.setField("message", (event.getReason().length() == 0) ? "no reason given" : event.getReason());
         msg.setField("realSender", event.getPlayer().getName());
-        msg.setField("prefix", plugin.getPrefix(event.getPlayer()));
-        msg.setField("suffix", plugin.getSuffix(event.getPlayer()));
+        msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+        msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
         msg.doNotColor("message");
         msg.post();
     }

@@ -4,21 +4,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.milkbowl.vault.chat.Chat;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -30,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.util.config.Configuration;
 import com.sk89q.util.config.ConfigurationNode;
 
-
 /**
  * @author Animosity
  * @author ricin
@@ -41,14 +32,14 @@ import com.sk89q.util.config.ConfigurationNode;
 
 //TODO: Better handling of null method returns (try to crash the bot and then stop that from happening again)
 public class CraftIRC extends JavaPlugin {
-    
+
     public static final String NAME = "CraftIRC";
     public static String VERSION;
-    private String DEFAULTCONFIG_INJAR_PATH = "/defaults/config.yml";
+    private final String DEFAULTCONFIG_INJAR_PATH = "/defaults/config.yml";
     static final Logger log = Logger.getLogger("Minecraft");
-    
+
     Configuration configuration;
-    
+
     //Misc class attributes
     PluginDescriptionFile desc = null;
     public Server server = null;
@@ -66,160 +57,177 @@ public class CraftIRC extends JavaPlugin {
     private List<ConfigurationNode> colormap;
     private Map<Integer, ArrayList<ConfigurationNode>> channodes;
     private Map<Path, ConfigurationNode> paths;
-    
+
     //Endpoints
-    private Map<String,EndPoint> endpoints;
-    private Map<EndPoint,String> tags;
-    private Map<String,CommandEndPoint> irccmds;
-    private Map<String,List<String>> taggroups;
+    private Map<String, EndPoint> endpoints;
+    private Map<EndPoint, String> tags;
+    private Map<String, CommandEndPoint> irccmds;
+    private Map<String, List<String>> taggroups;
     private Chat vault;
-    
+
     static void dolog(String message) {
-        log.info("[" + NAME + "] " + message);
+        CraftIRC.log.info("[" + CraftIRC.NAME + "] " + message);
     }
+
     static void dowarn(String message) {
-        log.log(Level.WARNING, "[" + NAME + "] " + message);
+        CraftIRC.log.log(Level.WARNING, "[" + CraftIRC.NAME + "] " + message);
     }
 
     /***************************
-     Bukkit stuff
+     * Bukkit stuff
      ***************************/
-    
+
+    @Override
     public void onEnable() {
         try {
-        	configuration = new Configuration(new File(getDataFolder().getPath() + "/config.yml"));
-        	configuration.load();
-        	
-            endpoints = new HashMap<String,EndPoint>();
-            tags = new HashMap<EndPoint,String>();
-            irccmds = new HashMap<String,CommandEndPoint>();
-            taggroups = new HashMap<String,List<String>>();
-            
-            PluginDescriptionFile desc = this.getDescription();
-            VERSION = desc.getVersion();
-            server = this.getServer();
-            
-            String dataFolderPath = this.getDataFolder().getPath() + File.separator;
+            this.configuration = new Configuration(new File(this.getDataFolder().getPath() + "/config.yml"));
+            this.configuration.load();
+
+            this.endpoints = new HashMap<String, EndPoint>();
+            this.tags = new HashMap<EndPoint, String>();
+            this.irccmds = new HashMap<String, CommandEndPoint>();
+            this.taggroups = new HashMap<String, List<String>>();
+
+            final PluginDescriptionFile desc = this.getDescription();
+            CraftIRC.VERSION = desc.getVersion();
+            this.server = this.getServer();
+
+            final String dataFolderPath = this.getDataFolder().getPath() + File.separator;
             (new File(dataFolderPath)).mkdir();
 
             //Checking if the configuration file exists and imports the default one from the .jar if it doesn't
-            File configFile = new File(dataFolderPath + "config.yml");
+            final File configFile = new File(dataFolderPath + "config.yml");
             if (!configFile.exists()) {
-                importDefaultConfig(DEFAULTCONFIG_INJAR_PATH, configFile);
-                autoDisable();
+                this.importDefaultConfig(this.DEFAULTCONFIG_INJAR_PATH, configFile);
+                this.autoDisable();
                 return;
             }
-            
-            bots = new ArrayList<ConfigurationNode>(configuration.getNodeList("bots", null));
-            channodes = new HashMap<Integer, ArrayList<ConfigurationNode>>();
-            for (int botID = 0; botID < bots.size(); botID++)
-                channodes.put(botID, new ArrayList<ConfigurationNode>(bots.get(botID).getNodeList("channels", null)));
-            
-            colormap = new ArrayList<ConfigurationNode>(configuration.getNodeList("colormap", null));
-            
-            paths = new HashMap<Path,ConfigurationNode>();
-            for (ConfigurationNode path : configuration.getNodeList("paths", new LinkedList<ConfigurationNode>())) {
-                Path identifier = new Path(path.getString("source"), path.getString("target"));
-                if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !paths.containsKey(identifier))
-                    paths.put(identifier, path);
+
+            this.bots = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("bots", null));
+            this.channodes = new HashMap<Integer, ArrayList<ConfigurationNode>>();
+            for (int botID = 0; botID < this.bots.size(); botID++) {
+                this.channodes.put(botID, new ArrayList<ConfigurationNode>(this.bots.get(botID).getNodeList("channels", null)));
             }
-            
+
+            this.colormap = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("colormap", null));
+
+            this.paths = new HashMap<Path, ConfigurationNode>();
+            for (final ConfigurationNode path : this.configuration.getNodeList("paths", new LinkedList<ConfigurationNode>())) {
+                final Path identifier = new Path(path.getString("source"), path.getString("target"));
+                if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !this.paths.containsKey(identifier)) {
+                    this.paths.put(identifier, path);
+                }
+            }
+
             //Retry timers
-            retry = new HashMap<String, RetryTask>();
-            retryTimer = new Timer();
+            this.retry = new HashMap<String, RetryTask>();
+            this.retryTimer = new Timer();
 
             //Event listeners
-            getServer().getPluginManager().registerEvents(listener, this);
-            getServer().getPluginManager().registerEvents(sayListener, this);
-            
+            this.getServer().getPluginManager().registerEvents(this.listener, this);
+            this.getServer().getPluginManager().registerEvents(this.sayListener, this);
+
             //Native endpoints!
-            if (cMinecraftTag() != null && !cMinecraftTag().equals("")) {
-            	registerEndPoint(cMinecraftTag(), new MinecraftPoint(this, getServer())); //The minecraft server, no bells and whistles
-            	for (String cmd : cCmdWordSay(null))
-            		registerCommand(cMinecraftTag(), cmd);
-            	for (String cmd : cCmdWordPlayers(null))
-            		registerCommand(cMinecraftTag(), cmd);
-            	if (!cMinecraftTagGroup().equals(""))
-            		groupTag(cMinecraftTag(), cMinecraftTagGroup());
+            if ((this.cMinecraftTag() != null) && !this.cMinecraftTag().equals("")) {
+                this.registerEndPoint(this.cMinecraftTag(), new MinecraftPoint(this, this.getServer())); //The minecraft server, no bells and whistles
+                for (final String cmd : this.cCmdWordSay(null)) {
+                    this.registerCommand(this.cMinecraftTag(), cmd);
+                }
+                for (final String cmd : this.cCmdWordPlayers(null)) {
+                    this.registerCommand(this.cMinecraftTag(), cmd);
+                }
+                if (!this.cMinecraftTagGroup().equals("")) {
+                    this.groupTag(this.cMinecraftTag(), this.cMinecraftTagGroup());
+                }
             }
-            if (cCancelledTag() != null && !cCancelledTag().equals("")) {
-            	registerEndPoint(cCancelledTag(), new MinecraftPoint(this, getServer())); //Handles cancelled chat
-            	if (!cMinecraftTagGroup().equals(""))
-            		groupTag(cCancelledTag(), cMinecraftTagGroup());
+            if ((this.cCancelledTag() != null) && !this.cCancelledTag().equals("")) {
+                this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); //Handles cancelled chat
+                if (!this.cMinecraftTagGroup().equals("")) {
+                    this.groupTag(this.cCancelledTag(), this.cMinecraftTagGroup());
+                }
             }
-            if (cConsoleTag() != null && !cConsoleTag().equals("")) {
-            	registerEndPoint(cConsoleTag(), new ConsolePoint(this, getServer()));     //The minecraft console
-            	for (String cmd : cCmdWordCmd(null))
-            		registerCommand(cConsoleTag(), cmd);
-            	if (!cMinecraftTagGroup().equals(""))
-            		groupTag(cConsoleTag(), cMinecraftTagGroup());
+            if ((this.cConsoleTag() != null) && !this.cConsoleTag().equals("")) {
+                this.registerEndPoint(this.cConsoleTag(), new ConsolePoint(this, this.getServer())); //The minecraft console
+                for (final String cmd : this.cCmdWordCmd(null)) {
+                    this.registerCommand(this.cConsoleTag(), cmd);
+                }
+                if (!this.cMinecraftTagGroup().equals("")) {
+                    this.groupTag(this.cConsoleTag(), this.cMinecraftTagGroup());
+                }
             }
 
             //Create bots
-            instances = new ArrayList<Minebot>();
-            for (int i = 0; i < bots.size(); i++)
-                instances.add(new Minebot(this, i, cDebug()));
-            
-            loadTagGroups();
+            this.instances = new ArrayList<Minebot>();
+            for (int i = 0; i < this.bots.size(); i++) {
+                this.instances.add(new Minebot(this, i, this.cDebug()));
+            }
 
-            dolog("Enabled.");
+            this.loadTagGroups();
+
+            CraftIRC.dolog("Enabled.");
 
             //Hold timers
-            hold = new HashMap<HoldType, Boolean>();
-            holdTimer = new Timer();
-            if (cHold("chat") > 0) {
-                hold.put(HoldType.CHAT, true);
-                holdTimer.schedule(new RemoveHoldTask(this, HoldType.CHAT), cHold("chat"));
-            } else
-                hold.put(HoldType.CHAT, false);
-            if (cHold("joins") > 0) {
-                hold.put(HoldType.JOINS, true);
-                holdTimer.schedule(new RemoveHoldTask(this, HoldType.JOINS), cHold("joins"));
-            } else
-                hold.put(HoldType.JOINS, false);
-            if (cHold("quits") > 0) {
-                hold.put(HoldType.QUITS, true);
-                holdTimer.schedule(new RemoveHoldTask(this, HoldType.QUITS), cHold("quits"));
-            } else
-                hold.put(HoldType.QUITS, false);
-            if (cHold("kicks") > 0) {
-                hold.put(HoldType.KICKS, true);
-                holdTimer.schedule(new RemoveHoldTask(this, HoldType.KICKS), cHold("kicks"));
-            } else
-                hold.put(HoldType.KICKS, false);
-            if (cHold("bans") > 0) {
-                hold.put(HoldType.BANS, true);
-                holdTimer.schedule(new RemoveHoldTask(this, HoldType.BANS), cHold("bans"));
-            } else
-                hold.put(HoldType.BANS, false);
-                        
-            this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+            this.hold = new HashMap<HoldType, Boolean>();
+            this.holdTimer = new Timer();
+            if (this.cHold("chat") > 0) {
+                this.hold.put(HoldType.CHAT, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.CHAT), this.cHold("chat"));
+            } else {
+                this.hold.put(HoldType.CHAT, false);
+            }
+            if (this.cHold("joins") > 0) {
+                this.hold.put(HoldType.JOINS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.JOINS), this.cHold("joins"));
+            } else {
+                this.hold.put(HoldType.JOINS, false);
+            }
+            if (this.cHold("quits") > 0) {
+                this.hold.put(HoldType.QUITS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.QUITS), this.cHold("quits"));
+            } else {
+                this.hold.put(HoldType.QUITS, false);
+            }
+            if (this.cHold("kicks") > 0) {
+                this.hold.put(HoldType.KICKS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.KICKS), this.cHold("kicks"));
+            } else {
+                this.hold.put(HoldType.KICKS, false);
+            }
+            if (this.cHold("bans") > 0) {
+                this.hold.put(HoldType.BANS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.BANS), this.cHold("bans"));
+            } else {
+                this.hold.put(HoldType.BANS, false);
+            }
+
+            this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                @Override
                 public void run() {
-                    if(CraftIRC.this.getServer().getPluginManager().isPluginEnabled("Vault")){
-                        try{
-                            CraftIRC.this.vault=((RegisteredServiceProvider<Chat>)getServer().getServicesManager().getRegistration(Chat.class)).getProvider();
-                        } catch (Exception e){
-                        
+                    if (CraftIRC.this.getServer().getPluginManager().isPluginEnabled("Vault")) {
+                        try {
+                            CraftIRC.this.vault = CraftIRC.this.getServer().getServicesManager().getRegistration(Chat.class).getProvider();
+                        } catch (final Exception e) {
+
                         }
                     }
                 }
             });
-            
-            setDebug(cDebug());
-        } catch (Exception e) {
+
+            this.setDebug(this.cDebug());
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     private void importDefaultConfig(String injarPath, File destination) {
         try {
-            InputStream is = this.getClass().getResourceAsStream(injarPath);
+            final InputStream is = this.getClass().getResourceAsStream(injarPath);
             if (is == null) {
                 throw new Exception("The default configuration file could not be found in the .jar");
             }
-            OutputStream os = new FileOutputStream(destination);
+            final OutputStream os = new FileOutputStream(destination);
 
-            byte[] buffer = new byte[4096];
+            final byte[] buffer = new byte[4096];
             int bytesRead;
             while ((bytesRead = is.read(buffer)) != -1) {
                 os.write(buffer, 0, bytesRead);
@@ -227,93 +235,114 @@ public class CraftIRC extends JavaPlugin {
 
             is.close();
             os.close();
-        } catch (Exception e) {
-            dowarn("The default configuration file could not be imported:");
+        } catch (final Exception e) {
+            CraftIRC.dowarn("The default configuration file could not be imported:");
             e.printStackTrace();
-            dowarn("You can MANUALLY place config.yml in " + destination.getParent());
+            CraftIRC.dowarn("You can MANUALLY place config.yml in " + destination.getParent());
             return;
         }
-        dolog("Default configuration file created: " + destination.getPath());
-        dolog("Take some time to EDIT it, then restart your server.");
-    }
-    
-    private void autoDisable() {
-        dolog("Auto-disabling...");
-        getServer().getPluginManager().disablePlugin(this);
+        CraftIRC.dolog("Default configuration file created: " + destination.getPath());
+        CraftIRC.dolog("Take some time to EDIT it, then restart your server.");
     }
 
+    private void autoDisable() {
+        CraftIRC.dolog("Auto-disabling...");
+        this.getServer().getPluginManager().disablePlugin(this);
+    }
+
+    @Override
     public void onDisable() {
         try {
-            retryTimer.cancel();
-            holdTimer.cancel();
+            this.retryTimer.cancel();
+            this.holdTimer.cancel();
             //Disconnect bots
-            if (bots != null) {
-                for (int i = 0; i < bots.size(); i++) {
-                    instances.get(i).disconnect();
-                    instances.get(i).dispose();
+            if (this.bots != null) {
+                for (int i = 0; i < this.bots.size(); i++) {
+                    this.instances.get(i).disconnect();
+                    this.instances.get(i).dispose();
                 }
             }
-            dolog("Disabled.");
-        } catch(Exception e) {
+            CraftIRC.dolog("Disabled.");
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
-    
-    /***************************
-    Minecraft command handling
-    ***************************/
 
+    /***************************
+     * Minecraft command handling
+     ***************************/
+
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        String commandName = command.getName().toLowerCase();
-         
+        final String commandName = command.getName().toLowerCase();
+
         try {
-            if (sender instanceof IRCCommandSender) sender = (IRCCommandSender)sender;
-            
+
             if (commandName.equals("ircmsg")) {
-                if (!sender.hasPermission("craftirc." + commandName)) return false;
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
                 return this.cmdMsgToTag(sender, args);
             } else if (commandName.equals("ircmsguser")) {
-                if (!sender.hasPermission("craftirc." + commandName)) return false;
-                return this.cmdMsgToUser(sender, args);                
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
+                return this.cmdMsgToUser(sender, args);
             } else if (commandName.equals("ircusers")) {
-                if (!sender.hasPermission("craftirc." + commandName)) return false;
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
                 return this.cmdGetUserList(sender, args);
             } else if (commandName.equals("admins!")) {
-                if (!sender.hasPermission("craftirc.admins")) return false;
+                if (!sender.hasPermission("craftirc.admins")) {
+                    return false;
+                }
                 return this.cmdNotifyIrcAdmins(sender, args);
             } else if (commandName.equals("ircraw")) {
-                if (!sender.hasPermission("craftirc." + commandName)) return false;
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
                 return this.cmdRawIrcCommand(sender, args);
             } else if (commandName.equals("ircreload")) {
-                if (!sender.hasPermission("craftirc." + commandName)) return false;
-                getServer().getPluginManager().disablePlugin(this);
-                getServer().getPluginManager().enablePlugin(this);
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
+                this.getServer().getPluginManager().disablePlugin(this);
+                this.getServer().getPluginManager().enablePlugin(this);
                 return true;
-            } else
+            } else {
                 return false;
-        } catch (Exception e) { 
-            e.printStackTrace(); 
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     private boolean cmdMsgToTag(CommandSender sender, String[] args) {
         try {
-            if (this.isDebug()) dolog("CraftIRCListener cmdMsgToAll()");
-            if (args.length < 2) return false;
-            String msgToSend = Util.combineSplit(1, args, " ");
-            RelayedMessage msg = this.newMsg(getEndPoint(cMinecraftTag()), getEndPoint(args[0]), "chat");
-            if (msg == null) return true;
-            if (sender instanceof Player)
+            if (this.isDebug()) {
+                CraftIRC.dolog("CraftIRCListener cmdMsgToAll()");
+            }
+            if (args.length < 2) {
+                return false;
+            }
+            final String msgToSend = Util.combineSplit(1, args, " ");
+            final RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), this.getEndPoint(args[0]), "chat");
+            if (msg == null) {
+                return true;
+            }
+            if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
-            else
+            } else {
                 msg.setField("sender", "SERVER");
+            }
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
             msg.post();
             sender.sendMessage("Message sent.");
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -321,20 +350,25 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdMsgToUser(CommandSender sender, String[] args) {
         try {
-            if (args.length < 3) return false;
-            String msgToSend = Util.combineSplit(2, args, " ");
-            RelayedMessage msg = this.newMsg(getEndPoint(cMinecraftTag()), getEndPoint(args[0]), "private");
-            if (msg == null) return true;
-            if (sender instanceof Player)
+            if (args.length < 3) {
+                return false;
+            }
+            final String msgToSend = Util.combineSplit(2, args, " ");
+            final RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), this.getEndPoint(args[0]), "private");
+            if (msg == null) {
+                return true;
+            }
+            if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
-            else
-                msg.setField("sender", "SERVER");;
+            } else {
+                msg.setField("sender", "SERVER");
+            };
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
             msg.postToUser(args[1]);
             sender.sendMessage("Message sent.");
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -342,14 +376,16 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdGetUserList(CommandSender sender, String[] args) {
         try {
-            if (args.length == 0)
+            if (args.length == 0) {
                 return false;
+            }
             sender.sendMessage("Users in " + args[0] + ":");
-            List<String> userlists = this.ircUserLists(args[0]);
-            for (Iterator<String> it = userlists.iterator(); it.hasNext();)
-                sender.sendMessage(it.next());
+            final List<String> userlists = this.ircUserLists(args[0]);
+            for (final String string : userlists) {
+                sender.sendMessage(string);
+            }
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -357,13 +393,19 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdNotifyIrcAdmins(CommandSender sender, String[] args) {
         try {
-            if (this.isDebug()) dolog("CraftIRCListener cmdNotifyIrcAdmins()");
-            if (args.length == 0 || !(sender instanceof Player)) {
-                if (this.isDebug()) dolog("CraftIRCListener cmdNotifyIrcAdmins() - args.length == 0 or Sender != player ");
+            if (this.isDebug()) {
+                CraftIRC.dolog("CraftIRCListener cmdNotifyIrcAdmins()");
+            }
+            if ((args.length == 0) || !(sender instanceof Player)) {
+                if (this.isDebug()) {
+                    CraftIRC.dolog("CraftIRCListener cmdNotifyIrcAdmins() - args.length == 0 or Sender != player ");
+                }
                 return false;
             }
-            RelayedMessage msg = newMsg(getEndPoint(cMinecraftTag()), null, "admin");
-            if (msg == null) return true;
+            final RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), null, "admin");
+            if (msg == null) {
+                return true;
+            }
             msg.setField("sender", ((Player) sender).getDisplayName());
             msg.setField("message", Util.combineSplit(0, args, " "));
             msg.setField("world", ((Player) sender).getWorld().getName());
@@ -371,7 +413,7 @@ public class CraftIRC extends JavaPlugin {
             msg.post(true);
             sender.sendMessage("Admin notice sent.");
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -379,617 +421,770 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdRawIrcCommand(CommandSender sender, String[] args) {
         try {
-            if (this.isDebug()) dolog("cmdRawIrcCommand(sender=" + sender.toString() + ", args=" + Util.combineSplit(0, args, " "));
-            if (args.length < 2) return false;
+            if (this.isDebug()) {
+                CraftIRC.dolog("cmdRawIrcCommand(sender=" + sender.toString() + ", args=" + Util.combineSplit(0, args, " "));
+            }
+            if (args.length < 2) {
+                return false;
+            }
             this.sendRawToBot(Util.combineSplit(1, args, " "), Integer.parseInt(args[0]));
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }
     }
-        
+
     /***************************
-    Endpoint and message interface (to be used by CraftIRC and external plugins)
-    ***************************/
-    
-    //Null target: Sends message through all possible paths.
+     * Endpoint and message interface (to be used by CraftIRC and external plugins)
+     ***************************/
+
+    /**
+     * Null target: Sends message through all possible paths.
+     * 
+     * @param source
+     * @param target
+     * @param eventType
+     * @return
+     */
     public RelayedMessage newMsg(EndPoint source, EndPoint target, String eventType) {
-        if (source == null) return null;
-        if (target == null || cPathExists(getTag(source), getTag(target)))
+        if (source == null) {
+            return null;
+        }
+        if ((target == null) || this.cPathExists(this.getTag(source), this.getTag(target))) {
             return new RelayedMessage(this, source, target, eventType);
-        else {
-            if (isDebug())
-                dolog("Failed to prepare message: " + getTag(source) + " -> " + getTag(target) + " (missing path)");
+        } else {
+            if (this.isDebug()) {
+                CraftIRC.dolog("Failed to prepare message: " + this.getTag(source) + " -> " + this.getTag(target) + " (missing path)");
+            }
             return null;
         }
     }
+
     public RelayedMessage newMsgToTag(EndPoint source, String target, String eventType) {
-        if (source == null) return null;
+        if (source == null) {
+            return null;
+        }
         EndPoint targetpoint = null;
         if (target != null) {
-            if (cPathExists(getTag(source), target)) {
-                targetpoint = getEndPoint(target);
-                if (targetpoint == null) dolog("The requested target tag '" + target + "' isn't registered.");
-            } else return null;
+            if (this.cPathExists(this.getTag(source), target)) {
+                targetpoint = this.getEndPoint(target);
+                if (targetpoint == null) {
+                    CraftIRC.dolog("The requested target tag '" + target + "' isn't registered.");
+                }
+            } else {
+                return null;
+            }
         }
         return new RelayedMessage(this, source, targetpoint, eventType);
     }
+
     public RelayedCommand newCmd(EndPoint source, String command) {
-        if (source == null) return null;
-        CommandEndPoint target = irccmds.get(command);
-        if (target == null) return null;
-        if (!cPathExists(getTag(source), getTag(target))) return null;
-        RelayedCommand cmd = new RelayedCommand(this, source, target);
+        if (source == null) {
+            return null;
+        }
+        final CommandEndPoint target = this.irccmds.get(command);
+        if (target == null) {
+            return null;
+        }
+        if (!this.cPathExists(this.getTag(source), this.getTag(target))) {
+            return null;
+        }
+        final RelayedCommand cmd = new RelayedCommand(this, source, target);
         cmd.setField("command", command);
         return cmd;
     }
-    
+
     public boolean registerEndPoint(String tag, EndPoint ep) {
-        if (isDebug()) dolog("Registering endpoint: " + tag);
-        if (tag == null) dolog("Failed to register endpoint - No tag!");
-        if (endpoints.get(tag) != null || tags.get(ep) != null) {
-            dolog("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist."); 
+        if (this.isDebug()) {
+            CraftIRC.dolog("Registering endpoint: " + tag);
+        }
+        if (tag == null) {
+            CraftIRC.dolog("Failed to register endpoint - No tag!");
+        }
+        if ((this.endpoints.get(tag) != null) || (this.tags.get(ep) != null)) {
+            CraftIRC.dolog("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist.");
             return false;
         }
         if (tag == "*") {
-            dolog("Couldn't register an endpoint - the character * can't be used as a tag.");
+            CraftIRC.dolog("Couldn't register an endpoint - the character * can't be used as a tag.");
             return false;
         }
-        endpoints.put(tag, ep);
-        tags.put(ep, tag);
+        this.endpoints.put(tag, ep);
+        this.tags.put(ep, tag);
         return true;
     }
+
     public boolean endPointRegistered(String tag) {
-        return endpoints.get(tag) != null;
+        return this.endpoints.get(tag) != null;
     }
+
     EndPoint getEndPoint(String tag) {
-        return endpoints.get(tag);
+        return this.endpoints.get(tag);
     }
+
     String getTag(EndPoint ep) {
-        return tags.get(ep);
+        return this.tags.get(ep);
     }
+
     public boolean registerCommand(String tag, String command) {
-        if (isDebug()) dolog("Registering command: " + command + " to endpoint:" + tag);
-        EndPoint ep = getEndPoint(tag);
+        if (this.isDebug()) {
+            CraftIRC.dolog("Registering command: " + command + " to endpoint:" + tag);
+        }
+        final EndPoint ep = this.getEndPoint(tag);
         if (ep == null) {
-            dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because there is no such tag.");
+            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because there is no such tag.");
             return false;
         }
         if (!(ep instanceof CommandEndPoint)) {
-            dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because it's not capable of handling commands.");
+            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because it's not capable of handling commands.");
             return false;
         }
-        if (irccmds.containsKey(command)) {
-            dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because that command is already registered.");
+        if (this.irccmds.containsKey(command)) {
+            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because that command is already registered.");
             return false;
         }
-        irccmds.put(command, (CommandEndPoint)ep);
+        this.irccmds.put(command, (CommandEndPoint) ep);
         return true;
     }
+
     public boolean unregisterCommand(String command) {
-        if (!irccmds.containsKey(command)) return false;
-        irccmds.remove(command);
+        if (!this.irccmds.containsKey(command)) {
+            return false;
+        }
+        this.irccmds.remove(command);
         return true;
     }
+
     public boolean unregisterEndPoint(String tag) {
-        EndPoint ep = getEndPoint(tag);
-        if (ep == null) return false;
-        endpoints.remove(tag);
-        tags.remove(ep);
-        ungroupTag(tag);
+        final EndPoint ep = this.getEndPoint(tag);
+        if (ep == null) {
+            return false;
+        }
+        this.endpoints.remove(tag);
+        this.tags.remove(ep);
+        this.ungroupTag(tag);
         if (ep instanceof CommandEndPoint) {
-            CommandEndPoint cep = (CommandEndPoint)ep;
-            for (String cmd : irccmds.keySet()) {
-                if (irccmds.get(cmd) == cep)
-                    irccmds.remove(cmd);
+            final CommandEndPoint cep = (CommandEndPoint) ep;
+            for (final String cmd : this.irccmds.keySet()) {
+                if (this.irccmds.get(cmd) == cep) {
+                    this.irccmds.remove(cmd);
+                }
             }
         }
         return true;
     }
-    
+
     public boolean groupTag(String tag, String group) {
-    	if (getEndPoint(tag) == null) return false;
-    	List<String> tags = taggroups.get(group);
-    	if (tags == null) {
-    		tags = new ArrayList<String>();
-    		taggroups.put(group, tags);
-    	}
-    	tags.add(tag);
-    	return true;
-    }
-    public void ungroupTag(String tag) {
-    	for (String group : taggroups.keySet())
-    		taggroups.get(group).remove(tag);
-    }
-    public void clearGroup(String group) {
-    	taggroups.remove(group);
-    }
-    public boolean checkTagsGrouped(String tagA, String tagB) {
-    	for (String group : taggroups.keySet())
-    		if (taggroups.get(group).contains(tagA) && taggroups.get(group).contains(tagB))
-    			return true;
-    	return false;
-    }
-    
-    /***************************
-    Heart of the beast! Unified method with no special cases that replaces the old sendMessage
-    ***************************/
-    
-    boolean delivery(RelayedMessage msg) {
-        return delivery(msg, null, null, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-    boolean delivery(RelayedMessage msg, List<EndPoint> destinations) {
-        return delivery(msg, destinations, null, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-    boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username) {
-        return delivery(msg, knownDestinations, username, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-    //Only successful if all known targets (or if there is none at least one possible target) are successful!
-    boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username, RelayedMessage.DeliveryMethod dm) {
-        String sourceTag = getTag(msg.getSource());
-        msg.setField("source", sourceTag);
-        List<EndPoint> destinations;
-        if (this.isDebug())
-            dolog("X->" + (knownDestinations.size() > 0 ? knownDestinations.toString() : "*") + ": " + msg.toString());
-        //If we weren't explicitly given a recipient for the message, let's try to find one (or more)
-        if (knownDestinations.size() < 1) {
-            //Use all possible destinations (auto-targets)
-            destinations = new LinkedList<EndPoint>();
-            for (String targetTag : cPathsFrom(sourceTag)) {
-            	EndPoint ep = getEndPoint(targetTag);
-            	if (ep instanceof SecuredEndPoint && SecuredEndPoint.Security.REQUIRE_TARGET.equals(((SecuredEndPoint)ep).getSecurity())) continue;
-                if (!cPathAttribute(sourceTag, targetTag, "attributes." + msg.getEvent())) continue;
-                if (dm == RelayedMessage.DeliveryMethod.ADMINS && !cPathAttribute(sourceTag, targetTag, "attributes.admin")) continue;
-                destinations.add(ep);
-            }
-            //Default paths to unsecured destinations (auto-paths)
-            if (cAutoPaths()) {
-            	for (EndPoint ep : endpoints.values()) {
-            		if (msg.getSource().equals(ep) || destinations.contains(ep)) continue;
-            		if (ep instanceof SecuredEndPoint && !SecuredEndPoint.Security.UNSECURED.equals(((SecuredEndPoint)ep).getSecurity())) continue;
-        			String targetTag = getTag(ep);
-        			if (checkTagsGrouped(sourceTag,targetTag)) continue;
-        			if (!cPathAttribute(sourceTag, targetTag, "attributes." + msg.getEvent())) continue;
-        			if (dm == RelayedMessage.DeliveryMethod.ADMINS && !cPathAttribute(sourceTag, targetTag, "attributes.admin")) continue;
-        			if (cPathAttribute(sourceTag, targetTag, "disabled")) continue;
-        			destinations.add(ep);
-            	}
-            }
-        } else destinations = new LinkedList<EndPoint>(knownDestinations);
-        if (destinations.size() < 1) return false;
-        //Deliver the message
-        boolean success = true;
-        for (EndPoint destination : destinations) {
-            String targetTag = getTag(destination);
-            msg.setField("target", targetTag);
-            //Check against path filters
-            if (msg instanceof RelayedCommand && matchesFilter(msg, cPathFilters(sourceTag, targetTag))) {
-                if (knownDestinations != null) success = false;
-                continue;
-            }
-            //Finally deliver!
-            if (this.isDebug())
-                dolog("-->X: " + msg.toString());
-            if (username != null)
-                success = success && destination.userMessageIn(username, msg);
-            else if (dm == RelayedMessage.DeliveryMethod.ADMINS) 
-                success = destination.adminMessageIn(msg);
-            else if (dm == RelayedMessage.DeliveryMethod.COMMAND) {
-                if (!(destination instanceof CommandEndPoint)) continue;
-                ((CommandEndPoint)destination).commandIn((RelayedCommand)msg);
-            } else
-                destination.messageIn(msg);
+        if (this.getEndPoint(tag) == null) {
+            return false;
         }
-        return success;
+        List<String> tags = this.taggroups.get(group);
+        if (tags == null) {
+            tags = new ArrayList<String>();
+            this.taggroups.put(group, tags);
+        }
+        tags.add(tag);
+        return true;
     }
-    
-    boolean matchesFilter(RelayedMessage msg, List<ConfigurationNode> filters) {
-        if (filters == null) return false;
-        newFilter: for (ConfigurationNode filter : filters) {
-            for (String key : filter.getKeys()) {
-                Pattern condition = Pattern.compile(filter.getString(key, ""));
-                if (condition == null) continue newFilter;
-                String subject = msg.getField(key);
-                if (subject == null) continue newFilter;
-                Matcher check = condition.matcher(subject);
-                if (!check.find()) continue newFilter;
+
+    public void ungroupTag(String tag) {
+        for (final String group : this.taggroups.keySet()) {
+            this.taggroups.get(group).remove(tag);
+        }
+    }
+
+    public void clearGroup(String group) {
+        this.taggroups.remove(group);
+    }
+
+    public boolean checkTagsGrouped(String tagA, String tagB) {
+        for (final String group : this.taggroups.keySet()) {
+            if (this.taggroups.get(group).contains(tagA) && this.taggroups.get(group).contains(tagB)) {
+                return true;
             }
-            return true; 
         }
         return false;
     }
 
     /***************************
-    Auxiliary methods
-    ***************************/
-    
+     * Heart of the beast! Unified method with no special cases that replaces the old sendMessage
+     ***************************/
+
+    boolean delivery(RelayedMessage msg) {
+        return this.delivery(msg, null, null, RelayedMessage.DeliveryMethod.STANDARD);
+    }
+
+    boolean delivery(RelayedMessage msg, List<EndPoint> destinations) {
+        return this.delivery(msg, destinations, null, RelayedMessage.DeliveryMethod.STANDARD);
+    }
+
+    boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username) {
+        return this.delivery(msg, knownDestinations, username, RelayedMessage.DeliveryMethod.STANDARD);
+    }
+
+    /**
+     * Only successful if all known targets (or if there is none at least one possible target) are successful!
+     * 
+     * @param msg
+     * @param knownDestinations
+     * @param username
+     * @param dm
+     * @return
+     */
+    boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username, RelayedMessage.DeliveryMethod dm) {
+        final String sourceTag = this.getTag(msg.getSource());
+        msg.setField("source", sourceTag);
+        List<EndPoint> destinations;
+        if (this.isDebug()) {
+            CraftIRC.dolog("X->" + (knownDestinations.size() > 0 ? knownDestinations.toString() : "*") + ": " + msg.toString());
+        }
+        //If we weren't explicitly given a recipient for the message, let's try to find one (or more)
+        if (knownDestinations.size() < 1) {
+            //Use all possible destinations (auto-targets)
+            destinations = new LinkedList<EndPoint>();
+            for (final String targetTag : this.cPathsFrom(sourceTag)) {
+                final EndPoint ep = this.getEndPoint(targetTag);
+                if ((ep instanceof SecuredEndPoint) && SecuredEndPoint.Security.REQUIRE_TARGET.equals(((SecuredEndPoint) ep).getSecurity())) {
+                    continue;
+                }
+                if (!this.cPathAttribute(sourceTag, targetTag, "attributes." + msg.getEvent())) {
+                    continue;
+                }
+                if ((dm == RelayedMessage.DeliveryMethod.ADMINS) && !this.cPathAttribute(sourceTag, targetTag, "attributes.admin")) {
+                    continue;
+                }
+                destinations.add(ep);
+            }
+            //Default paths to unsecured destinations (auto-paths)
+            if (this.cAutoPaths()) {
+                for (final EndPoint ep : this.endpoints.values()) {
+                    if (msg.getSource().equals(ep) || destinations.contains(ep)) {
+                        continue;
+                    }
+                    if ((ep instanceof SecuredEndPoint) && !SecuredEndPoint.Security.UNSECURED.equals(((SecuredEndPoint) ep).getSecurity())) {
+                        continue;
+                    }
+                    final String targetTag = this.getTag(ep);
+                    if (this.checkTagsGrouped(sourceTag, targetTag)) {
+                        continue;
+                    }
+                    if (!this.cPathAttribute(sourceTag, targetTag, "attributes." + msg.getEvent())) {
+                        continue;
+                    }
+                    if ((dm == RelayedMessage.DeliveryMethod.ADMINS) && !this.cPathAttribute(sourceTag, targetTag, "attributes.admin")) {
+                        continue;
+                    }
+                    if (this.cPathAttribute(sourceTag, targetTag, "disabled")) {
+                        continue;
+                    }
+                    destinations.add(ep);
+                }
+            }
+        } else {
+            destinations = new LinkedList<EndPoint>(knownDestinations);
+        }
+        if (destinations.size() < 1) {
+            return false;
+        }
+        //Deliver the message
+        boolean success = true;
+        for (final EndPoint destination : destinations) {
+            final String targetTag = this.getTag(destination);
+            msg.setField("target", targetTag);
+            //Check against path filters
+            if ((msg instanceof RelayedCommand) && this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
+                if (knownDestinations != null) {
+                    success = false;
+                }
+                continue;
+            }
+            //Finally deliver!
+            if (this.isDebug()) {
+                CraftIRC.dolog("-->X: " + msg.toString());
+            }
+            if (username != null) {
+                success = success && destination.userMessageIn(username, msg);
+            } else if (dm == RelayedMessage.DeliveryMethod.ADMINS) {
+                success = destination.adminMessageIn(msg);
+            } else if (dm == RelayedMessage.DeliveryMethod.COMMAND) {
+                if (!(destination instanceof CommandEndPoint)) {
+                    continue;
+                }
+                ((CommandEndPoint) destination).commandIn((RelayedCommand) msg);
+            } else {
+                destination.messageIn(msg);
+            }
+        }
+        return success;
+    }
+
+    boolean matchesFilter(RelayedMessage msg, List<ConfigurationNode> filters) {
+        if (filters == null) {
+            return false;
+        }
+        newFilter: for (final ConfigurationNode filter : filters) {
+            for (final String key : filter.getKeys()) {
+                final Pattern condition = Pattern.compile(filter.getString(key, ""));
+                if (condition == null) {
+                    continue newFilter;
+                }
+                final String subject = msg.getField(key);
+                if (subject == null) {
+                    continue newFilter;
+                }
+                final Matcher check = condition.matcher(subject);
+                if (!check.find()) {
+                    continue newFilter;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /***************************
+     * Auxiliary methods
+     ***************************/
+
     void sendRawToBot(String rawMessage, int bot) {
-        if (this.isDebug()) dolog("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
-        Minebot targetBot = instances.get(bot);
+        if (this.isDebug()) {
+            CraftIRC.dolog("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
+        }
+        final Minebot targetBot = this.instances.get(bot);
         targetBot.sendRawLineViaQueue(rawMessage);
     }
-    
+
     void sendMsgToTargetViaBot(String message, String target, int bot) {
-        Minebot targetBot = instances.get(bot);
+        final Minebot targetBot = this.instances.get(bot);
         targetBot.sendMessage(target, message);
     }
-    
+
     List<String> ircUserLists(String tag) {
-        return getEndPoint(tag).listDisplayUsers();        
+        return this.getEndPoint(tag).listDisplayUsers();
     }
 
     void setDebug(boolean d) {
-        debug = d;
+        this.debug = d;
 
-        for (int i = 0; i < bots.size(); i++)
-            instances.get(i).setVerbose(d);
+        for (int i = 0; i < this.bots.size(); i++) {
+            this.instances.get(i).setVerbose(d);
+        }
 
-        dolog("DEBUG [" + (d ? "ON" : "OFF") + "]");
+        CraftIRC.dolog("DEBUG [" + (d ? "ON" : "OFF") + "]");
     }
-    
+
     String getPrefix(Player p) {
-        String result="";
-        if(this.vault!=null){
-            try{
-                result=vault.getPlayerPrefix(p);
-            }catch (Exception e){
-            
+        String result = "";
+        if (this.vault != null) {
+            try {
+                result = this.vault.getPlayerPrefix(p);
+            } catch (final Exception e) {
+
             }
         }
         return result;
     }
-    
+
     String getSuffix(Player p) {
-        String result="";
-        if(this.vault!=null){
-            try{
-                result=vault.getPlayerSuffix(p);
-            }catch (Exception e){
-            
+        String result = "";
+        if (this.vault != null) {
+            try {
+                result = this.vault.getPlayerSuffix(p);
+            } catch (final Exception e) {
+
             }
         }
         return result;
     }
 
     boolean isDebug() {
-        return debug;
+        return this.debug;
     }
-    
+
     boolean checkPerms(Player pl, String path) {
         return pl.hasPermission(path);
     }
 
     boolean checkPerms(String pl, String path) {
-        Player pit = getServer().getPlayer(pl);
-        if (pit != null)
+        final Player pit = this.getServer().getPlayer(pl);
+        if (pit != null) {
             return pit.hasPermission(path);
+        }
         return false;
     }
 
     // TODO: Make sure this works
     String colorizeName(String name) {
-        Pattern color_codes = Pattern.compile("§[0-9a-f]");
+        final Pattern color_codes = Pattern.compile("§[0-9a-f]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
-            name = find_colors.replaceFirst(Character.toString((char) 3)
-                    + String.format("%02d", cColorIrcFromGame(find_colors.group())));
+            name = find_colors.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.cColorIrcFromGame(find_colors.group())));
             find_colors = color_codes.matcher(name);
         }
         return name;
     }
-   
+
     protected void enqueueConsoleCommand(String cmd) {
-      try {
-        getServer().dispatchCommand(getServer().getConsoleSender(), cmd);
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
+        try {
+            this.getServer().dispatchCommand(this.getServer().getConsoleSender(), cmd);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
-    
-    //If the channel is null it's a reconnect, otherwise a rejoin
+
+    /**
+     * If the channel is null it's a reconnect, otherwise a rejoin
+     * 
+     * @param bot
+     * @param channel
+     */
     void scheduleForRetry(Minebot bot, String channel) {
-        retryTimer.schedule(new RetryTask(this, bot, channel), cRetryDelay());
+        this.retryTimer.schedule(new RetryTask(this, bot, channel), this.cRetryDelay());
     }
-    
+
     /***************************
-    Read stuff from config
-    ***************************/
+     * Read stuff from config
+     ***************************/
 
     private ConfigurationNode getChanNode(int bot, String channel) {
-        ArrayList<ConfigurationNode> botChans = channodes.get(bot);
-        for (Iterator<ConfigurationNode> it = botChans.iterator(); it.hasNext();) {
-            ConfigurationNode chan = it.next();
-            if (chan.getString("name").equalsIgnoreCase(channel))
+        final ArrayList<ConfigurationNode> botChans = this.channodes.get(bot);
+        for (final ConfigurationNode chan : botChans) {
+            if (chan.getString("name").equalsIgnoreCase(channel)) {
                 return chan;
+            }
         }
         return Configuration.getEmptyNode();
     }
-    
+
     List<ConfigurationNode> cChannels(int bot) {
-        return channodes.get(bot);
+        return this.channodes.get(bot);
     }
-    
+
     private ConfigurationNode getPathNode(String source, String target) {
-        ConfigurationNode result = paths.get(new Path(source, target));
-        if (result == null) return configuration.getNode("default-attributes");
+        ConfigurationNode result = this.paths.get(new Path(source, target));
+        if (result == null) {
+            return this.configuration.getNode("default-attributes");
+        }
         ConfigurationNode basepath;
-        if (result.getKeys().contains("base") && (basepath = result.getNode("base")) != null) {
-            ConfigurationNode basenode = paths.get(new Path(basepath.getString("source", ""), basepath.getString("target", "")));
-            if (basenode != null) result = basenode;
+        if (result.getKeys().contains("base") && ((basepath = result.getNode("base")) != null)) {
+            final ConfigurationNode basenode = this.paths.get(new Path(basepath.getString("source", ""), basepath.getString("target", "")));
+            if (basenode != null) {
+                result = basenode;
+            }
         }
         return result;
     }
 
     String cMinecraftTag() {
-        return configuration.getString("settings.minecraft-tag", "minecraft");
+        return this.configuration.getString("settings.minecraft-tag", "minecraft");
     }
+
     String cCancelledTag() {
-        return configuration.getString("settings.cancelled-tag", "cancelled");
+        return this.configuration.getString("settings.cancelled-tag", "cancelled");
     }
+
     String cConsoleTag() {
-        return configuration.getString("settings.console-tag", "console");
+        return this.configuration.getString("settings.console-tag", "console");
     }
-    
+
     String cMinecraftTagGroup() {
-    	return configuration.getString("settings.minecraft-group-name", "minecraft");
+        return this.configuration.getString("settings.minecraft-group-name", "minecraft");
     }
+
     String cIrcTagGroup() {
-    	return configuration.getString("settings.irc-group-name", "irc");
+        return this.configuration.getString("settings.irc-group-name", "irc");
     }
-    
+
     boolean cAutoPaths() {
-    	return configuration.getBoolean("settings.auto-paths", false);
+        return this.configuration.getBoolean("settings.auto-paths", false);
     }
-    
+
     boolean cCancelChat() {
-        return configuration.getBoolean("settings.cancel-chat", false);
+        return this.configuration.getBoolean("settings.cancel-chat", false);
     }
-    
+
     boolean cDebug() {
-        return configuration.getBoolean("settings.debug", false);
+        return this.configuration.getBoolean("settings.debug", false);
     }
 
     ArrayList<String> cConsoleCommands() {
-        return new ArrayList<String>(configuration.getStringList("settings.console-commands", null));
+        return new ArrayList<String>(this.configuration.getStringList("settings.console-commands", null));
     }
 
     public int cHold(String eventType) {
-        return configuration.getInt("settings.hold-after-enable." + eventType, 0);
+        return this.configuration.getInt("settings.hold-after-enable." + eventType, 0);
     }
 
     String cFormatting(String eventType, RelayedMessage msg) {
-        return cFormatting(eventType, msg, null);
+        return this.cFormatting(eventType, msg, null);
     }
+
     String cFormatting(String eventType, RelayedMessage msg, EndPoint realTarget) {
-        String source = getTag(msg.getSource()), target = getTag(realTarget != null ? realTarget : msg.getTarget());
-        if (source == null || target == null) {
-            dowarn("Attempted to obtain formatting for invalid path " + source + " -> " + target + " .");
-            return cDefaultFormatting(eventType, msg);
+        final String source = this.getTag(msg.getSource()), target = this.getTag(realTarget != null ? realTarget : msg.getTarget());
+        if ((source == null) || (target == null)) {
+            CraftIRC.dowarn("Attempted to obtain formatting for invalid path " + source + " -> " + target + " .");
+            return this.cDefaultFormatting(eventType, msg);
         }
-        ConfigurationNode pathConfig = paths.get(new Path(source, target));
-        if (pathConfig != null && pathConfig.getString("formatting." + eventType, null) != null)
+        final ConfigurationNode pathConfig = this.paths.get(new Path(source, target));
+        if ((pathConfig != null) && (pathConfig.getString("formatting." + eventType, null) != null)) {
             return pathConfig.getString("formatting." + eventType, null);
-        else
-            return cDefaultFormatting(eventType, msg);
+        } else {
+            return this.cDefaultFormatting(eventType, msg);
+        }
     }
+
     String cDefaultFormatting(String eventType, RelayedMessage msg) {
-        if (msg.getSource().getType() == EndPoint.Type.MINECRAFT) return configuration.getString("settings.formatting.from-game." + eventType);
-        if (msg.getSource().getType() == EndPoint.Type.IRC) return configuration.getString("settings.formatting.from-irc." + eventType);
-        if (msg.getSource().getType() == EndPoint.Type.PLAIN) return configuration.getString("settings.formatting.from-plain." + eventType);
+        if (msg.getSource().getType() == EndPoint.Type.MINECRAFT) {
+            return this.configuration.getString("settings.formatting.from-game." + eventType);
+        }
+        if (msg.getSource().getType() == EndPoint.Type.IRC) {
+            return this.configuration.getString("settings.formatting.from-irc." + eventType);
+        }
+        if (msg.getSource().getType() == EndPoint.Type.PLAIN) {
+            return this.configuration.getString("settings.formatting.from-plain." + eventType);
+        }
         return "";
     }
 
     int cColorIrcFromGame(String game) {
         ConfigurationNode color;
-        Iterator<ConfigurationNode> it = colormap.iterator();
+        final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getString("game").equals(game))
-                return color.getInt("irc", cColorIrcFromName("foreground"));
+            if (color.getString("game").equals(game)) {
+                return color.getInt("irc", this.cColorIrcFromName("foreground"));
+            }
         }
-        return cColorIrcFromName("foreground");
+        return this.cColorIrcFromName("foreground");
     }
 
     int cColorIrcFromName(String name) {
         ConfigurationNode color;
-        Iterator<ConfigurationNode> it = colormap.iterator();
+        final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getString("name").equalsIgnoreCase(name) && color.getProperty("irc") != null)
+            if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
                 return color.getInt("irc", 1);
+            }
         }
-        if (name.equalsIgnoreCase("foreground"))
+        if (name.equalsIgnoreCase("foreground")) {
             return 1;
-        else
-            return cColorIrcFromName("foreground");
+        } else {
+            return this.cColorIrcFromName("foreground");
+        }
     }
 
     String cColorGameFromIrc(int irc) {
         ConfigurationNode color;
-        Iterator<ConfigurationNode> it = colormap.iterator();
+        final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getInt("irc", -1) == irc)
-                return color.getString("game", cColorGameFromName("foreground"));
+            if (color.getInt("irc", -1) == irc) {
+                return color.getString("game", this.cColorGameFromName("foreground"));
+            }
         }
-        return cColorGameFromName("foreground");
+        return this.cColorGameFromName("foreground");
     }
 
     String cColorGameFromName(String name) {
         ConfigurationNode color;
-        Iterator<ConfigurationNode> it = colormap.iterator();
+        final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getString("name").equalsIgnoreCase(name) && color.getProperty("game") != null)
+            if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("game") != null)) {
                 return color.getString("game", "\u00C2\u00A7f");
+            }
         }
-        if (name.equalsIgnoreCase("foreground"))
+        if (name.equalsIgnoreCase("foreground")) {
             return "\u00C2\u00A7f";
-        else
-            return cColorGameFromName("foreground");
+        } else {
+            return this.cColorGameFromName("foreground");
+        }
     }
 
     String cBindLocalAddr() {
-        return configuration.getString("settings.bind-address","");
+        return this.configuration.getString("settings.bind-address", "");
     }
-    
+
     int cRetryDelay() {
-        return configuration.getInt("settings.retry-delay", 10) * 1000;
+        return this.configuration.getInt("settings.retry-delay", 10) * 1000;
     }
 
     String cBotNickname(int bot) {
-        return bots.get(bot).getString("nickname", "CraftIRCbot");
+        return this.bots.get(bot).getString("nickname", "CraftIRCbot");
     }
 
     String cBotServer(int bot) {
-        return bots.get(bot).getString("server", "irc.esper.net");
+        return this.bots.get(bot).getString("server", "irc.esper.net");
     }
 
     int cBotPort(int bot) {
-        return bots.get(bot).getInt("port", 6667);
+        return this.bots.get(bot).getInt("port", 6667);
     }
 
     String cBotLogin(int bot) {
-        return bots.get(bot).getString("userident", "");
+        return this.bots.get(bot).getString("userident", "");
     }
 
     String cBotPassword(int bot) {
-        return bots.get(bot).getString("serverpass", "");
+        return this.bots.get(bot).getString("serverpass", "");
     }
 
     boolean cBotSsl(int bot) {
-        return bots.get(bot).getBoolean("ssl", false);
+        return this.bots.get(bot).getBoolean("ssl", false);
     }
 
     int cBotMessageDelay(int bot) {
-        return bots.get(bot).getInt("message-delay", 1000);
+        return this.bots.get(bot).getInt("message-delay", 1000);
     }
-    
+
     int cBotQueueSize(int bot) {
-        return bots.get(bot).getInt("queue-size", 5);
+        return this.bots.get(bot).getInt("queue-size", 5);
     }
 
     public String cCommandPrefix(int bot) {
-        return bots.get(bot).getString("command-prefix", configuration.getString("settings.command-prefix", "."));
+        return this.bots.get(bot).getString("command-prefix", this.configuration.getString("settings.command-prefix", "."));
     }
-    
+
     public List<String> cCmdWordCmd(Integer bot) {
-    	List<String> init = new ArrayList<String>(); init.add("cmd");
-    	List<String> result = configuration.getStringList("settings.irc-commands.cmd", init);
-    	if (bot != null)
-    		return bots.get(bot).getStringList("irc-commands.cmd", result);
-    	return result;
+        final List<String> init = new ArrayList<String>();
+        init.add("cmd");
+        final List<String> result = this.configuration.getStringList("settings.irc-commands.cmd", init);
+        if (bot != null) {
+            return this.bots.get(bot).getStringList("irc-commands.cmd", result);
+        }
+        return result;
     }
+
     public List<String> cCmdWordSay(Integer bot) {
-    	List<String> init = new ArrayList<String>(); init.add("say");
-    	List<String> result = configuration.getStringList("settings.irc-commands.say", init);
-    	if (bot != null)
-    		return bots.get(bot).getStringList("irc-commands.say", result);
-    	return result;
+        final List<String> init = new ArrayList<String>();
+        init.add("say");
+        final List<String> result = this.configuration.getStringList("settings.irc-commands.say", init);
+        if (bot != null) {
+            return this.bots.get(bot).getStringList("irc-commands.say", result);
+        }
+        return result;
     }
+
     public List<String> cCmdWordPlayers(Integer bot) {
-    	List<String> init = new ArrayList<String>(); init.add("players");
-    	List<String> result = configuration.getStringList("settings.irc-commands.players", init);
-    	if (bot != null)
-    		return bots.get(bot).getStringList("irc-commands.players", result);
-    	return result;
+        final List<String> init = new ArrayList<String>();
+        init.add("players");
+        final List<String> result = this.configuration.getStringList("settings.irc-commands.players", init);
+        if (bot != null) {
+            return this.bots.get(bot).getStringList("irc-commands.players", result);
+        }
+        return result;
     }
 
     public ArrayList<String> cBotAdminPrefixes(int bot) {
-        return new ArrayList<String>(bots.get(bot).getStringList("admin-prefixes", null));
+        return new ArrayList<String>(this.bots.get(bot).getStringList("admin-prefixes", null));
     }
 
     ArrayList<String> cBotIgnoredUsers(int bot) {
-        return new ArrayList<String>(bots.get(bot).getStringList("ignored-users", null));
+        return new ArrayList<String>(this.bots.get(bot).getStringList("ignored-users", null));
     }
 
     String cBotAuthMethod(int bot) {
-        return bots.get(bot).getString("auth.method", "nickserv");
+        return this.bots.get(bot).getString("auth.method", "nickserv");
     }
 
     String cBotAuthUsername(int bot) {
-        return bots.get(bot).getString("auth.username", "");
+        return this.bots.get(bot).getString("auth.username", "");
     }
 
     String cBotAuthPassword(int bot) {
-        return bots.get(bot).getString("auth.password", "");
+        return this.bots.get(bot).getString("auth.password", "");
     }
 
     ArrayList<String> cBotOnConnect(int bot) {
-        return new ArrayList<String>(bots.get(bot).getStringList("on-connect", null));
+        return new ArrayList<String>(this.bots.get(bot).getStringList("on-connect", null));
     }
 
     String cChanName(int bot, String channel) {
-        return getChanNode(bot, channel).getString("name", "#changeme");
+        return this.getChanNode(bot, channel).getString("name", "#changeme");
     }
 
     String cChanTag(int bot, String channel) {
-        return getChanNode(bot, channel).getString("tag", String.valueOf(bot) + "_" + channel);
+        return this.getChanNode(bot, channel).getString("tag", String.valueOf(bot) + "_" + channel);
     }
 
     String cChanPassword(int bot, String channel) {
-        return getChanNode(bot, channel).getString("password", "");
+        return this.getChanNode(bot, channel).getString("password", "");
     }
 
     ArrayList<String> cChanOnJoin(int bot, String channel) {
-        return new ArrayList<String>(getChanNode(bot, channel).getStringList("on-join", null));
+        return new ArrayList<String>(this.getChanNode(bot, channel).getStringList("on-join", null));
     }
-    
+
     List<String> cPathsFrom(String source) {
-        List<String> results = new LinkedList<String>();
-        for (Path path : paths.keySet()) {
-            if (!path.getSourceTag().equals(source)) continue;
-            if (paths.get(path).getBoolean("disable", false)) continue;
+        final List<String> results = new LinkedList<String>();
+        for (final Path path : this.paths.keySet()) {
+            if (!path.getSourceTag().equals(source)) {
+                continue;
+            }
+            if (this.paths.get(path).getBoolean("disable", false)) {
+                continue;
+            }
             results.add(path.getTargetTag());
         }
         return results;
     }
-    
+
     List<String> cPathsTo(String target) {
-        List<String> results = new LinkedList<String>();
-        for (Path path : paths.keySet()) {
-            if (!path.getTargetTag().equals(target)) continue;
-            if (paths.get(path).getBoolean("disable", false)) continue;
+        final List<String> results = new LinkedList<String>();
+        for (final Path path : this.paths.keySet()) {
+            if (!path.getTargetTag().equals(target)) {
+                continue;
+            }
+            if (this.paths.get(path).getBoolean("disable", false)) {
+                continue;
+            }
             results.add(path.getSourceTag());
         }
         return results;
     }
-    
-    
+
     public boolean cPathExists(String source, String target) {
-        ConfigurationNode pathNode = getPathNode(source, target);
-        return pathNode != null && !pathNode.getBoolean("disabled", false);
+        final ConfigurationNode pathNode = this.getPathNode(source, target);
+        return (pathNode != null) && !pathNode.getBoolean("disabled", false);
     }
-    
+
     public boolean cPathAttribute(String source, String target, String attribute) {
-        ConfigurationNode node = getPathNode(source, target);
-        if (node.getProperty(attribute) != null) return node.getBoolean(attribute, false);
-        else return configuration.getNode("default-attributes").getBoolean(attribute, false);
+        final ConfigurationNode node = this.getPathNode(source, target);
+        if (node.getProperty(attribute) != null) {
+            return node.getBoolean(attribute, false);
+        } else {
+            return this.configuration.getNode("default-attributes").getBoolean(attribute, false);
+        }
     }
-    
+
     public List<ConfigurationNode> cPathFilters(String source, String target) {
-        return getPathNode(source, target).getNodeList("filters", new ArrayList<ConfigurationNode>());
+        return this.getPathNode(source, target).getNodeList("filters", new ArrayList<ConfigurationNode>());
     }
-    
+
     void loadTagGroups() {
-    	List<String> groups = configuration.getKeys("settings.tag-groups");
-    	if (groups == null) return;
-    	for (String group : groups)
-    		for (String tag : configuration.getStringList("settings.tag-groups." + group, new ArrayList<String>()))
-    			groupTag(tag, group);
+        final List<String> groups = this.configuration.getKeys("settings.tag-groups");
+        if (groups == null) {
+            return;
+        }
+        for (final String group : groups) {
+            for (final String tag : this.configuration.getStringList("settings.tag-groups." + group, new ArrayList<String>())) {
+                this.groupTag(tag, group);
+            }
+        }
     }
-    
+
     boolean cUseMapAsWhitelist(int bot) {
-        return bots.get(bot).getBoolean("use-map-as-whitelist", false);
+        return this.bots.get(bot).getBoolean("use-map-as-whitelist", false);
     }
-    
+
     String cIrcDisplayName(int bot, String nickname) {
-    	return bots.get(bot).getString("irc-nickname-map." + nickname, nickname);
+        return this.bots.get(bot).getString("irc-nickname-map." + nickname, nickname);
     }
-    
+
     boolean cNicknameIsInIrcMap(int bot, String nickname) {
-    	return bots.get(bot).getString("irc-nickname-map." + nickname) != null;
+        return this.bots.get(bot).getString("irc-nickname-map." + nickname) != null;
     }
 
     enum HoldType {
@@ -997,8 +1192,8 @@ public class CraftIRC extends JavaPlugin {
     }
 
     class RemoveHoldTask extends TimerTask {
-        private CraftIRC plugin;
-        private HoldType ht;
+        private final CraftIRC plugin;
+        private final HoldType ht;
 
         protected RemoveHoldTask(CraftIRC plugin, HoldType ht) {
             super();
@@ -1006,13 +1201,14 @@ public class CraftIRC extends JavaPlugin {
             this.ht = ht;
         }
 
+        @Override
         public void run() {
-            this.plugin.hold.put(ht, false);
+            this.plugin.hold.put(this.ht, false);
         }
     }
 
     boolean isHeld(HoldType ht) {
-        return hold.get(ht);
+        return this.hold.get(ht);
     }
 
 }

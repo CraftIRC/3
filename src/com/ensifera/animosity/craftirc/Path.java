@@ -1,40 +1,41 @@
 package com.ensifera.animosity.craftirc;
 
 public class Path {
-    private String sourceTag;
-    private String targetTag;
+    private final String sourceTag;
+    private final String targetTag;
 
     Path(String sourceTag, String targetTag) {
         this.sourceTag = sourceTag;
         this.targetTag = targetTag;
     }
 
+    @Override
     public int hashCode() {
-        int hashFirst = sourceTag != null ? sourceTag.hashCode() : 0;
-        int hashSecond = targetTag != null ? targetTag.hashCode() : 0;
+        final int hashFirst = this.sourceTag != null ? this.sourceTag.hashCode() : 0;
+        final int hashSecond = this.targetTag != null ? this.targetTag.hashCode() : 0;
 
-        return (hashFirst + hashSecond) * hashSecond + hashFirst;
+        return ((hashFirst + hashSecond) * hashSecond) + hashFirst;
     }
 
+    @Override
     public boolean equals(Object other) {
-        if (other != null && other instanceof Path) {
-            Path otherPath = (Path)other;
-            return (sourceTag.equals(otherPath.getSourceTag()) || sourceTag.equals("*"))
-                && (targetTag.equals(otherPath.getTargetTag()) || targetTag.equals("*"));
+        if ((other != null) && (other instanceof Path)) {
+            final Path otherPath = (Path) other;
+            return (this.sourceTag.equals(otherPath.getSourceTag()) || this.sourceTag.equals("*")) && (this.targetTag.equals(otherPath.getTargetTag()) || this.targetTag.equals("*"));
         }
         return false;
     }
 
-    public String toString() { 
-           return sourceTag + " -> " + targetTag; 
+    @Override
+    public String toString() {
+        return this.sourceTag + " -> " + this.targetTag;
     }
 
     public String getSourceTag() {
-        return sourceTag;
+        return this.sourceTag;
     }
-    
+
     public String getTargetTag() {
-        return targetTag;
+        return this.targetTag;
     }
 }
-

@@ -7,75 +7,93 @@ import java.util.List;
 
 import org.jibble.pircbot.User;
 
-
 class NicknameComparator implements Comparator<String> {
 
     Minebot bot;
+
     NicknameComparator(Minebot bot) {
         this.bot = bot;
     }
-    
+
+    @Override
     public int compare(String o1, String o2) {
-        String prefixes = bot.getUserPrefixesInOrder();
-        if (!prefixes.contains(o1.substring(0,1)) && !prefixes.contains(o2.substring(0,1))) return o1.compareToIgnoreCase(o2);
-        else if (!prefixes.contains(o1.substring(0,1))) return 1;
-        else if (!prefixes.contains(o2.substring(0,1))) return -1;
-        else return prefixes.indexOf(o1.substring(0,1)) - prefixes.indexOf(o2.substring(0,1));
+        final String prefixes = this.bot.getUserPrefixesInOrder();
+        if (!prefixes.contains(o1.substring(0, 1)) && !prefixes.contains(o2.substring(0, 1))) {
+            return o1.compareToIgnoreCase(o2);
+        } else if (!prefixes.contains(o1.substring(0, 1))) {
+            return 1;
+        } else if (!prefixes.contains(o2.substring(0, 1))) {
+            return -1;
+        } else {
+            return prefixes.indexOf(o1.substring(0, 1)) - prefixes.indexOf(o2.substring(0, 1));
+        }
     }
-    
+
 }
 
 public class IRCChannelPoint implements SecuredEndPoint {
 
     Minebot bot;
     String channel;
+
     IRCChannelPoint(Minebot bot, String channel) {
         this.bot = bot;
         this.channel = channel;
     }
-    
+
+    @Override
     public Type getType() {
         return EndPoint.Type.IRC;
     }
-    
+
+    @Override
     public Security getSecurity() {
-    	return SecuredEndPoint.Security.UNSECURED;
+        return SecuredEndPoint.Security.UNSECURED;
     }
 
+    @Override
     public void messageIn(RelayedMessage msg) {
-        bot.sendMessage(channel, msg.getMessage(this));
+        this.bot.sendMessage(this.channel, msg.getMessage(this));
     }
-    
+
+    @Override
     public boolean userMessageIn(String username, RelayedMessage msg) {
-        if (bot.getChannelPrefixes().contains(username.substring(0, 1))) return false;
-        bot.sendNotice(username, msg.getMessage(this));
+        if (this.bot.getChannelPrefixes().contains(username.substring(0, 1))) {
+            return false;
+        }
+        this.bot.sendNotice(username, msg.getMessage(this));
         return true;
     }
-    
+
+    @Override
     public boolean adminMessageIn(RelayedMessage msg) {
-        String message = msg.getMessage(this);
+        final String message = msg.getMessage(this);
         boolean success = false;
-        for (String nick : listDisplayUsers()) {
-            if (bot.getPlugin().cBotAdminPrefixes(bot.getId()).contains(nick.substring(0, 1))) {
+        for (final String nick : this.listDisplayUsers()) {
+            if (this.bot.getPlugin().cBotAdminPrefixes(this.bot.getId()).contains(nick.substring(0, 1))) {
                 success = true;
-                bot.sendNotice(nick.substring(1), message);
+                this.bot.sendNotice(nick.substring(1), message);
             }
         }
         return success;
     }
-    
+
+    @Override
     public List<String> listUsers() {
-        List<String> users = new LinkedList<String>();
-        for (User user : bot.getUsers(channel))
+        final List<String> users = new LinkedList<String>();
+        for (final User user : this.bot.getUsers(this.channel)) {
             users.add(user.getNick());
+        }
         return users;
     }
-    
+
+    @Override
     public List<String> listDisplayUsers() {
-        List<String> users = new LinkedList<String>();
-        for (User user : bot.getUsers(channel))
-            users.add(bot.getHighestUserPrefix(user) + user.getNick());
-        Collections.sort(users, new NicknameComparator(bot));
+        final List<String> users = new LinkedList<String>();
+        for (final User user : this.bot.getUsers(this.channel)) {
+            users.add(this.bot.getHighestUserPrefix(user) + user.getNick());
+        }
+        Collections.sort(users, new NicknameComparator(this.bot));
         return users;
     }
 
