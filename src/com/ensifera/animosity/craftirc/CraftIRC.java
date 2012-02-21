@@ -35,7 +35,7 @@ public class CraftIRC extends JavaPlugin {
 
     public static final String NAME = "CraftIRC";
     public static String VERSION;
-    private final String DEFAULTCONFIG_INJAR_PATH = "/defaults/config.yml";
+    private final String DEFAULTCONFIG_INJAR_PATH = "config.yml";
     static final Logger log = Logger.getLogger("Minecraft");
 
     Configuration configuration;
