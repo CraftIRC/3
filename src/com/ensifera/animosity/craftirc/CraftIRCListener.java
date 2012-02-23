@@ -25,7 +25,7 @@ public class CraftIRCListener implements Listener {
                 }
                 msg.setField("sender", event.getPlayer().getDisplayName());
                 msg.setField("message", Util.combineSplit(1, split, " "));
-                msg.setField("world", event.getPlayer().getWorld().getName());
+                msg.setField("world", plugin.getWorldName(event.getPlayer()));
                 msg.setField("realSender", event.getPlayer().getName());
                 msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
                 msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
@@ -57,7 +57,7 @@ public class CraftIRCListener implements Listener {
             }
             msg.setField("sender", event.getPlayer().getDisplayName());
             msg.setField("message", event.getMessage());
-            msg.setField("world", event.getPlayer().getWorld().getName());
+            msg.setField("world", plugin.getWorldName(event.getPlayer()));
             msg.setField("realSender", event.getPlayer().getName());
             msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
             msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
@@ -79,7 +79,7 @@ public class CraftIRCListener implements Listener {
                 return;
             }
             msg.setField("sender", event.getPlayer().getDisplayName());
-            msg.setField("world", event.getPlayer().getWorld().getName());
+            msg.setField("world", plugin.getWorldName(event.getPlayer()));
             msg.setField("realSender", event.getPlayer().getName());
             msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
             msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
@@ -100,7 +100,7 @@ public class CraftIRCListener implements Listener {
                 return;
             }
             msg.setField("sender", event.getPlayer().getDisplayName());
-            msg.setField("world", event.getPlayer().getWorld().getName());
+            msg.setField("world", plugin.getWorldName(event.getPlayer()));
             msg.setField("realSender", event.getPlayer().getName());
             msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
             msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
