@@ -26,18 +26,18 @@ public class ConsolePoint implements CommandEndPoint {
 
     @Override
     public void messageIn(RelayedMessage msg) {
-        CraftIRC.dolog(msg.getMessage());
+        CraftIRC.dolog(msg.getMessage(this));
     }
 
     @Override
     public boolean userMessageIn(String username, RelayedMessage msg) {
-        CraftIRC.dolog("(To " + username + ")" + msg.getMessage());
+        CraftIRC.dolog("(To " + username + ")" + msg.getMessage(this));
         return true;
     }
 
     @Override
     public boolean adminMessageIn(RelayedMessage msg) {
-        CraftIRC.dolog("(To the admins)" + msg.getMessage());
+        CraftIRC.dolog("(To the admins)" + msg.getMessage(this));
         return true;
     }
 
