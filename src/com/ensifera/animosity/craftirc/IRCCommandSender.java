@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.conversations.Conversation;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -107,5 +108,40 @@ public class IRCCommandSender implements ConsoleCommandSender {
     @Override
     public boolean isOp() {
         return this.sender.isOp();
+    }
+    public void sendMessage(String[] arg0) {
+        try {
+            for(String message:arg0){
+                final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
+                msg.post();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void abandonConversation(Conversation arg0) {
+        sender.abandonConversation(arg0);
+    }
+
+    public void acceptConversationInput(String arg0) {
+        sender.acceptConversationInput(arg0);
+    }
+
+    public boolean beginConversation(Conversation arg0) {
+        return sender.beginConversation(arg0);
+    }
+
+    public boolean isConversing() {
+        return sender.isConversing();
+    }
+
+    public void sendRawMessage(String message) {
+        try {
+            final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
+            msg.post();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
