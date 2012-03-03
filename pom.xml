@@ -16,10 +16,14 @@
     <url>s://www.github.com/CraftIRC/CraftIRC</url>
   </scm>
   <repositories>
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
+      <repository>
+          <id>bukkit-repo</id>
+          <url>http://repo.bukkit.org/content/groups/public</url>
+      </repository>
+      <repository>
+          <id>mmcave-repo</id>
+          <url>http://repo.mmcave.com</url>
+      </repository>
     </repositories>
   <dependencies>
     <dependency>
@@ -32,7 +36,7 @@
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.9-SNAPSHOT</version>
+      <version>1.2.12-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
