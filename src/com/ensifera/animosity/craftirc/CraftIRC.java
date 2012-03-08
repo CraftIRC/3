@@ -16,9 +16,11 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.sk89q.util.config.Configuration;
 import com.sk89q.util.config.ConfigurationNode;
 
@@ -27,7 +29,7 @@ import com.sk89q.util.config.ConfigurationNode;
  * @author ricin
  * @author Protected
  * @author mbaxter
- * 
+ *
  */
 
 //TODO: Better handling of null method returns (try to crash the bot and then stop that from happening again)
@@ -408,7 +410,7 @@ public class CraftIRC extends JavaPlugin {
             }
             msg.setField("sender", ((Player) sender).getDisplayName());
             msg.setField("message", Util.combineSplit(0, args, " "));
-            msg.setField("world", ((Player) sender).getWorld().getName());
+            msg.setField("world", this.getWorldName((Player) sender));
             msg.doNotColor("message");
             msg.post(true);
             sender.sendMessage("Admin notice sent.");
@@ -441,7 +443,7 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * Null target: Sends message through all possible paths.
-     * 
+     *
      * @param source
      * @param target
      * @param eventType
@@ -625,7 +627,7 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * Only successful if all known targets (or if there is none at least one possible target) are successful!
-     * 
+     *
      * @param msg
      * @param knownDestinations
      * @param username
@@ -835,12 +837,27 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * If the channel is null it's a reconnect, otherwise a rejoin
-     * 
+     *
      * @param bot
      * @param channel
      */
     void scheduleForRetry(Minebot bot, String channel) {
         this.retryTimer.schedule(new RetryTask(this, bot, channel), this.cRetryDelay());
+    }
+
+    /**
+     * Return the world name of the player, with optional formatting provided by multiverse-core
+     *
+     * @param player
+     * @return worldname
+     */
+    public String getWorldName(Player player) {
+        Plugin multiverse = this.getServer().getPluginManager().getPlugin("Multiverse-Core");
+        String worldName = player.getLocation().getWorld().getName();
+        if(multiverse != null && multiverse.isEnabled()) {
+            worldName = ((MVPlugin)multiverse).getCore().getMVWorldManager().getMVWorld(player.getLocation().getWorld()).getColoredWorldString();
+        }
+        return worldName;
     }
 
     /***************************
