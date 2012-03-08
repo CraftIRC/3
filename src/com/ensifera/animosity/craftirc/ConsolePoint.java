@@ -58,7 +58,12 @@ public class ConsolePoint implements CommandEndPoint {
             //Admin commands
             if (this.plugin.cCmdWordCmd(null).contains(command)) {
                 final String args = cmd.getField("args");
-                final String ccmd = args.substring(0, args.indexOf(" "));
+                String ccmd;
+                try {
+                    ccmd = args.substring(0, args.indexOf(" "));
+                } catch (StringIndexOutOfBoundsException e) {
+                    ccmd = args;
+                }
                 if (ccmd.equals("")) {
                     return;
                 }
