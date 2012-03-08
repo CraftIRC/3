@@ -19,6 +19,7 @@ public class IRCCommandSender implements ConsoleCommandSender {
     IRCCommandSender(Server server, RelayedCommand cmd, EndPoint console, ConsoleCommandSender sender) {
         this.cmd = cmd;
         this.console = console;
+        this.sender = sender;
     }
 
     public String getField(String name) {
@@ -109,9 +110,10 @@ public class IRCCommandSender implements ConsoleCommandSender {
     public boolean isOp() {
         return this.sender.isOp();
     }
+
     public void sendMessage(String[] arg0) {
         try {
-            for(String message:arg0){
+            for (String message : arg0) {
                 final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
                 msg.post();
             }
