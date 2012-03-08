@@ -89,6 +89,7 @@ settings:
       quit: '[%srcChannel%] * Quits: %sender% (%message%)'
       kick: '[%srcChannel%] * %sender% was kicked by %moderator% (%message%)'
       nick: '[%srcChannel%] * %sender% is now known as %message%'
+      generic: '%message%'
     from-plain:
     #======================================
     
