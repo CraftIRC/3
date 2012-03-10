@@ -80,6 +80,7 @@ settings:
       kick: '[%moderator% KICKED %sender% (%message%)]'
       admin: '%sender% to online admins ->- %message%'
       generic: '%message%'
+      death: '%message%'
     from-irc:
       chat: '[%srcChannel%] <%sender%> %message%'
       private: '%sender% whispers> %message%'
@@ -103,6 +104,7 @@ settings:
     #  kick: '%red%[%sender% was KICKED (%message%)]'
     #  generic: '%darkgrey%%message%'
     #  admin: '%prefix%%sender%%suffix% to online admins> %message%'
+    #  death: '%red%%message%'
     #from-irc:
     #  chat: '%grey%[%srcChannel%]%foreground% <%ircPrefix%%sender%> %message%'
     #  private: '%grey%[IRC]%foreground% %sender% whispers> %message%'
@@ -239,6 +241,7 @@ default-attributes:
     command: true
     say: true
     generic: true
+    death: true
     
     #Admin commands and /admins! can only be sent through a path where admin is set to true
     admin: false

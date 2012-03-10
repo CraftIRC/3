@@ -199,6 +199,12 @@ public class CraftIRC extends JavaPlugin {
             } else {
                 this.hold.put(HoldType.BANS, false);
             }
+            if (this.cHold("deaths") > 0) {
+                this.hold.put(HoldType.DEATHS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.DEATHS), this.cHold("deaths"));
+            } else {
+                this.hold.put(HoldType.DEATHS, false);
+            }
 
             this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                 @Override
@@ -1188,7 +1194,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     enum HoldType {
-        CHAT, JOINS, QUITS, KICKS, BANS
+        CHAT, JOINS, QUITS, KICKS, BANS, DEATHS
     }
 
     class RemoveHoldTask extends TimerTask {
