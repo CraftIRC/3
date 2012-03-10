@@ -3,6 +3,7 @@ package com.ensifera.animosity.craftirc;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 
 public class CraftIRCListener implements Listener {
@@ -126,6 +127,28 @@ public class CraftIRCListener implements Listener {
         msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
         msg.doNotColor("message");
         msg.post();
+    }
+   
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (this.plugin.isHeld(CraftIRC.HoldType.DEATHS)) {
+            return;
+        }
+        try {
+            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "death");
+            if (msg == null) {
+                return;
+            }
+            msg.setField("sender", event.getEntity().getDisplayName());
+            msg.setField("message", event.getDeathMessage());
+            msg.setField("world", event.getEntity().getWorld().getName());
+            msg.setField("realSender", event.getEntity().getName());
+            msg.setField("prefix", this.plugin.getPrefix(event.getEntity()));
+            msg.setField("suffix", this.plugin.getSuffix(event.getEntity()));
+            msg.post();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
