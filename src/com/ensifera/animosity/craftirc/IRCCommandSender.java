@@ -14,7 +14,7 @@ public class IRCCommandSender implements ConsoleCommandSender {
 
     private final RelayedCommand cmd;
     private final EndPoint console;
-    private ConsoleCommandSender sender;
+    private final ConsoleCommandSender sender;
 
     IRCCommandSender(Server server, RelayedCommand cmd, EndPoint console, ConsoleCommandSender sender) {
         this.cmd = cmd;
@@ -111,38 +111,44 @@ public class IRCCommandSender implements ConsoleCommandSender {
         return this.sender.isOp();
     }
 
+    @Override
     public void sendMessage(String[] arg0) {
         try {
-            for (String message : arg0) {
+            for (final String message : arg0) {
                 final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
                 msg.post();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
+    @Override
     public void abandonConversation(Conversation arg0) {
-        sender.abandonConversation(arg0);
+        this.sender.abandonConversation(arg0);
     }
 
+    @Override
     public void acceptConversationInput(String arg0) {
-        sender.acceptConversationInput(arg0);
+        this.sender.acceptConversationInput(arg0);
     }
 
+    @Override
     public boolean beginConversation(Conversation arg0) {
-        return sender.beginConversation(arg0);
+        return this.sender.beginConversation(arg0);
     }
 
+    @Override
     public boolean isConversing() {
-        return sender.isConversing();
+        return this.sender.isConversing();
     }
 
+    @Override
     public void sendRawMessage(String message) {
         try {
             final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
             msg.post();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

@@ -107,7 +107,7 @@ public class RelayedMessage {
         realTarget = this.target;
         if (realTarget == null) {
             if (currentTarget == null) {
-                return fields.get("message");
+                return this.fields.get("message");
             }
             realTarget = currentTarget;
             result = this.plugin.cFormatting(this.eventType, this, realTarget);

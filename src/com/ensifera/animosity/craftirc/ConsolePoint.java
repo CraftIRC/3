@@ -61,7 +61,7 @@ public class ConsolePoint implements CommandEndPoint {
                 String ccmd;
                 try {
                     ccmd = args.substring(0, args.indexOf(" "));
-                } catch (StringIndexOutOfBoundsException e) {
+                } catch (final StringIndexOutOfBoundsException e) {
                     ccmd = args;
                 }
                 if (ccmd.equals("")) {
