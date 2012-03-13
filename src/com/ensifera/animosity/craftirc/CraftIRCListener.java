@@ -111,7 +111,7 @@ public class CraftIRCListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         if (this.plugin.isHeld(CraftIRC.HoldType.KICKS)) {
             return;
