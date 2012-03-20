@@ -699,6 +699,9 @@ public class CraftIRC extends JavaPlugin {
         boolean success = true;
         for (final EndPoint destination : destinations) {
             final String targetTag = this.getTag(destination);
+            if(targetTag.equals(this.cCancelledTag())){
+                continue;
+            }
             msg.setField("target", targetTag);
             //Check against path filters
             if ((msg instanceof RelayedCommand) && this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
