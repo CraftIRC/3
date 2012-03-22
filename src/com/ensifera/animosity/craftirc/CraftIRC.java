@@ -118,7 +118,7 @@ public class CraftIRC extends JavaPlugin {
             }
             
             //Anti highlite
-            this.antiHighlite = this.configuration.getBoolean("anti-highlite", false);
+            this.antiHighlite = this.configuration.getBoolean("settings.anti-highlite", false);
             
             //Retry timers
             this.retry = new HashMap<String, RetryTask>();

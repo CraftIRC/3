@@ -56,7 +56,7 @@ public class CraftIRCListener implements Listener {
             if (msg == null) {
                 return;
             }
-            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString())));
+            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString()));
             msg.setField("message", event.getMessage());
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
@@ -79,7 +79,7 @@ public class CraftIRCListener implements Listener {
             if (msg == null) {
                 return;
             }
-            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString())));
+            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString()));
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
             msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
@@ -100,7 +100,7 @@ public class CraftIRCListener implements Listener {
             if (msg == null) {
                 return;
             }
-            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString())));
+            msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString()));
             msg.setField("world", event.getPlayer().getWorld().getName());
             msg.setField("realSender", event.getPlayer().getName());
             msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
@@ -120,7 +120,7 @@ public class CraftIRCListener implements Listener {
         if (msg == null) {
             return;
         }
-        msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString())));
+        msg.setField("sender", (!plugin.antiHighlite() ? event.getPlayer().getDisplayName() : new StringBuffer(event.getPlayer().getDisplayName()).insert(2, "·").toString()));
         msg.setField("message", (event.getReason().length() == 0) ? "no reason given" : event.getReason());
         msg.setField("realSender", event.getPlayer().getName());
         msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
@@ -139,7 +139,7 @@ public class CraftIRCListener implements Listener {
             if (msg == null) {
                 return;
             }
-            msg.setField("sender", (!plugin.antiHighlite() ? event.getEntity().getDisplayName() : new StringBuffer(event.getEntity().getDisplayName()).insert(2, "·").toString())));
+            msg.setField("sender", (!plugin.antiHighlite() ? event.getEntity().getDisplayName() : new StringBuffer(event.getEntity().getDisplayName()).insert(2, "·").toString()));
             msg.setField("message", event.getDeathMessage());
             msg.setField("world", event.getEntity().getWorld().getName());
             msg.setField("realSender", event.getEntity().getName());
