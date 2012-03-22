@@ -54,6 +54,7 @@ public class CraftIRC extends JavaPlugin {
     private List<ConfigurationNode> colormap;
     private Map<Integer, ArrayList<ConfigurationNode>> channodes;
     private Map<Path, ConfigurationNode> paths;
+    private boolean antiHighlite = false;
 
     //Endpoints
     private Map<String, EndPoint> endpoints;
@@ -115,7 +116,10 @@ public class CraftIRC extends JavaPlugin {
                     this.paths.put(identifier, path);
                 }
             }
-
+            
+            //Anti highlite
+            this.antiHighlite = this.configuration.getBoolean("anti-highlite", false);
+            
             //Retry timers
             this.retry = new HashMap<String, RetryTask>();
             this.retryTimer = new Timer();
@@ -1196,6 +1200,11 @@ public class CraftIRC extends JavaPlugin {
 
     boolean cNicknameIsInIrcMap(int bot, String nickname) {
         return this.bots.get(bot).getString("irc-nickname-map." + nickname) != null;
+    }
+    
+    //Anti highlite
+    boolean antiHighlite() {
+    	return this.antiHighlite;
     }
 
     enum HoldType {
