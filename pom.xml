@@ -26,14 +26,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>[1.2.4-R0.1-SNAPSHOT,)</version>
+      <version>[1.2.3-R0.2,)</version>
       <type>jar</type>
     </dependency>
     <!-- You need to locally install this, there is no known repo -->
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>[1.2.9-SNAPSHOT,)</version>
+      <version>[1.2.9,)</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
