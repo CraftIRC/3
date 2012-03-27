@@ -4,7 +4,7 @@
   <groupId>com.ensifera</groupId>
   <artifactId>CraftIRC</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.6.0-SNAPSHOT</version>
   <name>CraftIRC</name>
   <url>http://www.github.com/CraftIRC/CraftIRC3</url>
   <properties>
@@ -22,17 +22,18 @@
     </repository>
     </repositories>
   <dependencies>
+    <!-- http://docs.codehaus.org/display/MAVEN/Dependency+Mediation+and+Conflict+Resolution Dependency Version Ranges -->
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.2.3-R0.2-SNAPSHOT</version>
+      <version>[1.2.4-R0.1-SNAPSHOT,)</version>
       <type>jar</type>
     </dependency>
-    <!-- You need to locally install this, there is no repo -->
+    <!-- You need to locally install this, there is no known repo -->
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.9-SNAPSHOT</version>
+      <version>[1.2.9-SNAPSHOT,)</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
