@@ -4,7 +4,7 @@
   <groupId>com.ensifera</groupId>
   <artifactId>CraftIRC</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.7.0-SNAPSHOT</version>
   <name>CraftIRC</name>
   <url>http://www.github.com/CraftIRC/CraftIRC3</url>
   <properties>
@@ -25,14 +25,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.2.3-R0.2-SNAPSHOT</version>
+      <version>[1.2.3-R0.2,)</version>
       <type>jar</type>
     </dependency>
     <!-- You need to locally install this, there is no repo -->
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.9-SNAPSHOT</version>
+      <version>[1.2.9,)</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
