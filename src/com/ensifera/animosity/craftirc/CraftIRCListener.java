@@ -69,7 +69,7 @@ public class CraftIRCListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
             return;
