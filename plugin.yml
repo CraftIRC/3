@@ -1,7 +1,8 @@
 name: CraftIRC
 main: com.ensifera.animosity.craftirc.CraftIRC
 authors: [Animosity, Protected, mbaxter]
-version: 3.6
+version: '3.6'
+softdepend: ['VanishNoPacket']
 commands:
   ircmsg:
     description: Send message to tag
