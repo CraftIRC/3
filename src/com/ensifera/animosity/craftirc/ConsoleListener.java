@@ -16,7 +16,7 @@ public class ConsoleListener implements Listener {
     public void onServerCommand(ServerCommandEvent event) {
         if (event.getCommand().toLowerCase().startsWith("say")) {
             final String message = event.getCommand().substring(4);
-            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cConsoleTag()), null, "console");
+            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cConsoleTag()), null, "say");
             msg.setField("message", message);
             msg.doNotColor("message");
             msg.post();
