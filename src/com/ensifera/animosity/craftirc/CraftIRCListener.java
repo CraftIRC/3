@@ -1,10 +1,13 @@
 package com.ensifera.animosity.craftirc;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.plugin.SimplePluginManager;
 
 public class CraftIRCListener implements Listener {
 
@@ -20,6 +23,13 @@ public class CraftIRCListener implements Listener {
             final String[] split = event.getMessage().split(" ");
             // ACTION/EMOTE can't be claimed, so use onPlayerCommandPreprocess
             if (split[0].equalsIgnoreCase("/me")) {
+            	SimplePluginManager pluginManager = (SimplePluginManager)this.plugin.getServer().getPluginManager();
+            	java.lang.reflect.Field commandMapField = pluginManager.getClass().getDeclaredField("commandMap");
+            	commandMapField.setAccessible(true);
+            	CommandMap map = (CommandMap)commandMapField.get(pluginManager);
+            	Command meCommand = map.getCommand("me");
+            	if (!(meCommand instanceof org.bukkit.command.defaults.MeCommand)) return;
+            	if (!meCommand.testPermission(event.getPlayer())) return; 
                 final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "action");
                 if (msg == null) {
                     return;
@@ -30,6 +40,20 @@ public class CraftIRCListener implements Listener {
                 msg.setField("realSender", event.getPlayer().getName());
                 msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
                 msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+                msg.doNotColor("message");
+                msg.post();
+            }
+            if (split[0].equalsIgnoreCase("/say")) {
+            	SimplePluginManager pluginManager = (SimplePluginManager)this.plugin.getServer().getPluginManager();
+            	java.lang.reflect.Field commandMapField = pluginManager.getClass().getDeclaredField("commandMap");
+            	commandMapField.setAccessible(true);
+            	CommandMap map = (CommandMap)commandMapField.get(pluginManager);
+            	Command sayCommand = map.getCommand("say");
+            	if (!(sayCommand instanceof org.bukkit.command.defaults.SayCommand)) return;
+            	if (!(sayCommand.testPermission(event.getPlayer()))) return;
+            	final String message = event.getMessage().substring(5);
+                final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "say");
+                msg.setField("message", message);
                 msg.doNotColor("message");
                 msg.post();
             }
@@ -71,6 +95,10 @@ public class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
+    	
+    	if (this.plugin.getServer().getPluginManager().isPluginEnabled("VanishNoPacket") && event.getPlayer().hasPermission("vanish.joinwithoutannounce")) {
+    		return;
+    	}
         if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
             return;
         }
@@ -92,6 +120,9 @@ public class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+    	if (this.plugin.getServer().getPluginManager().isPluginEnabled("VanishNoPacket") && event.getPlayer().hasPermission("vanish.silentquit")) {
+			return;
+    	}
         if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) {
             return;
         }

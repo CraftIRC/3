@@ -118,8 +118,8 @@ public class RelayedMessage {
 
         //IRC color code aliases (actually not recommended)
         if (realTarget.getType() == EndPoint.Type.IRC) {
-            result = result.replaceAll("%k([0-9]{1,2})%", Character.toString((char) 3) + "$1");
-            result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", Character.toString((char) 3) + "$1,$2");
+            result = result.replaceAll("%k([0-9]{2})%", Character.toString((char) 3) + "$1");
+            result = result.replaceAll("%k([0-9]{2}),([0-9]{1,2})%", Character.toString((char) 3) + "$1,$2");
             result = result.replace("%k%", Character.toString((char) 3));
             result = result.replace("%o%", Character.toString((char) 15));
             result = result.replace("%b%", Character.toString((char) 2));
@@ -154,7 +154,7 @@ public class RelayedMessage {
                 }
                 result = find_vars.replaceFirst(replacement);
             } else if (realTarget.getType() == EndPoint.Type.IRC) {
-                result = find_vars.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.plugin.cColorIrcFromName(find_vars.group(1))));
+                result = find_vars.replaceFirst(Character.toString((char) 3) + this.plugin.cColorIrcFromName(find_vars.group(1)));
             } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
                 result = find_vars.replaceFirst(this.plugin.cColorGameFromName(find_vars.group(1)));
             } else {
@@ -170,7 +170,7 @@ public class RelayedMessage {
                 final Pattern color_codes = Pattern.compile("\u00A7([A-Fa-f0-9])?");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
-                    result = find_colors.replaceFirst("\u0003" + Integer.toString(this.plugin.cColorIrcFromGame("\u00A7" + find_colors.group(1))));
+                    result = find_colors.replaceFirst("\u0003" + this.plugin.cColorIrcFromGame("\u00A7" + find_colors.group(1)));
                     find_colors = color_codes.matcher(result);
                 }
             } else if ((realTarget.getType() != EndPoint.Type.MINECRAFT) || !colors) {
@@ -181,16 +181,16 @@ public class RelayedMessage {
         if (this.source.getType() == EndPoint.Type.IRC) {
             if ((realTarget.getType() == EndPoint.Type.MINECRAFT) && colors) {
                 result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 22) + "|" + Character.toString((char) 31) + ")", "");
-                final Pattern color_codes = Pattern.compile(Character.toString((char) 3) + "([01]?[0-9])(,[0-9]{0,2})?");
+                final Pattern color_codes = Pattern.compile(Character.toString((char) 3) + "([0-9]{1,2})");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
-                    result = find_colors.replaceFirst(this.plugin.cColorGameFromIrc(Integer.parseInt(find_colors.group(1))));
+                    result = find_colors.replaceFirst(this.plugin.cColorGameFromIrc(find_colors.group(1)));
                     find_colors = color_codes.matcher(result);
                 }
                 result = result.replaceAll(Character.toString((char) 15) + "|" + Character.toString((char) 3), this.plugin.cColorGameFromName("foreground"));
             } else if ((realTarget.getType() != EndPoint.Type.IRC) || !colors) {
                 //Strip colors
-                result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 15) + "|" + Character.toString((char) 22) + Character.toString((char) 31) + "|" + Character.toString((char) 3) + "[0-9]{0,2}(,[0-9]{0,2})?)", "");
+                result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 15) + "|" + Character.toString((char) 22) + Character.toString((char) 31) + "|" + Character.toString((char) 3) + "[0-9]{2})", "");
             }
         }
 
