@@ -1198,7 +1198,7 @@ public class CraftIRC extends JavaPlugin {
         return this.bots.get(bot).getString("irc-nickname-map." + nickname) != null;
     }
 
-    enum HoldType {
+    public enum HoldType {
         CHAT, JOINS, QUITS, KICKS, BANS, DEATHS
     }
 
@@ -1218,7 +1218,7 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
-    boolean isHeld(HoldType ht) {
+    public boolean isHeld(HoldType ht) {
         return this.hold.get(ht);
     }
 
