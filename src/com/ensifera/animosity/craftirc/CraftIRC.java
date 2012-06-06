@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import net.milkbowl.vault.chat.Chat;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -527,11 +528,11 @@ public class CraftIRC extends JavaPlugin {
         return this.endpoints.get(tag) != null;
     }
 
-    EndPoint getEndPoint(String tag) {
+    public EndPoint getEndPoint(String tag) {
         return this.endpoints.get(tag);
     }
 
-    String getTag(EndPoint ep) {
+    public String getTag(EndPoint ep) {
         return this.tags.get(ep);
     }
 
@@ -758,7 +759,7 @@ public class CraftIRC extends JavaPlugin {
      * Auxiliary methods
      ***************************/
 
-    void sendRawToBot(String rawMessage, int bot) {
+    public void sendRawToBot(String rawMessage, int bot) {
         if (this.isDebug()) {
             CraftIRC.dolog("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
         }
@@ -766,12 +767,12 @@ public class CraftIRC extends JavaPlugin {
         targetBot.sendRawLineViaQueue(rawMessage);
     }
 
-    void sendMsgToTargetViaBot(String message, String target, int bot) {
+    public void sendMsgToTargetViaBot(String message, String target, int bot) {
         final Minebot targetBot = this.instances.get(bot);
         targetBot.sendMessage(target, message);
     }
 
-    List<String> ircUserLists(String tag) {
+    public List<String> ircUserLists(String tag) {
         return this.getEndPoint(tag).listDisplayUsers();
     }
 
@@ -785,7 +786,7 @@ public class CraftIRC extends JavaPlugin {
         CraftIRC.dolog("DEBUG [" + (d ? "ON" : "OFF") + "]");
     }
 
-    String getPrefix(Player p) {
+    public String getPrefix(Player p) {
         String result = "";
         if (this.vault != null) {
             try {
@@ -797,7 +798,7 @@ public class CraftIRC extends JavaPlugin {
         return result;
     }
 
-    String getSuffix(Player p) {
+    public String getSuffix(Player p) {
         String result = "";
         if (this.vault != null) {
             try {
@@ -809,7 +810,7 @@ public class CraftIRC extends JavaPlugin {
         return result;
     }
 
-    boolean isDebug() {
+    public boolean isDebug() {
         return this.debug;
     }
 
@@ -826,8 +827,8 @@ public class CraftIRC extends JavaPlugin {
     }
 
     // TODO: Make sure this works
-    String colorizeName(String name) {
-        final Pattern color_codes = Pattern.compile("§[0-9a-f]");
+    public String colorizeName(String name) {
+        final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-f]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
             name = find_colors.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.cColorIrcFromGame(find_colors.group())));
@@ -868,7 +869,7 @@ public class CraftIRC extends JavaPlugin {
         return Configuration.getEmptyNode();
     }
 
-    List<ConfigurationNode> cChannels(int bot) {
+    public List<ConfigurationNode> cChannels(int bot) {
         return this.channodes.get(bot);
     }
 
@@ -887,39 +888,39 @@ public class CraftIRC extends JavaPlugin {
         return result;
     }
 
-    String cMinecraftTag() {
+    public String cMinecraftTag() {
         return this.configuration.getString("settings.minecraft-tag", "minecraft");
     }
 
-    String cCancelledTag() {
+    public String cCancelledTag() {
         return this.configuration.getString("settings.cancelled-tag", "cancelled");
     }
 
-    String cConsoleTag() {
+    public String cConsoleTag() {
         return this.configuration.getString("settings.console-tag", "console");
     }
 
-    String cMinecraftTagGroup() {
+    public String cMinecraftTagGroup() {
         return this.configuration.getString("settings.minecraft-group-name", "minecraft");
     }
 
-    String cIrcTagGroup() {
+    public String cIrcTagGroup() {
         return this.configuration.getString("settings.irc-group-name", "irc");
     }
 
-    boolean cAutoPaths() {
+    public boolean cAutoPaths() {
         return this.configuration.getBoolean("settings.auto-paths", false);
     }
 
-    boolean cCancelChat() {
+    public boolean cCancelChat() {
         return this.configuration.getBoolean("settings.cancel-chat", false);
     }
 
-    boolean cDebug() {
+    public boolean cDebug() {
         return this.configuration.getBoolean("settings.debug", false);
     }
 
-    ArrayList<String> cConsoleCommands() {
+    public ArrayList<String> cConsoleCommands() {
         return new ArrayList<String>(this.configuration.getStringList("settings.console-commands", null));
     }
 
@@ -927,11 +928,11 @@ public class CraftIRC extends JavaPlugin {
         return this.configuration.getInt("settings.hold-after-enable." + eventType, 0);
     }
 
-    String cFormatting(String eventType, RelayedMessage msg) {
+    public String cFormatting(String eventType, RelayedMessage msg) {
         return this.cFormatting(eventType, msg, null);
     }
 
-    String cFormatting(String eventType, RelayedMessage msg, EndPoint realTarget) {
+    public String cFormatting(String eventType, RelayedMessage msg, EndPoint realTarget) {
         final String source = this.getTag(msg.getSource()), target = this.getTag(realTarget != null ? realTarget : msg.getTarget());
         if ((source == null) || (target == null)) {
             CraftIRC.dowarn("Attempted to obtain formatting for invalid path " + source + " -> " + target + " .");
@@ -945,7 +946,7 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
-    String cDefaultFormatting(String eventType, RelayedMessage msg) {
+    public String cDefaultFormatting(String eventType, RelayedMessage msg) {
         if (msg.getSource().getType() == EndPoint.Type.MINECRAFT) {
             return this.configuration.getString("settings.formatting.from-game." + eventType);
         }
@@ -958,7 +959,7 @@ public class CraftIRC extends JavaPlugin {
         return "";
     }
 
-    int cColorIrcFromGame(String game) {
+    public int cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
@@ -970,7 +971,7 @@ public class CraftIRC extends JavaPlugin {
         return this.cColorIrcFromName("foreground");
     }
 
-    int cColorIrcFromName(String name) {
+    public int cColorIrcFromName(String name) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
@@ -986,7 +987,7 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
-    String cColorGameFromIrc(int irc) {
+    public String cColorGameFromIrc(int irc) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
@@ -998,7 +999,7 @@ public class CraftIRC extends JavaPlugin {
         return this.cColorGameFromName("foreground");
     }
 
-    String cColorGameFromName(String name) {
+    public String cColorGameFromName(String name) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
@@ -1014,43 +1015,43 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
-    String cBindLocalAddr() {
+    public String cBindLocalAddr() {
         return this.configuration.getString("settings.bind-address", "");
     }
 
-    int cRetryDelay() {
+    public int cRetryDelay() {
         return this.configuration.getInt("settings.retry-delay", 10) * 1000;
     }
 
-    String cBotNickname(int bot) {
+    public String cBotNickname(int bot) {
         return this.bots.get(bot).getString("nickname", "CraftIRCbot");
     }
 
-    String cBotServer(int bot) {
+    public String cBotServer(int bot) {
         return this.bots.get(bot).getString("server", "irc.esper.net");
     }
 
-    int cBotPort(int bot) {
+    public int cBotPort(int bot) {
         return this.bots.get(bot).getInt("port", 6667);
     }
 
-    String cBotLogin(int bot) {
+    public String cBotLogin(int bot) {
         return this.bots.get(bot).getString("userident", "");
     }
 
-    String cBotPassword(int bot) {
+    public String cBotPassword(int bot) {
         return this.bots.get(bot).getString("serverpass", "");
     }
 
-    boolean cBotSsl(int bot) {
+    public boolean cBotSsl(int bot) {
         return this.bots.get(bot).getBoolean("ssl", false);
     }
 
-    int cBotMessageDelay(int bot) {
+    public int cBotMessageDelay(int bot) {
         return this.bots.get(bot).getInt("message-delay", 1000);
     }
 
-    int cBotQueueSize(int bot) {
+    public int cBotQueueSize(int bot) {
         return this.bots.get(bot).getInt("queue-size", 5);
     }
 
@@ -1092,43 +1093,43 @@ public class CraftIRC extends JavaPlugin {
         return new ArrayList<String>(this.bots.get(bot).getStringList("admin-prefixes", null));
     }
 
-    ArrayList<String> cBotIgnoredUsers(int bot) {
+    public ArrayList<String> cBotIgnoredUsers(int bot) {
         return new ArrayList<String>(this.bots.get(bot).getStringList("ignored-users", null));
     }
 
-    String cBotAuthMethod(int bot) {
+    public String cBotAuthMethod(int bot) {
         return this.bots.get(bot).getString("auth.method", "nickserv");
     }
 
-    String cBotAuthUsername(int bot) {
+    public String cBotAuthUsername(int bot) {
         return this.bots.get(bot).getString("auth.username", "");
     }
 
-    String cBotAuthPassword(int bot) {
+    public String cBotAuthPassword(int bot) {
         return this.bots.get(bot).getString("auth.password", "");
     }
 
-    ArrayList<String> cBotOnConnect(int bot) {
+    public ArrayList<String> cBotOnConnect(int bot) {
         return new ArrayList<String>(this.bots.get(bot).getStringList("on-connect", null));
     }
 
-    String cChanName(int bot, String channel) {
+    public String cChanName(int bot, String channel) {
         return this.getChanNode(bot, channel).getString("name", "#changeme");
     }
 
-    String cChanTag(int bot, String channel) {
+    public String cChanTag(int bot, String channel) {
         return this.getChanNode(bot, channel).getString("tag", String.valueOf(bot) + "_" + channel);
     }
 
-    String cChanPassword(int bot, String channel) {
+    public String cChanPassword(int bot, String channel) {
         return this.getChanNode(bot, channel).getString("password", "");
     }
 
-    ArrayList<String> cChanOnJoin(int bot, String channel) {
+    public ArrayList<String> cChanOnJoin(int bot, String channel) {
         return new ArrayList<String>(this.getChanNode(bot, channel).getStringList("on-join", null));
     }
 
-    List<String> cPathsFrom(String source) {
+    public List<String> cPathsFrom(String source) {
         final List<String> results = new LinkedList<String>();
         for (final Path path : this.paths.keySet()) {
             if (!path.getSourceTag().equals(source)) {
@@ -1190,11 +1191,11 @@ public class CraftIRC extends JavaPlugin {
         return this.bots.get(bot).getBoolean("use-map-as-whitelist", false);
     }
 
-    String cIrcDisplayName(int bot, String nickname) {
+    public String cIrcDisplayName(int bot, String nickname) {
         return this.bots.get(bot).getString("irc-nickname-map." + nickname, nickname);
     }
 
-    boolean cNicknameIsInIrcMap(int bot, String nickname) {
+    public boolean cNicknameIsInIrcMap(int bot, String nickname) {
         return this.bots.get(bot).getString("irc-nickname-map." + nickname) != null;
     }
 
