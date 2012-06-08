@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>[1.2.3-R0.2,)</version>
+      <version>[1.2.5-R1.0,)</version>
       <type>jar</type>
     </dependency>
     <!-- You need to locally install this, there is no repo -->

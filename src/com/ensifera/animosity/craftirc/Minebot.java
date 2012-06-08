@@ -97,6 +97,32 @@ public class Minebot extends PircBot implements Runnable {
             e.printStackTrace();
         }
     }
+    
+    public void delChannel(String tag){
+        IRCChannelPoint point=this.channels.remove(tag);
+        if(point==null){
+            return;
+        }
+        this.plugin.unregisterEndPoint(tag);
+        this.plugin.ungroupTag(tag);
+        this.partChannel("#"+tag, "No longer registered!");
+    }
+
+    public void addChannel(String channel){
+        if (this.channels.containsKey(channel)) {
+            return;
+        }
+        final IRCChannelPoint chan = new IRCChannelPoint(this, "#"+channel);
+        String tag="irc_"+channel;
+        if (!this.plugin.registerEndPoint(tag, chan)) {
+            return;
+        }
+        if (!this.plugin.cIrcTagGroup().equals("")) {
+            this.plugin.groupTag(tag, this.plugin.cIrcTagGroup());
+        }
+        this.channels.put("#"+channel, chan);
+        this.joinChannel("#"+channel);
+    }
 
     /**
      * Thread start

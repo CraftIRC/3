@@ -758,6 +758,10 @@ public class CraftIRC extends JavaPlugin {
     /***************************
      * Auxiliary methods
      ***************************/
+    
+    public Minebot getBot(int bot){
+        return this.instances.get(bot);
+    }
 
     public void sendRawToBot(String rawMessage, int bot) {
         if (this.isDebug()) {
