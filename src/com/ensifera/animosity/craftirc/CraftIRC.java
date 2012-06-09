@@ -286,7 +286,12 @@ public class CraftIRC extends JavaPlugin {
         final String commandName = command.getName().toLowerCase();
 
         try {
-
+            if (commandName.equals("ircsay")){
+                if (!sender.hasPermission("craftirc." + commandName)) {
+                    return false;
+                }
+                return this.cmdMsgSay(sender,args);
+            }
             if (commandName.equals("ircmsg")) {
                 if (!sender.hasPermission("craftirc." + commandName)) {
                     return false;
@@ -322,6 +327,38 @@ public class CraftIRC extends JavaPlugin {
             } else {
                 return false;
             }
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    private boolean cmdMsgSay(CommandSender sender, String[] args) {
+        try{
+            RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), null, "chat");
+            if (msg == null) {
+                return true;
+            }
+            String senderName=sender.getName();
+            String world="";
+            String prefix="";
+            String suffix="";
+            if(sender instanceof Player){
+                Player player = (Player) sender;
+                senderName = player.getDisplayName();
+                world = player.getWorld().getName();
+                prefix = this.getPrefix(player);
+                suffix = this.getSuffix(player);
+            }
+            msg.setField("sender", senderName);
+            msg.setField("message", Util.combineSplit(0, args, " "));
+            msg.setField("world", world);
+            msg.setField("realSender", sender.getName());
+            msg.setField("prefix", prefix);
+            msg.setField("suffix", suffix);
+            msg.doNotColor("message");
+            msg.post();
+            return true;
         } catch (final Exception e) {
             e.printStackTrace();
             return false;

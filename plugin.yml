@@ -3,6 +3,10 @@ main: com.ensifera.animosity.craftirc.CraftIRC
 authors: [Animosity, Protected, mbaxter]
 version: 3.6
 commands:
+  ircsay:
+    description: Relays message as from minecraft
+    usage: /<command> [msg]
+    permission: craftirc.ircsay
   ircmsg:
     description: Send message to tag
     usage: /<command> [tag] [msg]
@@ -28,6 +32,8 @@ commands:
     usage: /<command>
     permission: craftirc.ircreload
 permissions:
+  craftirc.ircsay:
+    default: true
   craftirc.ircmsg:
     default: true
   craftirc.ircmsguser:
