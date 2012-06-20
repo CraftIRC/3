@@ -26,6 +26,9 @@ settings:
   #(Secured endpoints can still send messages through auto-paths, but not receive them)
   auto-paths: true
   
+  #Anti nick highlite
+  anti-highlite: false
+  
   #Paths between endpoints within the same group are not established. These groups will be created automatically (set to '' to disable):
   #*For the three endpoints above 
   minecraft-group-name: 'minecraft'
