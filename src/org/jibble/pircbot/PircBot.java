@@ -457,6 +457,7 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
      */
     public final void joinChannel(String channel) {
         this.sendRawLine("JOIN " + channel);
+        this.sendRawLine("MODE " + channel); // Added to parse the +c mode on join
     }
 
     /**
@@ -1328,6 +1329,18 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
                     log("*** SERVER SUPPORTS PREFIXES: " + _userPrefixes.toString() + " | Order: " + _userPrefixOrder);
                 }
             }
+        } else if (code == RPL_CHANNELMODEIS) {
+            // Reply to the MODE #channel command sent after join
+            String[] split = response.split("\\s+");
+            if (split.length >= 3) {
+                String channel = split[1];
+                // We're only interested in the +c part.
+                if (split[2].indexOf("c") != -1) {
+                    onBlockColors(channel, "", "", "");
+                } else {
+                    onUnblockColors(channel, "", "", "");
+                }
+            }
         }
 
         this.onServerResponse(code, response);
@@ -1781,6 +1794,12 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
                         onSetSecret(channel, sourceNick, sourceLogin, sourceHostname);
                     } else {
                         onRemoveSecret(channel, sourceNick, sourceLogin, sourceHostname);
+                    }
+                } else if (atPos == 'c') {
+                    if (pn == '+') {
+                        onBlockColors(channel, sourceNick, sourceLogin, sourceHostname);
+                    } else {
+                        onUnblockColors(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                 }
             }
@@ -2339,6 +2358,48 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
      *            The hostname of the user that performed the mode change.
      */
     protected void onRemoveSecret(String channel, String sourceNick, String sourceLogin, String sourceHostname) {
+    }
+
+    /**
+     * Called when a channel is set to +c
+     * <p>
+     * This is a type of mode change and is also passed to the onMode method in
+     * the PircBot class.
+     * <p>
+     * The implementation of this method in the PircBot abstract class performs
+     * no actions and may be overridden as required.
+     *
+     * @param channel
+     *            The channel in which the mode change took place.
+     * @param sourceNick
+     *            The nick of the user that performed the mode change.
+     * @param sourceLogin
+     *            The login of the user that performed the mode change.
+     * @param sourceHostname
+     *            The hostname of the user that performed the mode change.
+     */
+    protected void onBlockColors(String channel, String sourceNick, String sourceLogin, String sourceHostname) {
+    }
+
+    /**
+     * Called when a channel is set to -c
+     * <p>
+     * This is a type of mode change and is also passed to the onMode method in
+     * the PircBot class.
+     * <p>
+     * The implementation of this method in the PircBot abstract class performs
+     * no actions and may be overridden as required.
+     *
+     * @param channel
+     *            The channel in which the mode change took place.
+     * @param sourceNick
+     *            The nick of the user that performed the mode change.
+     * @param sourceLogin
+     *            The login of the user that performed the mode change.
+     * @param sourceHostname
+     *            The hostname of the user that performed the mode change.
+     */
+    protected void onUnblockColors(String channel, String sourceNick, String sourceLogin, String sourceHostname) {
     }
 
     /**

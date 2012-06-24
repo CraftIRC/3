@@ -544,4 +544,18 @@ public class Minebot extends PircBot implements Runnable {
         }
     }
 
+    @Override
+    protected void onBlockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        if (this.channels.containsKey(channel)) {
+            this.channels.get(channel).setAllowColors(false);
+        }
+    }
+
+    @Override
+    protected void onUnblockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        if (this.channels.containsKey(channel)) {
+            this.channels.get(channel).setAllowColors(true);
+        }
+    }
+
 }// EO Minebot

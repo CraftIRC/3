@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jibble.pircbot.User;
+import org.jibble.pircbot.Colors;
 
 class NicknameComparator implements Comparator<String> {
 
@@ -35,6 +36,7 @@ public class IRCChannelPoint implements SecuredEndPoint {
 
     Minebot bot;
     String channel;
+    boolean allowColors = true;
 
     IRCChannelPoint(Minebot bot, String channel) {
         this.bot = bot;
@@ -53,7 +55,11 @@ public class IRCChannelPoint implements SecuredEndPoint {
 
     @Override
     public void messageIn(RelayedMessage msg) {
-        this.bot.sendMessage(this.channel, msg.getMessage(this));
+        String message = msg.getMessage(this);
+        if (!this.allowColors) {
+            message = Colors.removeFormattingAndColors(message);
+        }
+        this.bot.sendMessage(this.channel, message);
     }
 
     @Override
@@ -97,4 +103,11 @@ public class IRCChannelPoint implements SecuredEndPoint {
         return users;
     }
 
+    public void setAllowColors(boolean allowColors) {
+        this.allowColors = allowColors;
+    }
+
+    public boolean getAllowColors() {
+        return this.allowColors;
+    }
 }
