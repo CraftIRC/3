@@ -691,6 +691,9 @@ public class CraftIRC extends JavaPlugin {
             destinations = new LinkedList<EndPoint>();
             for (final String targetTag : this.cPathsFrom(sourceTag)) {
                 final EndPoint ep = this.getEndPoint(targetTag);
+                if (ep == null) {
+                    continue;
+                }
                 if ((ep instanceof SecuredEndPoint) && SecuredEndPoint.Security.REQUIRE_TARGET.equals(((SecuredEndPoint) ep).getSecurity())) {
                     continue;
                 }
@@ -705,6 +708,9 @@ public class CraftIRC extends JavaPlugin {
             //Default paths to unsecured destinations (auto-paths)
             if (this.cAutoPaths()) {
                 for (final EndPoint ep : this.endpoints.values()) {
+                    if (ep == null) {
+                        continue;
+                    }
                     if (msg.getSource().equals(ep) || destinations.contains(ep)) {
                         continue;
                     }
