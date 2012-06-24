@@ -180,14 +180,14 @@ public class RelayedMessage {
         }
         if (this.source.getType() == EndPoint.Type.IRC) {
             if ((realTarget.getType() == EndPoint.Type.MINECRAFT) && colors) {
-                result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 22) + "|" + Character.toString((char) 31) + ")", "");
-                final Pattern color_codes = Pattern.compile(Character.toString((char) 3) + "([01]?[0-9])(,[0-9]{0,2})?");
+                result = result.replaceAll("\u0002", "\u00A7l").replaceAll("\u001f", "\u00A7n").replaceAll("\u001d", "\u00A7o").replaceAll("\u0016", "");
+                final Pattern color_codes = Pattern.compile("\u0003([01]?[0-9])(,[0-9]{0,2})?");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
                     result = find_colors.replaceFirst(this.plugin.cColorGameFromIrc(Integer.parseInt(find_colors.group(1))));
                     find_colors = color_codes.matcher(result);
                 }
-                result = result.replaceAll(Character.toString((char) 15) + "|" + Character.toString((char) 3), this.plugin.cColorGameFromName("foreground"));
+                result = result.replaceAll("\u000f|\u0003", this.plugin.cColorGameFromName("foreground"));
             } else if ((realTarget.getType() != EndPoint.Type.IRC) || !colors) {
                 //Strip colors
                 result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 15) + "|" + Character.toString((char) 22) + Character.toString((char) 31) + "|" + Character.toString((char) 3) + "[0-9]{0,2}(,[0-9]{0,2})?)", "");
