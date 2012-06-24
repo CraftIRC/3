@@ -152,6 +152,10 @@ public class RelayedMessage {
                 if (!this.doNotColorFields.contains(find_vars.group(1))) {
                     replacement = replacement.replaceAll("&([0-9A-Fa-f])", "\u00A7$1");
                 }
+                if (realTarget.getType() == EndPoint.Type.IRC && find_vars.group(1).equals("sender")) {
+                    // if anti-highlight isn't set (disabled), this function returns the same value as the input
+                    replacement = plugin.processAntiHighlight(replacement);
+                }
                 result = find_vars.replaceFirst(replacement);
             } else if (realTarget.getType() == EndPoint.Type.IRC) {
                 result = find_vars.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.plugin.cColorIrcFromName(find_vars.group(1))));
