@@ -4,12 +4,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sk89q.util.config.ConfigurationNode;
+import org.bukkit.ChatColor;
 public class RelayedMessage {
 
     enum DeliveryMethod {
         STANDARD, ADMINS, COMMAND
     }
 
+    static String ircBold = Character.toString((char) 2);
+    static String ircColor = Character.toString((char) 3);
+    static String ircReset = Character.toString((char) 15);
+    static String ircReverse = Character.toString((char) 22);
+    static String ircUnderline = Character.toString((char) 31);
     static String typeString = "MSG";
 
     private final CraftIRC plugin;
@@ -116,16 +123,28 @@ public class RelayedMessage {
             }
         }
 
-        //IRC color code aliases (actually not recommended)
+        //IRC color code aliases
         if (realTarget.getType() == EndPoint.Type.IRC) {
-            result = result.replaceAll("%k([0-9]{1,2})%", Character.toString((char) 3) + "$1");
-            result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", Character.toString((char) 3) + "$1,$2");
-            result = result.replace("%k%", Character.toString((char) 3));
-            result = result.replace("%o%", Character.toString((char) 15));
-            result = result.replace("%b%", Character.toString((char) 2));
-            result = result.replace("%u%", Character.toString((char) 31));
-            result = result.replace("%r%", Character.toString((char) 22));
+            //Replace named colours
+            for(ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name"); 
+                if (null != colorName && colorName.length() > 0)
+                    result = result.replace("%"+colorName+"%", ircColor + node.getString("irc", "01"));
+            }
+            result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
+            result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", ircColor + "$1,$2");
+            result = result.replace("%k%", ircColor);
+            result = result.replace("%o%", ircReset);
+            result = result.replace("%b%", ircBold);
+            result = result.replace("%u%", ircUnderline);
+            result = result.replace("%r%", ircReverse);
         } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
+            //Replace named colours
+            for(ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name"); 
+                if (null != colorName && colorName.length() > 0)
+                    result = result.replace("%"+colorName+"%", plugin.cColorGameFromName(colorName));
+            }
             result = result.replaceAll("%k([0-9]{1,2})%", "");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", "");
             result = result.replace("%k%", this.plugin.cColorGameFromName("foreground"));
@@ -143,24 +162,13 @@ public class RelayedMessage {
             result = result.replace("%r%", "");
         }
 
-        //Fields and named colors (all the important stuff is here actually)
-        final Pattern other_vars = Pattern.compile("%([A-Za-z0-9]+)%");
-        Matcher find_vars = other_vars.matcher(result);
-        while (find_vars.find()) {
-            if (this.fields.get(find_vars.group(1)) != null) {
-                String replacement = Matcher.quoteReplacement(this.fields.get(find_vars.group(1)));
-                if (!this.doNotColorFields.contains(find_vars.group(1))) {
-                    replacement = replacement.replaceAll("&([0-9A-Fa-f])", "\u00A7$1");
-                }
-                result = find_vars.replaceFirst(replacement);
-            } else if (realTarget.getType() == EndPoint.Type.IRC) {
-                result = find_vars.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.plugin.cColorIrcFromName(find_vars.group(1))));
-            } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
-                result = find_vars.replaceFirst(this.plugin.cColorGameFromName(find_vars.group(1)));
-            } else {
-                result = find_vars.replaceFirst("");
+        //Fields
+        for (String fieldName : this.fields.keySet()) {
+            String replacement = this.fields.get(fieldName);
+            if (!this.doNotColorFields.contains(fieldName)) {
+                replacement = ChatColor.translateAlternateColorCodes('&', replacement);
             }
-            find_vars = other_vars.matcher(result);
+            result = result.replace("%"+fieldName+"%", replacement);
         }
 
         //Convert colors
