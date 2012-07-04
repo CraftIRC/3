@@ -1006,7 +1006,8 @@ public class CraftIRC extends JavaPlugin {
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                return color.getString("irc", this.cColorIrcFromName("foreground"));
+            	//Backwards compatibility with old integer entries in config.yml.
+                return (color.getString("irc").length() == 1 ? "0" : "") + color.getString("irc", this.cColorIrcFromName("foreground"));
             }
         }
         return this.cColorIrcFromName("foreground");
@@ -1029,7 +1030,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cColorGameFromIrc(String irc) {
-    	//Leading zero added.
+    	//Leading zero added, fixes buggy IRC clients sending one-digit colours.
     	if (irc.length() == 1)
     		irc = "0"+irc;
         ConfigurationNode color;
