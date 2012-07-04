@@ -872,7 +872,7 @@ public class CraftIRC extends JavaPlugin {
         final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-f]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
-            name = find_colors.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.cColorIrcFromGame(find_colors.group())));
+            name = find_colors.replaceFirst(Character.toString((char) 3) + this.cColorIrcFromGame(find_colors.group()));
             find_colors = color_codes.matcher(name);
         }
         return name;
@@ -1000,40 +1000,43 @@ public class CraftIRC extends JavaPlugin {
         return "";
     }
 
-    public int cColorIrcFromGame(String game) {
+    public String cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                return color.getInt("irc", this.cColorIrcFromName("foreground"));
+                return color.getString("irc", this.cColorIrcFromName("foreground"));
             }
         }
         return this.cColorIrcFromName("foreground");
     }
 
-    public int cColorIrcFromName(String name) {
+    public String cColorIrcFromName(String name) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
-                return color.getInt("irc", 1);
+                return color.getString("irc", "01");
             }
         }
         if (name.equalsIgnoreCase("foreground")) {
-            return 1;
+            return "01";
         } else {
             return this.cColorIrcFromName("foreground");
         }
     }
 
-    public String cColorGameFromIrc(int irc) {
+    public String cColorGameFromIrc(String irc) {
+    	//Leading zero added.
+    	if (irc.length() == 1)
+    		irc = "0"+irc;
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getInt("irc", -1) == irc) {
+            if (color.getString("irc", "").equals(irc)) {
                 return color.getString("game", this.cColorGameFromName("foreground"));
             }
         }
