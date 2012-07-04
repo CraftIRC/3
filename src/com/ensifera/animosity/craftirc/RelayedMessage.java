@@ -170,7 +170,7 @@ public class RelayedMessage {
                 final Pattern color_codes = Pattern.compile("\u00A7([A-Fa-f0-9])?");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
-                    result = find_colors.replaceFirst("\u0003" + Integer.toString(this.plugin.cColorIrcFromGame("\u00A7" + find_colors.group(1))));
+                    result = find_colors.replaceFirst("\u0003" + this.plugin.cColorIrcFromGame("\u00A7" + find_colors.group(1)));
                     find_colors = color_codes.matcher(result);
                 }
             } else if ((realTarget.getType() != EndPoint.Type.MINECRAFT) || !colors) {
@@ -184,7 +184,7 @@ public class RelayedMessage {
                 final Pattern color_codes = Pattern.compile(Character.toString((char) 3) + "([01]?[0-9])(,[0-9]{0,2})?");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
-                    result = find_colors.replaceFirst(this.plugin.cColorGameFromIrc(Integer.parseInt(find_colors.group(1))));
+                    result = find_colors.replaceFirst(this.plugin.cColorGameFromIrc(find_colors.group(1)));
                     find_colors = color_codes.matcher(result);
                 }
                 result = result.replaceAll(Character.toString((char) 15) + "|" + Character.toString((char) 3), this.plugin.cColorGameFromName("foreground"));
