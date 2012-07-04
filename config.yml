@@ -92,6 +92,7 @@ settings:
       nick: '[%srcChannel%] * %sender% is now known as %message%'
       generic: '%message%'
     from-plain:
+      say: '[Server] %message%'
     #======================================
     
     #==========Colorful formatting=========
@@ -115,6 +116,8 @@ settings:
     #  kick: '%grey%[%srcChannel%]%darkgreen% * %sender% was kicked by %ircModPrefix%%moderator%'
     #  nick: '%grey%[%srcChannel%]%darkgreen% * %sender% is now known as %message%'
     #  generic: '%grey%%message%'
+    #from-plain:
+    #  say: '%magenta%[Server] %message%'
     #======================================
 
 

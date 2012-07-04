@@ -1,5 +1,6 @@
 package com.ensifera.animosity.craftirc;
 
+import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,6 +31,14 @@ public class CraftIRCListener implements Listener {
                 msg.setField("realSender", event.getPlayer().getName());
                 msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
                 msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+                msg.doNotColor("message");
+                msg.post();
+            }
+            if (split[0].equalsIgnoreCase("/say")) {
+            	if (!(event.getPlayer().hasPermission("bukkit.command.say") && event.getPlayer().hasPermission(Server.BROADCAST_CHANNEL_USERS))) return;
+            	final String message = event.getMessage().substring(5);
+                final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "say");
+                msg.setField("message", message);
                 msg.doNotColor("message");
                 msg.post();
             }
