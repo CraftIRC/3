@@ -1,7 +1,7 @@
 name: CraftIRC
 main: com.ensifera.animosity.craftirc.CraftIRC
 authors: [Animosity, Protected, mbaxter]
-version: 3.6
+version: '${project.version}'
 commands:
   ircsay:
     description: Relays message as from minecraft
