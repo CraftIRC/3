@@ -1263,5 +1263,9 @@ public class CraftIRC extends JavaPlugin {
     public boolean isHeld(HoldType ht) {
         return this.hold.get(ht);
     }
+    
+    public List<ConfigurationNode> getColorMap() {
+        return this.colormap;
+    }
 
 }
