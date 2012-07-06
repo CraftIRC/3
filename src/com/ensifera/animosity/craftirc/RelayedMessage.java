@@ -127,8 +127,8 @@ public class RelayedMessage {
         if (realTarget.getType() == EndPoint.Type.IRC) {
             //Replace named colours
             for(ConfigurationNode node : plugin.getColorMap()) {
-                String colorName = node.getString("name"); 
-                if (null != colorName && colorName.length() > 0)
+                String colorName = node.getString("name", ""); 
+                if (colorName.length() > 0)
                     result = result.replace("%"+colorName+"%", ircColor + node.getString("irc", "01"));
             }
             result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
@@ -141,8 +141,8 @@ public class RelayedMessage {
         } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
             //Replace named colours
             for(ConfigurationNode node : plugin.getColorMap()) {
-                String colorName = node.getString("name"); 
-                if (null != colorName && colorName.length() > 0)
+                String colorName = node.getString("name", ""); 
+                if (colorName.length() > 0)
                     result = result.replace("%"+colorName+"%", plugin.cColorGameFromName(colorName));
             }
             result = result.replaceAll("%k([0-9]{1,2})%", "");
@@ -152,7 +152,13 @@ public class RelayedMessage {
             result = result.replace("%b%", "");
             result = result.replace("%u%", "");
             result = result.replace("%r%", "");
-        } else {
+        } else { //EndPoint.Type.PLAIN
+            //Replace named colours
+            for(ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name", ""); 
+                if (colorName.length() > 0)
+                    result = result.replace("%"+colorName+"%", "");
+            }
             result = result.replaceAll("%k([0-9]{1,2})%", "");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", "");
             result = result.replace("%k%", "");
