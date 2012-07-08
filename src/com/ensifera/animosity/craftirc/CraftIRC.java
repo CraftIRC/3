@@ -381,7 +381,7 @@ public class CraftIRC extends JavaPlugin {
             if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
             } else {
-                msg.setField("sender", "SERVER");
+                msg.setField("sender", sender.getName());
             }
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
@@ -407,7 +407,7 @@ public class CraftIRC extends JavaPlugin {
             if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
             } else {
-                msg.setField("sender", "SERVER");
+                msg.setField("sender", sender.getName());
             };
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
