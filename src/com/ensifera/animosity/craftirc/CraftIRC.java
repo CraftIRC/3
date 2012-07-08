@@ -62,6 +62,9 @@ public class CraftIRC extends JavaPlugin {
     private Map<String, CommandEndPoint> irccmds;
     private Map<String, List<String>> taggroups;
     private Chat vault;
+    
+    //Replacement Filters
+    private Map<String, Map<String, String>> replaceFilters;
 
     static void dolog(String message) {
         CraftIRC.log.info("[" + CraftIRC.NAME + "] " + message);
@@ -115,6 +118,28 @@ public class CraftIRC extends JavaPlugin {
                 if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !this.paths.containsKey(identifier)) {
                     this.paths.put(identifier, path);
                 }
+            }
+            
+            //Replace filters
+            this.replaceFilters = new HashMap<String, Map<String, String>>();
+            try {
+                for (String key : this.configuration.getNode("filters").getKeys()) {
+                    //Map key to regex pattern, value to replacement.
+                    Map<String, String> replaceMap = new HashMap<String, String>();
+                    this.replaceFilters.put(key, replaceMap);
+                    for (ConfigurationNode fieldNode : this.configuration.getNodeList("filters." + key, null)) {
+                        Map<String, Object> patterns = fieldNode.getAll();
+                        if (patterns != null)
+                            for (String pattern : patterns.keySet())
+                                replaceMap.put(pattern, patterns.get(pattern).toString());
+                    }
+                    
+                    //Also supports non-map entries.
+                    for (String unMappedEntry : this.configuration.getStringList("filters." + key, null))
+                        if (unMappedEntry.length() > 0 && unMappedEntry.charAt(0) != '{') //mapped toString() begins with {, but regex can't begin with {.
+                            replaceMap.put(unMappedEntry, "");
+                }
+            } catch (NullPointerException e) {
             }
 
             //Retry timers
@@ -1214,6 +1239,10 @@ public class CraftIRC extends JavaPlugin {
 
     public List<ConfigurationNode> cPathFilters(String source, String target) {
         return this.getPathNode(source, target).getNodeList("filters", new ArrayList<ConfigurationNode>());
+    }
+    
+    public Map<String, Map<String, String>> cReplaceFilters() {
+        return this.replaceFilters;
     }
 
     void loadTagGroups() {
