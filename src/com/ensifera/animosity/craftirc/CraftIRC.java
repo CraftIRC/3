@@ -411,7 +411,14 @@ public class CraftIRC extends JavaPlugin {
             };
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
-            msg.postToUser(args[1]);
+            boolean sameEndPoint = this.getEndPoint(this.cMinecraftTag()).equals(this.getEndPoint(args[0]));
+            //Don't actually deliver the message if the user is invisible to the sender.
+            if (sameEndPoint && sender instanceof Player) {
+                Player recipient = getServer().getPlayer(args[1]);
+                if (recipient != null && recipient.isOnline() && ((Player)sender).canSee(recipient))
+                    msg.postToUser(args[1]);
+            } else
+                msg.postToUser(args[1]);
             sender.sendMessage("Message sent.");
             return true;
         } catch (final Exception e) {
