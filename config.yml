@@ -276,3 +276,71 @@ colormap:
   - {irc: 13, game: "\u00A7d", name: 'magenta'}
   - {irc: 8, game: "\u00A7e", name: 'yellow'}
   - {irc: 1, game: "\u00A7f", name: 'foreground'}
+
+
+# ******************* REPLACEMENT FILTERS *******************
+# This section allows you to set up find and replace rules on
+# every section of every message sent by CraftIRC.
+
+# If you want to delete messages instead you should use the path filters, above.
+
+# Each filter contains regular expressions for formatting variables.
+
+# For example, you can change the prefix of IRC Channel Operators to something 
+# different by executing a replacement on the %ircPrefix% variable.
+
+# filters:
+#   ircPrefix: ['@' : 'Op ']
+
+# Or you could censor IP addresses to and from chat.
+
+# filters:
+#   message: ['(\d+\.){3}\d+' : '#.#.#.#']
+
+# When writing searches, the following characters have special meanings:
+# ^ $ . + ? * { } [ ] ( )
+# If you want to use these characters normally, escape them with a backslash \.
+# When writing the replacement, make sure you escape any $ or \ characters
+# with an additional \ unless you want to use backreferences.
+
+# Example: Changing emoticon ^_^ to $_$
+ 
+# filters:
+#   message: ['\^_\^' : '\$_\$']
+
+# To delete a search, use an empty replacement, or none at all.
+
+# This example shows two ways of deleting. The searches are xxx and yyy.
+
+# filters:
+#   message: [xxx, yyy : '']
+
+# Remember that any list can be written in two ways.
+# filters:
+#   prefix: ['mod' : 'Mod', 'adm' : 'Admin']
+
+# is equivalent to
+
+# filters:
+#   prefix:
+#   - 'mod' : 'Mod'
+#   - 'adm' : 'Admin'
+filters:
+  command: []
+  source: []
+  target: []
+  prefix: []
+  suffix: []
+  sender: []
+  realSender: []
+  message: []
+  moderator: []
+  world: []
+
+# IRC only variables:
+  ircPrefix: []
+  realModerator: []
+  ircModPrefix: []
+  modUsername: []
+  modHostname: []
+  srcChannel: []

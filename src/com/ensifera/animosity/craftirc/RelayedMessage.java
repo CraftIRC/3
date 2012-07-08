@@ -3,6 +3,7 @@ package com.ensifera.animosity.craftirc;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.sk89q.util.config.ConfigurationNode;
 import org.bukkit.ChatColor;
@@ -174,6 +175,20 @@ public class RelayedMessage {
             if (!this.doNotColorFields.contains(fieldName)) {
                 replacement = ChatColor.translateAlternateColorCodes('&', replacement);
             }
+            //Global find/replacements with regular expressions.
+            Map<String, Map<String, String>> replaceFilters = this.plugin.cReplaceFilters();
+            if (replaceFilters.containsKey(fieldName))
+                for (String search : replaceFilters.get(fieldName).keySet())
+                    try {
+                        replacement = replacement.replaceAll(search, replaceFilters.get(fieldName).get(search));
+                    } catch (PatternSyntaxException e) {
+                        CraftIRC.dowarn("Pattern is invalid: "+e.getPattern());
+                    }
+                    catch (IllegalArgumentException e) {
+                        if ("Illegal group reference".equals(e.getMessage()))
+                            CraftIRC.dowarn("Invalid replacement - backreference not found.");
+                        else throw e;
+                    }
             result = result.replace("%"+fieldName+"%", replacement);
         }
 
