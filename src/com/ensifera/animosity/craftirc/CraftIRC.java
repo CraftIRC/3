@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.lang.StringBuilder;
 
 import net.milkbowl.vault.chat.Chat;
 
@@ -1281,6 +1282,24 @@ public class CraftIRC extends JavaPlugin {
     
     public List<ConfigurationNode> getColorMap() {
         return this.colormap;
+    }
+
+    public String processAntiHighlight(String input) {
+        String delimiter = this.configuration.getString("settings.anti-highlight");
+
+        if (delimiter != null && !delimiter.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (int i=0; i < input.length(); i++) {
+                char c = input.charAt(i);
+                builder.append(c);
+                if (c != '\u00A7') {
+                    builder.append(delimiter);
+                }
+            }
+            return builder.toString();
+        } else {
+            return input;
+        }
     }
 
 }
