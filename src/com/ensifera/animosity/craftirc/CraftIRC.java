@@ -33,7 +33,6 @@ public class CraftIRC extends JavaPlugin {
 
     public static final String NAME = "CraftIRC";
     public static String VERSION;
-    private final String DEFAULTCONFIG_INJAR_PATH = "config.yml";
     static final Logger log = Logger.getLogger("Minecraft");
 
     Configuration configuration;
@@ -81,7 +80,14 @@ public class CraftIRC extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            this.configuration = new Configuration(new File(this.getDataFolder().getPath() + "/config.yml"));
+        	//Checking if the configuration file exists and imports the default one from the .jar if it doesn't
+            final File configFile = new File(this.getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                this.saveDefaultConfig();
+                this.autoDisable();
+                return;
+            }
+            this.configuration = new Configuration(configFile);
             this.configuration.load();
 
             this.endpoints = new HashMap<String, EndPoint>();
@@ -92,18 +98,6 @@ public class CraftIRC extends JavaPlugin {
             final PluginDescriptionFile desc = this.getDescription();
             CraftIRC.VERSION = desc.getVersion();
             this.server = this.getServer();
-
-            final String dataFolderPath = this.getDataFolder().getPath() + File.separator;
-            (new File(dataFolderPath)).mkdir();
-
-            //Checking if the configuration file exists and imports the default one from the .jar if it doesn't
-            final File configFile = new File(dataFolderPath + "config.yml");
-            if (!configFile.exists()) {
-                this.importDefaultConfig(this.DEFAULTCONFIG_INJAR_PATH, configFile);
-                this.autoDisable();
-                return;
-            }
-
             this.bots = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("bots", null));
             this.channodes = new HashMap<Integer, ArrayList<ConfigurationNode>>();
             for (int botID = 0; botID < this.bots.size(); botID++) {
@@ -251,32 +245,6 @@ public class CraftIRC extends JavaPlugin {
         } catch (final IOException e) {
             //Meh.
         }
-    }
-
-    private void importDefaultConfig(String injarPath, File destination) {
-        try {
-            final InputStream is = this.getClass().getResourceAsStream(injarPath);
-            if (is == null) {
-                throw new Exception("The default configuration file could not be found in the .jar");
-            }
-            final OutputStream os = new FileOutputStream(destination);
-
-            final byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-
-            is.close();
-            os.close();
-        } catch (final Exception e) {
-            CraftIRC.dowarn("The default configuration file could not be imported:");
-            e.printStackTrace();
-            CraftIRC.dowarn("You can MANUALLY place config.yml in " + destination.getParent());
-            return;
-        }
-        CraftIRC.dolog("Default configuration file created: " + destination.getPath());
-        CraftIRC.dolog("Take some time to EDIT it, then restart your server.");
     }
 
     private void autoDisable() {
