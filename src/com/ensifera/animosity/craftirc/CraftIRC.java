@@ -34,7 +34,6 @@ public class CraftIRC extends JavaPlugin {
 
     public static final String NAME = "CraftIRC";
     public static String VERSION;
-    private final String DEFAULTCONFIG_INJAR_PATH = "config.yml";
     static final Logger log = Logger.getLogger("Minecraft");
 
     Configuration configuration;
@@ -63,6 +62,9 @@ public class CraftIRC extends JavaPlugin {
     private Map<String, CommandEndPoint> irccmds;
     private Map<String, List<String>> taggroups;
     private Chat vault;
+    
+    //Replacement Filters
+    private Map<String, Map<String, String>> replaceFilters;
 
     static void dolog(String message) {
         CraftIRC.log.info("[" + CraftIRC.NAME + "] " + message);
@@ -79,7 +81,14 @@ public class CraftIRC extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            this.configuration = new Configuration(new File(this.getDataFolder().getPath() + "/config.yml"));
+        	//Checking if the configuration file exists and imports the default one from the .jar if it doesn't
+            final File configFile = new File(this.getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                this.saveDefaultConfig();
+                this.autoDisable();
+                return;
+            }
+            this.configuration = new Configuration(configFile);
             this.configuration.load();
 
             this.endpoints = new HashMap<String, EndPoint>();
@@ -90,18 +99,6 @@ public class CraftIRC extends JavaPlugin {
             final PluginDescriptionFile desc = this.getDescription();
             CraftIRC.VERSION = desc.getVersion();
             this.server = this.getServer();
-
-            final String dataFolderPath = this.getDataFolder().getPath() + File.separator;
-            (new File(dataFolderPath)).mkdir();
-
-            //Checking if the configuration file exists and imports the default one from the .jar if it doesn't
-            final File configFile = new File(dataFolderPath + "config.yml");
-            if (!configFile.exists()) {
-                this.importDefaultConfig(this.DEFAULTCONFIG_INJAR_PATH, configFile);
-                this.autoDisable();
-                return;
-            }
-
             this.bots = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("bots", null));
             this.channodes = new HashMap<Integer, ArrayList<ConfigurationNode>>();
             for (int botID = 0; botID < this.bots.size(); botID++) {
@@ -116,6 +113,28 @@ public class CraftIRC extends JavaPlugin {
                 if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !this.paths.containsKey(identifier)) {
                     this.paths.put(identifier, path);
                 }
+            }
+            
+            //Replace filters
+            this.replaceFilters = new HashMap<String, Map<String, String>>();
+            try {
+                for (String key : this.configuration.getNode("filters").getKeys()) {
+                    //Map key to regex pattern, value to replacement.
+                    Map<String, String> replaceMap = new HashMap<String, String>();
+                    this.replaceFilters.put(key, replaceMap);
+                    for (ConfigurationNode fieldNode : this.configuration.getNodeList("filters." + key, null)) {
+                        Map<String, Object> patterns = fieldNode.getAll();
+                        if (patterns != null)
+                            for (String pattern : patterns.keySet())
+                                replaceMap.put(pattern, patterns.get(pattern).toString());
+                    }
+                    
+                    //Also supports non-map entries.
+                    for (String unMappedEntry : this.configuration.getStringList("filters." + key, null))
+                        if (unMappedEntry.length() > 0 && unMappedEntry.charAt(0) != '{') //mapped toString() begins with {, but regex can't begin with {.
+                            replaceMap.put(unMappedEntry, "");
+                }
+            } catch (NullPointerException e) {
             }
 
             //Retry timers
@@ -227,32 +246,6 @@ public class CraftIRC extends JavaPlugin {
         } catch (final IOException e) {
             //Meh.
         }
-    }
-
-    private void importDefaultConfig(String injarPath, File destination) {
-        try {
-            final InputStream is = this.getClass().getResourceAsStream(injarPath);
-            if (is == null) {
-                throw new Exception("The default configuration file could not be found in the .jar");
-            }
-            final OutputStream os = new FileOutputStream(destination);
-
-            final byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-
-            is.close();
-            os.close();
-        } catch (final Exception e) {
-            CraftIRC.dowarn("The default configuration file could not be imported:");
-            e.printStackTrace();
-            CraftIRC.dowarn("You can MANUALLY place config.yml in " + destination.getParent());
-            return;
-        }
-        CraftIRC.dolog("Default configuration file created: " + destination.getPath());
-        CraftIRC.dolog("Take some time to EDIT it, then restart your server.");
     }
 
     private void autoDisable() {
@@ -382,7 +375,7 @@ public class CraftIRC extends JavaPlugin {
             if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
             } else {
-                msg.setField("sender", "SERVER");
+                msg.setField("sender", sender.getName());
             }
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
@@ -408,11 +401,18 @@ public class CraftIRC extends JavaPlugin {
             if (sender instanceof Player) {
                 msg.setField("sender", ((Player) sender).getDisplayName());
             } else {
-                msg.setField("sender", "SERVER");
+                msg.setField("sender", sender.getName());
             };
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
-            msg.postToUser(args[1]);
+            boolean sameEndPoint = this.getEndPoint(this.cMinecraftTag()).equals(this.getEndPoint(args[0]));
+            //Don't actually deliver the message if the user is invisible to the sender.
+            if (sameEndPoint && sender instanceof Player) {
+                Player recipient = getServer().getPlayer(args[1]);
+                if (recipient != null && recipient.isOnline() && ((Player)sender).canSee(recipient))
+                    msg.postToUser(args[1]);
+            } else
+                msg.postToUser(args[1]);
             sender.sendMessage("Message sent.");
             return true;
         } catch (final Exception e) {
@@ -692,6 +692,9 @@ public class CraftIRC extends JavaPlugin {
             destinations = new LinkedList<EndPoint>();
             for (final String targetTag : this.cPathsFrom(sourceTag)) {
                 final EndPoint ep = this.getEndPoint(targetTag);
+                if (ep == null) {
+                    continue;
+                }
                 if ((ep instanceof SecuredEndPoint) && SecuredEndPoint.Security.REQUIRE_TARGET.equals(((SecuredEndPoint) ep).getSecurity())) {
                     continue;
                 }
@@ -706,6 +709,9 @@ public class CraftIRC extends JavaPlugin {
             //Default paths to unsecured destinations (auto-paths)
             if (this.cAutoPaths()) {
                 for (final EndPoint ep : this.endpoints.values()) {
+                    if (ep == null) {
+                        continue;
+                    }
                     if (msg.getSource().equals(ep) || destinations.contains(ep)) {
                         continue;
                     }
@@ -873,7 +879,7 @@ public class CraftIRC extends JavaPlugin {
         final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-f]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
-            name = find_colors.replaceFirst(Character.toString((char) 3) + String.format("%02d", this.cColorIrcFromGame(find_colors.group())));
+            name = find_colors.replaceFirst(Character.toString((char) 3) + this.cColorIrcFromGame(find_colors.group()));
             find_colors = color_codes.matcher(name);
         }
         return name;
@@ -1001,40 +1007,45 @@ public class CraftIRC extends JavaPlugin {
         return "";
     }
 
-    public int cColorIrcFromGame(String game) {
+    public String cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                return color.getInt("irc", this.cColorIrcFromName("foreground"));
+            	//Forces sending two digit colour codes. 
+                return (color.getString("irc").length() == 1 ? "0" : "") + color.getString("irc", this.cColorIrcFromName("foreground"));
             }
         }
         return this.cColorIrcFromName("foreground");
     }
 
-    public int cColorIrcFromName(String name) {
+    public String cColorIrcFromName(String name) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
-                return color.getInt("irc", 1);
+                return color.getString("irc", "01");
             }
         }
         if (name.equalsIgnoreCase("foreground")) {
-            return 1;
+            return "01";
         } else {
             return this.cColorIrcFromName("foreground");
         }
     }
 
-    public String cColorGameFromIrc(int irc) {
+    public String cColorGameFromIrc(String irc) {
+    	//Always convert to two digits.
+    	if (irc.length() == 1)
+    		irc = "0"+irc;
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
-            if (color.getInt("irc", -1) == irc) {
+            //Enforce two digit comparisons.
+            if (color.getString("irc", "").equals(irc) || "0".concat(color.getString("irc", "")).equals(irc)) {
                 return color.getString("game", this.cColorGameFromName("foreground"));
             }
         }
@@ -1216,6 +1227,10 @@ public class CraftIRC extends JavaPlugin {
     public List<ConfigurationNode> cPathFilters(String source, String target) {
         return this.getPathNode(source, target).getNodeList("filters", new ArrayList<ConfigurationNode>());
     }
+    
+    public Map<String, Map<String, String>> cReplaceFilters() {
+        return this.replaceFilters;
+    }
 
     void loadTagGroups() {
         final List<String> groups = this.configuration.getKeys("settings.tag-groups");
@@ -1263,6 +1278,10 @@ public class CraftIRC extends JavaPlugin {
 
     public boolean isHeld(HoldType ht) {
         return this.hold.get(ht);
+    }
+    
+    public List<ConfigurationNode> getColorMap() {
+        return this.colormap;
     }
 
     public String processAntiHighlight(String input) {

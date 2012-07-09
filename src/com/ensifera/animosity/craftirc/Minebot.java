@@ -240,7 +240,7 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     public void onJoin(String channel, String sender, String login, String hostname) {
         if (this.channels.containsKey(channel)) {
-            if (sender.equals(this.nickname)) {
+            if (sender.equals(this.getNick())) {
                 this.amNowInChannel(channel);
             } else {
                 if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
@@ -272,7 +272,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onPart(String channel, String sender, String login, String hostname, String reason) {
-        if (sender.equals(this.nickname)) {
+        if (sender.equals(this.getNick())) {
             this.noLongerInChannel(channel, true);
         }
         if (this.channels.containsKey(channel)) {
@@ -298,7 +298,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onChannelQuit(String channel, String sender, String login, String hostname, String reason) {
-        if (sender.equals(this.nickname)) {
+        if (sender.equals(this.getNick())) {
             this.noLongerInChannel(channel, false);
         }
         if (this.channels.containsKey(channel)) {
@@ -324,7 +324,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
-        if (recipientNick.equals(this.nickname)) {
+        if (recipientNick.equals(this.getNick())) {
             this.noLongerInChannel(channel, true);
         }
         if (this.channels.containsKey(channel)) {
@@ -356,7 +356,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onChannelNickChange(String channel, String oldNick, String login, String hostname, String newNick) {
-        if (oldNick.equals(this.nickname)) {
+        if (oldNick.equals(this.getNick())) {
             this.nickname = newNick;
         }
         if (this.channels.containsKey(channel)) {
@@ -541,6 +541,20 @@ public class Minebot extends PircBot implements Runnable {
 
         } catch (final Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onBlockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        if (this.channels.containsKey(channel)) {
+            this.channels.get(channel).setAllowColors(false);
+        }
+    }
+
+    @Override
+    protected void onUnblockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        if (this.channels.containsKey(channel)) {
+            this.channels.get(channel).setAllowColors(true);
         }
     }
 
