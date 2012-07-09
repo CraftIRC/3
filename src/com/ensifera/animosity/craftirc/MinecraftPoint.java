@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.kitteh.vanish.staticaccess.VanishNoPacket;
 
 public class MinecraftPoint implements CommandEndPoint {
 
@@ -69,9 +70,17 @@ public class MinecraftPoint implements CommandEndPoint {
 
     @Override
     public List<String> listDisplayUsers() {
+        boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
         final LinkedList<String> users = new LinkedList<String>();
         for (final Player p : this.server.getOnlinePlayers()) {
-            users.add(p.getDisplayName());
+            if (isVanishEnabled) {
+                try {
+                    if (!VanishNoPacket.isVanished(p.getName())) {
+                        users.add(p.getName());
+                    }
+                } catch (Exception e) {}
+            } else
+                users.add(p.getName());
         }
         Collections.sort(users);
         return users;
