@@ -175,6 +175,10 @@ public class RelayedMessage {
             if (!this.doNotColorFields.contains(fieldName)) {
                 replacement = ChatColor.translateAlternateColorCodes('&', replacement);
             }
+            if (realTarget.getType() == EndPoint.Type.IRC && fieldName.equals("sender")) {
+                // if anti-highlight isn't set (disabled), this function returns the same value as the input
+                replacement = plugin.processAntiHighlight(replacement);
+            }
             //Global find/replacements with regular expressions.
             Map<String, Map<String, String>> replaceFilters = this.plugin.cReplaceFilters();
             if (replaceFilters.containsKey(fieldName))

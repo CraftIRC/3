@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 import java.io.*;
+import java.lang.StringBuilder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1283,4 +1284,21 @@ public class CraftIRC extends JavaPlugin {
         return this.colormap;
     }
 
+    public String processAntiHighlight(String input) {
+        String delimiter = this.configuration.getString("settings.anti-highlight");
+
+        if (delimiter != null && !delimiter.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (int i=0; i < input.length(); i++) {
+                char c = input.charAt(i);
+                builder.append(c);
+                if (c != '\u00A7') {
+                    builder.append(delimiter);
+                }
+            }
+            return builder.toString();
+        } else {
+            return input;
+        }
+    }
 }

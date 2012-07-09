@@ -26,6 +26,11 @@ settings:
   #(Secured endpoints can still send messages through auto-paths, but not receive them)
   auto-paths: true
   
+  # If set, this character will be inserted after each character ("abc" -> "a_b_c_") to prevent IRC highlights
+  # The default value, "\u200B", is the unicode zero width space. "\x0f" (irc formatting reset code) might work too.
+  # Double quotes are important in yaml when using character escapes like these!
+  # anti-highlight: "\u200B"
+  
   #Paths between endpoints within the same group are not established. These groups will be created automatically (set to '' to disable):
   #*For the three endpoints above 
   minecraft-group-name: 'minecraft'
