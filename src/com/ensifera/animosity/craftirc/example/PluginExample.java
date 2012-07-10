@@ -11,33 +11,27 @@ import com.ensifera.animosity.craftirc.RelayedMessage;
 
 public class PluginExample extends JavaPlugin implements EndPoint {
 
-    protected CraftIRC craftircHandle = null;
-
+    private final String exampletag = "exampletag";
+    
     @Override
     public void onEnable() {
-        final Plugin checkplugin = this.getServer().getPluginManager().getPlugin("CraftIRC");
-        if ((checkplugin == null) || !checkplugin.isEnabled()) {
+        final Plugin plugin = this.getServer().getPluginManager().getPlugin("CraftIRC");
+        if ((plugin == null) || !plugin.isEnabled() || !(plugin instanceof CraftIRC)) {
             this.getServer().getPluginManager().disablePlugin((this));
         } else {
-            try {
-                this.craftircHandle = (CraftIRC) checkplugin;
-                this.craftircHandle.registerEndPoint("mytag", this);
-                final RelayedMessage rm = this.craftircHandle.newMsg(this, null, "generic");
-                rm.setField("message", "I'm aliiive!");
-                rm.post();
-            } catch (final ClassCastException ex) {
-                ex.printStackTrace();
-                this.getServer().getPluginManager().disablePlugin((this));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+            final CraftIRC craftirc = (CraftIRC) plugin;
+            craftirc.registerEndPoint(this.exampletag, this);
+            final RelayedMessage rm = craftirc.newMsg(this, null, "generic");
+            rm.setField("message", "I'm aliiive!");
+            rm.post();
         }
     }
 
     @Override
     public void onDisable() {
-        if (this.craftircHandle != null) {
-            this.craftircHandle.unregisterEndPoint("mytag");
+        final Plugin plugin = this.getServer().getPluginManager().getPlugin("CraftIRC");
+        if (((plugin != null) && !plugin.isEnabled()) || (plugin instanceof CraftIRC)) {
+            ((CraftIRC) plugin).unregisterEndPoint(this.exampletag);
         }
     }
 
