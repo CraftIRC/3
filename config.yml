@@ -82,7 +82,7 @@ settings:
       action: '* %sender% %message%'
       join: '[%sender% connected]'
       quit: '[%sender% disconnected]'
-      kick: '[%moderator% KICKED %sender% (%message%)]'
+      kick: '[%sender% was KICKED (%message%)]'
       admin: '%sender% to online admins ->- %message%'
       generic: '%message%'
       death: '%message%'
