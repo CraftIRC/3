@@ -3700,7 +3700,7 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
     private Map<String, String> _userPrefixes = new HashMap<String, String>();
     // prefixes as delivered from the server .. highest to lowest - default to
     // op/voice
-    private String _userPrefixOrder = "@+";
+    private String _userPrefixOrder = "~&@%+";
     private String _channelPrefixes = "#&+!";
     private List<String> supportedPrefixes = new ArrayList<String>(Arrays.asList("~", "&", "@", "%", "+"));
     private List<String> supportedModes = new ArrayList<String>(Arrays.asList("q", "a", "o", "h", "v"));
