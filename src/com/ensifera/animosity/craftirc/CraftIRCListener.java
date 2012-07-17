@@ -88,7 +88,7 @@ public class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (this.plugin.getServer().getPluginManager().isPluginEnabled("VanishNoPacket") && event.getPlayer().hasPermission("vanish.joinwithoutannounce")) {
+        if (event.getJoinMessage() == null) {
             return;
         }
         if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
@@ -112,7 +112,7 @@ public class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (this.plugin.getServer().getPluginManager().isPluginEnabled("VanishNoPacket") && event.getPlayer().hasPermission("vanish.silentquit")) {
+        if (event.getQuitMessage() == null) {
             return;
         }
         if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) {
