@@ -74,7 +74,7 @@ public class Minebot extends PircBot implements Runnable {
         this.whereAmI = new HashSet<String>();
         this.channels = new HashMap<String, IRCChannelPoint>();
         for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
-            final String name = channelNode.getString("name");
+            final String name = channelNode.getString("name").toLowerCase();
             if (this.channels.containsKey(name)) {
                 continue;
             }
@@ -109,6 +109,7 @@ public class Minebot extends PircBot implements Runnable {
     }
 
     public void addChannel(String channel){
+        channel = channel.toLowerCase();
         if (this.channels.containsKey(channel)) {
             return;
         }
@@ -226,6 +227,7 @@ public class Minebot extends PircBot implements Runnable {
     }
 
     void amNowInChannel(String channel) {
+        channel = channel.toLowerCase();
         CraftIRC.dolog("Joined channel: " + channel);
         this.whereAmI.add(channel);
         final String tag = this.plugin.cChanTag(this.botId, channel);
@@ -239,6 +241,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onJoin(String channel, String sender, String login, String hostname) {
+        channel = channel.toLowerCase();
         if (this.channels.containsKey(channel)) {
             if (sender.equals(this.getNick())) {
                 this.amNowInChannel(channel);
@@ -272,6 +275,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onPart(String channel, String sender, String login, String hostname, String reason) {
+        channel = channel.toLowerCase();
         if (sender.equals(this.getNick())) {
             this.noLongerInChannel(channel, true);
         }
@@ -298,6 +302,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onChannelQuit(String channel, String sender, String login, String hostname, String reason) {
+        channel = channel.toLowerCase();
         if (sender.equals(this.getNick())) {
             this.noLongerInChannel(channel, false);
         }
@@ -324,6 +329,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
+        channel = channel.toLowerCase();
         if (recipientNick.equals(this.getNick())) {
             this.noLongerInChannel(channel, true);
         }
@@ -356,6 +362,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onChannelNickChange(String channel, String oldNick, String login, String hostname, String newNick) {
+        channel = channel.toLowerCase();
         if (oldNick.equals(this.getNick())) {
             this.nickname = newNick;
         }
@@ -382,6 +389,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onMessage(String channel, String sender, String login, String hostname, String message) {
+        channel = channel.toLowerCase();
         if (this.ignores.contains(sender)) {
             return;
         }
@@ -459,6 +467,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onAction(String sender, String login, String hostname, String target, String action) {
+        target=target.toLowerCase();
         final RelayedMessage msg = this.plugin.newMsg(this.channels.get(target), null, "action");
         if (msg == null) {
             return;
@@ -481,6 +490,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onTopic(String channel, String topic, String sender, long date, boolean changed) {
+        channel = channel.toLowerCase();
         final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "topic");
         if (msg == null) {
             return;
@@ -500,6 +510,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     protected void onMode(String channel, String moderator, String sourceLogin, String sourceHostname, String mode) {
+        channel = channel.toLowerCase();
         final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "mode");
         if (msg == null) {
             return;
@@ -546,6 +557,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     protected void onBlockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        channel = channel.toLowerCase();
         if (this.channels.containsKey(channel)) {
             this.channels.get(channel).setAllowColors(false);
         }
@@ -553,6 +565,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     protected void onUnblockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
+        channel = channel.toLowerCase();
         if (this.channels.containsKey(channel)) {
             this.channels.get(channel).setAllowColors(true);
         }
