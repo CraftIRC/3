@@ -3449,6 +3449,9 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
      * @return the highest user mode, or an empty String if none found
      */
     public final String getHighestUserPrefix(User user) {
+        if(user == null) {
+            return "";
+        }
         for (int x = 0; x < _userPrefixOrder.length(); x++) {
             if (user.getPrefix().indexOf(_userPrefixOrder.charAt(x) + "") >= 0) {
                 return _userPrefixOrder.charAt(x) + "";
