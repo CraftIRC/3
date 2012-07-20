@@ -79,8 +79,9 @@ public class MinecraftPoint implements CommandEndPoint {
                         continue;
                     }
                 }
-            } else
-                users.add(p.getName());
+                
+            }
+            users.add(p.getName());
         }
         Collections.sort(users);
         return users;
