@@ -72,11 +72,11 @@ public class MinecraftPoint implements CommandEndPoint {
     public List<String> listDisplayUsers() {
         boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
         final LinkedList<String> users = new LinkedList<String>();
-        for (final Player p : this.server.getOnlinePlayers()) {
+        playerLoop: for (final Player p : this.server.getOnlinePlayers()) {
             if (isVanishEnabled) {
                 for (MetadataValue value : p.getMetadata("vanished")) {
                     if (value.getOwningPlugin().getName().equals("VanishNoPacket") && value.asBoolean()) {
-                        continue;
+                        continue playerLoop;
                     }
                 }
                 
