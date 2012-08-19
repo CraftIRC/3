@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,35 +56,46 @@ public class CraftIRCListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChat(PlayerChatEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (this.plugin.isHeld(CraftIRC.HoldType.CHAT)) {
             return;
         }
-        try {
-            if (this.plugin.cCancelChat()) {
-                event.setCancelled(true);
-            }
-            RelayedMessage msg;
-            if (event.isCancelled()) {
-                msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cCancelledTag()), null, "chat");
-            } else {
-                msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "chat");
-            }
-            if (msg == null) {
-                return;
-            }
-            msg.setField("sender", event.getPlayer().getDisplayName());
-            msg.setField("message", event.getMessage());
-            msg.setField("world", event.getPlayer().getWorld().getName());
-            msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
-            msg.doNotColor("message");
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
+        if (this.plugin.cCancelChat()) {
+            event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerChatMonitor(AsyncPlayerChatEvent event) {
+        if (this.plugin.isHeld(CraftIRC.HoldType.CHAT)) {
+            return;
+        }
+        final boolean cancelled = event.isCancelled();
+        final Player player = event.getPlayer();
+        final String message = event.getMessage();
+        this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+            @Override
+            public void run() {
+                RelayedMessage msg;
+                if (cancelled) {
+                    msg = plugin.newMsg(plugin.getEndPoint(plugin.cCancelledTag()), null, "chat");
+                } else {
+                    msg = plugin.newMsg(plugin.getEndPoint(plugin.cMinecraftTag()), null, "chat");
+                }
+                if (msg == null) {
+                    return;
+                }
+                msg.setField("sender", player.getDisplayName());
+                msg.setField("message", message);
+                msg.setField("world", player.getWorld().getName());
+                msg.setField("realSender", player.getName());
+                msg.setField("prefix", plugin.getPrefix(player));
+                msg.setField("suffix", plugin.getSuffix(player));
+                msg.doNotColor("message");
+                msg.post();
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

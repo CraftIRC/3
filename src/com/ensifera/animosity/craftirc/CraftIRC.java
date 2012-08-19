@@ -65,6 +65,7 @@ public class CraftIRC extends JavaPlugin {
     
     //Replacement Filters
     private Map<String, Map<String, String>> replaceFilters;
+    private boolean cancelChat;
 
     static void dolog(String message) {
         CraftIRC.log.info("[" + CraftIRC.NAME + "] " + message);
@@ -90,6 +91,7 @@ public class CraftIRC extends JavaPlugin {
             }
             this.configuration = new Configuration(configFile);
             this.configuration.load();
+            this.cancelChat = this.configuration.getBoolean("settings.cancel-chat", false);
 
             this.endpoints = new HashMap<String, EndPoint>();
             this.tags = new HashMap<EndPoint, String>();
@@ -961,7 +963,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public boolean cCancelChat() {
-        return this.configuration.getBoolean("settings.cancel-chat", false);
+        return cancelChat;
     }
 
     public boolean cDebug() {
