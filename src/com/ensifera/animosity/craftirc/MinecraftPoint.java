@@ -99,14 +99,17 @@ public class MinecraftPoint implements CommandEndPoint {
         } else if (this.plugin.cCmdWordPlayers(null).contains(command)) {
             final List<String> users = this.listDisplayUsers();
             final int playerCount = users.size();
-            String result = "Nobody is minecrafting right now.";
+            String result;
             if (playerCount > 0) {
-                final List<String> userlist = this.listDisplayUsers();
-                String userstring = (userlist.size() > 0 ? userlist.get(0) : "");
-                for (int i = 1; i < userlist.size(); i++) {
-                    userstring = userstring + " " + userlist.get(i);
+                StringBuilder builder = new StringBuilder();
+                builder.append("Online (").append(playerCount).append("/").append(this.server.getMaxPlayers()).append("): ");
+                for (int i = 0; i < users.size(); i++) {
+                    builder.append(users.get(i)).append(" ");
                 }
-                result = "Online (" + playerCount + "/" + this.server.getMaxPlayers() + "): " + userstring;
+                builder.setLength(builder.length()-1);
+                result = builder.toString();
+            } else {
+                result = "Nobody is minecrafting right now.";
             }
             //Reply to remote endpoint! 
             final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "");
