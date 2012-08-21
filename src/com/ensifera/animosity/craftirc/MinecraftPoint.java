@@ -79,7 +79,6 @@ public class MinecraftPoint implements CommandEndPoint {
                         continue playerLoop;
                     }
                 }
-                
             }
             users.add(p.getName());
         }

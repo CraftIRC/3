@@ -19,14 +19,16 @@ class NicknameComparator implements Comparator<String> {
     @Override
     public int compare(String o1, String o2) {
         final String prefixes = this.bot.getUserPrefixesInOrder();
-        if (!prefixes.contains(o1.substring(0, 1)) && !prefixes.contains(o2.substring(0, 1))) {
+        final String o1sub = o1.substring(0, 1);
+        final String o2sub = o2.substring(0, 1);
+        if (!prefixes.contains(o1sub) && !prefixes.contains(o2sub)) {
             return o1.compareToIgnoreCase(o2);
-        } else if (!prefixes.contains(o1.substring(0, 1))) {
+        } else if (!prefixes.contains(o1sub)) {
             return 1;
-        } else if (!prefixes.contains(o2.substring(0, 1))) {
+        } else if (!prefixes.contains(o2sub)) {
             return -1;
         } else {
-            return prefixes.indexOf(o1.substring(0, 1)) - prefixes.indexOf(o2.substring(0, 1));
+            return prefixes.indexOf(o1sub) - prefixes.indexOf(o2sub);
         }
     }
 
@@ -74,14 +76,13 @@ public class IRCChannelPoint implements SecuredEndPoint {
     @Override
     public boolean adminMessageIn(RelayedMessage msg) {
         final String message = msg.getMessage(this);
-        boolean success = false;
         for (final String nick : this.listDisplayUsers()) {
             if (this.bot.getPlugin().cBotAdminPrefixes(this.bot.getId()).contains(nick.substring(0, 1))) {
-                success = true;
                 this.bot.sendNotice(nick.substring(1), message);
+                return true;
             }
         }
-        return success;
+        return false;
     }
 
     @Override
