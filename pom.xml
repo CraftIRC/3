@@ -4,7 +4,7 @@
   <groupId>com.ensifera</groupId>
   <artifactId>CraftIRC</artifactId>
   <packaging>jar</packaging>
-  <version>3.9-SNAPSHOT</version>
+  <version>3.9</version>
   <name>CraftIRC</name>
   <url>http://www.github.com/CraftIRC/CraftIRC3</url>
   <properties>
@@ -36,7 +36,7 @@
       <type>jar</type>
     </dependency>
   </dependencies>
-  
+
   <build>
     <directory>target</directory>
     <outputDirectory>target/classes</outputDirectory>
@@ -73,4 +73,3 @@
     </plugins>
   </build>
 </project>
-
