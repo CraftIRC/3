@@ -106,20 +106,16 @@ public class CraftIRCListener implements Listener {
         if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
             return;
         }
-        try {
-            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "join");
-            if (msg == null) {
-                return;
-            }
-            msg.setField("sender", event.getPlayer().getDisplayName());
-            msg.setField("world", event.getPlayer().getWorld().getName());
-            msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "join");
+        if (msg == null) {
+            return;
         }
+        msg.setField("sender", event.getPlayer().getDisplayName());
+        msg.setField("world", event.getPlayer().getWorld().getName());
+        msg.setField("realSender", event.getPlayer().getName());
+        msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+        msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+        msg.post();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -130,20 +126,16 @@ public class CraftIRCListener implements Listener {
         if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) {
             return;
         }
-        try {
-            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "quit");
-            if (msg == null) {
-                return;
-            }
-            msg.setField("sender", event.getPlayer().getDisplayName());
-            msg.setField("world", event.getPlayer().getWorld().getName());
-            msg.setField("realSender", event.getPlayer().getName());
-            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
-            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "quit");
+        if (msg == null) {
+            return;
         }
+        msg.setField("sender", event.getPlayer().getDisplayName());
+        msg.setField("world", event.getPlayer().getWorld().getName());
+        msg.setField("realSender", event.getPlayer().getName());
+        msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+        msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+        msg.post();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -163,27 +155,23 @@ public class CraftIRCListener implements Listener {
         msg.doNotColor("message");
         msg.post();
     }
-   
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (this.plugin.isHeld(CraftIRC.HoldType.DEATHS)) {
             return;
         }
-        try {
-            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "death");
-            if (msg == null) {
-                return;
-            }
-            msg.setField("sender", event.getEntity().getDisplayName());
-            msg.setField("message", event.getDeathMessage());
-            msg.setField("world", event.getEntity().getWorld().getName());
-            msg.setField("realSender", event.getEntity().getName());
-            msg.setField("prefix", this.plugin.getPrefix(event.getEntity()));
-            msg.setField("suffix", this.plugin.getSuffix(event.getEntity()));
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "death");
+        if (msg == null) {
+            return;
         }
+        msg.setField("sender", event.getEntity().getDisplayName());
+        msg.setField("message", event.getDeathMessage());
+        msg.setField("world", event.getEntity().getWorld().getName());
+        msg.setField("realSender", event.getEntity().getName());
+        msg.setField("prefix", this.plugin.getPrefix(event.getEntity()));
+        msg.setField("suffix", this.plugin.getSuffix(event.getEntity()));
+        msg.post();
     }
 
 }
