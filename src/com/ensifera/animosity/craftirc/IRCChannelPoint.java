@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jibble.pircbot.User;
-import org.jibble.pircbot.Colors;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.User;
 
 class NicknameComparator implements Comparator<String> {
 

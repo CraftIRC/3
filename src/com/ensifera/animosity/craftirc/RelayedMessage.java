@@ -5,7 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+
 import org.bukkit.ChatColor;
 public class RelayedMessage {
 

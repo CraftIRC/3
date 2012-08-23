@@ -1,4 +1,4 @@
-package com.sk89q.util.config;
+package com.ensifera.animosity.craftirc.libs.com.sk89q.util.config;
 
 /**
  * Configuration exception.

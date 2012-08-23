@@ -3,11 +3,11 @@ package com.ensifera.animosity.craftirc;
 import java.io.IOException;
 import java.util.*;
 
-import org.jibble.pircbot.IrcException;
-import org.jibble.pircbot.PircBot;
-import org.jibble.pircbot.TrustingSSLSocketFactory;
 
-import com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
 
 /**
  * @author Animosity

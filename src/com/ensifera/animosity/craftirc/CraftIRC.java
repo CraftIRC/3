@@ -18,8 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.sk89q.util.config.Configuration;
-import com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 
 /**
  * @author Animosity
