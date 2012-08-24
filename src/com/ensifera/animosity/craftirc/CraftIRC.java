@@ -1089,6 +1089,10 @@ public class CraftIRC extends JavaPlugin {
     public int cBotPort(int bot) {
         return this.bots.get(bot).getInt("port", 6667);
     }
+    
+    public int cBotBindPort(int bot) {
+        return this.bots.get(bot).getInt("bind-port", 0);
+    }
 
     public String cBotLogin(int bot) {
         return this.bots.get(bot).getString("userident", "");

@@ -27,6 +27,7 @@ public class Minebot extends PircBot implements Runnable {
     private String ircServer;
     private int ircPort;
     private String ircPass;
+    private int localBindPort;
 
     // Nickname authentication
     private String authMethod;
@@ -71,6 +72,8 @@ public class Minebot extends PircBot implements Runnable {
         this.authMethod = this.plugin.cBotAuthMethod(this.botId);
         this.authUser = this.plugin.cBotAuthUsername(this.botId);
         this.authPass = this.plugin.cBotAuthPassword(this.botId);
+        
+        this.localBindPort = this.plugin.cBotBindPort(this.botId);
 
         this.whereAmI = new HashSet<String>();
         this.channels = new HashMap<String, IRCChannelPoint>();
@@ -136,7 +139,7 @@ public class Minebot extends PircBot implements Runnable {
             final String localAddr = this.plugin.cBindLocalAddr();
             if (!localAddr.isEmpty()) {
 
-                if (this.bindLocalAddr(localAddr, this.ircPort)) {
+                if (this.bindLocalAddr(localAddr, this.localBindPort)) {
                     CraftIRC.dolog("BINDING socket to " + localAddr + ":" + this.ircPort);
                 }
             }
