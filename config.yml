@@ -134,7 +134,7 @@ settings:
 bots:
 
   - nickname: 'CraftIRCbot'
-    server: 'irc.example.com'
+    server: 'localhost'           # Change this to the IRC server you wish to connect to
     port: 6667
     userident: 'bot'              #Username/ident, anything you want
     serverpass: ''                #This isn't the nickserv password
