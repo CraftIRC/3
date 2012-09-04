@@ -549,7 +549,7 @@ public class Minebot extends PircBot implements Runnable {
             if (this.plugin.isEnabled()) {
                 CraftIRC.log.info(CraftIRC.NAME + " - disconnected from IRC server... reconnecting!");
 
-                this.connectToIrc();
+                //this.connectToIrc();
                 this.plugin.scheduleForRetry(this, null);
 
             }
