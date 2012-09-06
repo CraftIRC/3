@@ -19,7 +19,7 @@ settings:
 
   #These tags identify built-in endpoints (for the paths: section). Other endpoints may be provided by plugins.
   minecraft-tag: 'minecraft'  #A basic game-side endpoint (a chat plugin may provide better functionality).
-  cancelled-tag: 'cancelled'   #Cancelled chat is sent here. Give this tag a name only if you disable either auto-paths or minecraft-tag
+  cancelled-tag: ''           #Cancelled chat is sent here. Give this tag a name only if you disable either auto-paths or minecraft-tag
   console-tag: 'console'      #The minecraft server console.
   
   #Automatically establish paths between unsecured communication endpoints. Turn off if you always want to configure every path manually.
