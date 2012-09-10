@@ -161,6 +161,9 @@ public class CraftIRCListener implements Listener {
         if (this.plugin.isHeld(CraftIRC.HoldType.DEATHS)) {
             return;
         }
+        if (event.getDeathMessage() == null) {
+            return;
+        }
         final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "death");
         if (msg == null) {
             return;
