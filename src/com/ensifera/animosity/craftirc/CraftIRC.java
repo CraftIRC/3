@@ -878,7 +878,7 @@ public class CraftIRC extends JavaPlugin {
 
     // TODO: Make sure this works
     public String colorizeName(String name) {
-        final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-f]");
+        final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-fk-r]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
             name = find_colors.replaceFirst(Character.toString((char) 3) + this.cColorIrcFromGame(find_colors.group()));
