@@ -201,7 +201,7 @@ public class RelayedMessage {
         final boolean colors = this.plugin.cPathAttribute(this.fields.get("source"), this.fields.get("target"), "attributes.colors");
         if (this.source.getType() == EndPoint.Type.MINECRAFT) {
             if ((realTarget.getType() == EndPoint.Type.IRC) && colors) {
-                final Pattern color_codes = Pattern.compile("\u00A7([A-Fa-f0-9])?");
+                final Pattern color_codes = Pattern.compile("\u00A7([A-FK-Ra-fk-r0-9])?");
                 Matcher find_colors = color_codes.matcher(result);
                 while (find_colors.find()) {
                     result = find_colors.replaceFirst("\u0003" + this.plugin.cColorIrcFromGame("\u00A7" + find_colors.group(1)));
@@ -209,7 +209,7 @@ public class RelayedMessage {
                 }
             } else if ((realTarget.getType() != EndPoint.Type.MINECRAFT) || !colors) {
                 //Strip colors
-                result = result.replaceAll("(\u00A7([A-Fa-f0-9])?)", "");
+                result = result.replaceAll("(\u00A7([A-FK-Ra-fr-r0-9])?)", "");
             }
         }
         if (this.source.getType() == EndPoint.Type.IRC) {
