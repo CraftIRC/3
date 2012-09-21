@@ -402,7 +402,7 @@ public class Minebot extends PircBot implements Runnable {
                 return;
             }
             final String[] splitMessage = message.split(" ");
-            final String command = splitMessage[0];
+            final String command = splitMessage.length > 0 ? splitMessage[0] : "";
             final String args = Util.combineSplit(1, splitMessage, " ");
             RelayedCommand cmd = null;
             final String localTag = this.plugin.cChanTag(this.botId, channel);
