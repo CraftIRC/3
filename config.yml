@@ -173,6 +173,9 @@ bots:
         on-join:
         # - 'PRIVMSG #changeme :Howdy do!'
         
+        # Ignore the +c mode and try sending colors anyway if there are colors in a message
+        force-colors: false
+        
       #- name: '#anotherchannel'
       #  ...
       

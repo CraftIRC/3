@@ -1172,6 +1172,10 @@ public class CraftIRC extends JavaPlugin {
         return new ArrayList<String>(this.bots.get(bot).getStringList("on-connect", null));
     }
 
+    public boolean cChanForceColors(int bot, String channel) {
+        return this.getChanNode(bot, channel).getBoolean("force-colors", false);
+    }
+
     public String cChanName(int bot, String channel) {
         return this.getChanNode(bot, channel).getString("name", "#changeme");
     }

@@ -562,6 +562,9 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     protected void onBlockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
         channel = channel.toLowerCase();
+        if (!this.plugin.cChanForceColors(botId, channel)){
+            return;
+        }
         if (this.channels.containsKey(channel)) {
             this.channels.get(channel).setAllowColors(false);
         }
@@ -570,6 +573,9 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     protected void onUnblockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
         channel = channel.toLowerCase();
+        if (!this.plugin.cChanForceColors(botId, channel)){
+            return;
+        }
         if (this.channels.containsKey(channel)) {
             this.channels.get(channel).setAllowColors(true);
         }
