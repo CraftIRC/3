@@ -209,7 +209,7 @@ public class RelayedMessage {
                 }
             } else if ((realTarget.getType() != EndPoint.Type.MINECRAFT) || !colors) {
                 //Strip colors
-                result = result.replaceAll("(\u00A7([A-FK-Ra-fr-r0-9])?)", "");
+                result = result.replaceAll("(\u00A7([A-FK-Ra-fk-r0-9])?)", "");
             }
         }
         if (this.source.getType() == EndPoint.Type.IRC) {
