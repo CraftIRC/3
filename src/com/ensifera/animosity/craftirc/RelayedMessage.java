@@ -173,6 +173,9 @@ public class RelayedMessage {
         //Fields
         for (String fieldName : this.fields.keySet()) {
             String replacement = this.fields.get(fieldName);
+            if (replacement == null) {
+                continue;
+            }
             if (!this.doNotColorFields.contains(fieldName)) {
                 replacement = ChatColor.translateAlternateColorCodes('&', replacement);
             }
