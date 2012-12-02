@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 
 /**
  * @author Animosity
@@ -881,7 +882,8 @@ public class CraftIRC extends JavaPlugin {
         final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-fk-r]");
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
-            name = find_colors.replaceFirst(Character.toString((char) 3) + this.cColorIrcFromGame(find_colors.group()));
+            String color = this.cColorIrcFromGame(find_colors.group());
+            name = find_colors.replaceFirst(color.equals("-1") ? Colors.NORMAL: Character.toString((char) 3) + color);
             find_colors = color_codes.matcher(name);
         }
         return name;
