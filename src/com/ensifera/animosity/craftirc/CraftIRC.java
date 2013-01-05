@@ -546,6 +546,9 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public boolean registerEndPoint(String tag, EndPoint ep) {
+        if (!this.isEnabled()) {
+            this.getLogger().log(Level.WARNING, "CraftIRC EndPoints cannot be registered while CraftIRC is disabled", new Throwable());
+        }
         if (this.isDebug()) {
             CraftIRC.dolog("Registering endpoint: " + tag);
         }
