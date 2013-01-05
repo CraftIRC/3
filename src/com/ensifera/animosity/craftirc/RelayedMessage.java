@@ -47,7 +47,7 @@ public class RelayedMessage {
         }
         this.eventType = eventType;
         this.template = "%message%";
-        if ((eventType != null) && (eventType != "") && (target != null)) {
+        if ((eventType != null) && (!eventType.equals("")) && !eventType.equals("command") && (target != null)) {
             this.template = plugin.cFormatting(eventType, this);
         }
         this.fields = new HashMap<String, String>();

@@ -99,6 +99,7 @@ settings:
     from-plain:
       action: '* %sender% %message%'
       say: '[Server] %message%'
+      generic: '%message%'
     #======================================
     
     #==========Colorful formatting=========

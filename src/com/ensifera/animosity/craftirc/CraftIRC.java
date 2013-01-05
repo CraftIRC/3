@@ -999,16 +999,25 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cDefaultFormatting(String eventType, RelayedMessage msg) {
-        if (msg.getSource().getType() == EndPoint.Type.MINECRAFT) {
-            return this.configuration.getString("settings.formatting.from-game." + eventType);
+        String source;
+        switch (msg.getSource().getType()) {
+            case MINECRAFT:
+                source = "game";
+                break;
+            case IRC:
+                source = "irc";
+                break;
+            default:
+                source = "plain";
         }
-        if (msg.getSource().getType() == EndPoint.Type.IRC) {
-            return this.configuration.getString("settings.formatting.from-irc." + eventType);
+        String lookup = "settings.formatting.from-" + source + "." + eventType;
+        String result = this.configuration.getString(lookup);
+
+        if (result == null) {
+            CraftIRC.dowarn("Could not find record " + lookup);
+            result = "Error: See CraftIRC console";
         }
-        if (msg.getSource().getType() == EndPoint.Type.PLAIN) {
-            return this.configuration.getString("settings.formatting.from-plain." + eventType);
-        }
-        return "";
+        return result;
     }
 
     public String cColorIrcFromGame(String game) {
