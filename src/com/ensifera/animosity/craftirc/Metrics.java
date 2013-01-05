@@ -122,7 +122,7 @@ public class Metrics {
         }
 
         // Begin hitting the server with glorious data
-        this.plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(this.plugin, new Runnable() {
+        this.plugin.getServer().getScheduler().runTaskTimerAsynchronously(this.plugin, new Runnable() {
             private boolean firstPost = true;
 
             public void run() {
