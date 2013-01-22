@@ -16,7 +16,7 @@ public class ConsolePoint implements CommandEndPoint {
 
     @Override
     public Type getType() {
-        return EndPoint.Type.PLAIN;
+        return EndPoint.Type.MINECRAFT;
     }
 
     @Override
