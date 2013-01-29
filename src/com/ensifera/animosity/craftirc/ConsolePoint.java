@@ -6,8 +6,8 @@ import org.bukkit.Server;
 
 public class ConsolePoint implements CommandEndPoint {
 
-    Server server;
-    CraftIRC plugin;
+    private Server server;
+    private CraftIRC plugin;
 
     ConsolePoint(CraftIRC plugin, Server server) {
         this.server = server;
@@ -69,7 +69,12 @@ public class ConsolePoint implements CommandEndPoint {
                 }
                 if (this.plugin.cConsoleCommands().contains(ccmd) || this.plugin.cConsoleCommands().contains("*") || this.plugin.cConsoleCommands().contains("all")) {
                     final IRCCommandSender sender = new IRCCommandSender(this.server, cmd, this, this.server.getConsoleSender());
-                    this.server.dispatchCommand(sender, args);
+                    this.plugin.getServer().getScheduler().runTask(this.plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            ConsolePoint.this.server.dispatchCommand(sender, args);
+                        }
+                    });
                 }
             }
         }
