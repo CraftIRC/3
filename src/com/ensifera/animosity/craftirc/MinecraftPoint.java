@@ -3,6 +3,7 @@ package com.ensifera.animosity.craftirc;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -70,11 +71,11 @@ public class MinecraftPoint implements CommandEndPoint {
 
     @Override
     public List<String> listDisplayUsers() {
-        boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
+        final boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
         final LinkedList<String> users = new LinkedList<String>();
         playerLoop: for (final Player p : this.server.getOnlinePlayers()) {
             if (isVanishEnabled) {
-                for (MetadataValue value : p.getMetadata("vanished")) {
+                for (final MetadataValue value : p.getMetadata("vanished")) {
                     if (value.getOwningPlugin().getName().equals("VanishNoPacket") && value.asBoolean()) {
                         continue playerLoop;
                     }
@@ -100,20 +101,44 @@ public class MinecraftPoint implements CommandEndPoint {
             final int playerCount = users.size();
             String result;
             if (playerCount > 0) {
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 builder.append("Online (").append(playerCount).append("/").append(this.server.getMaxPlayers()).append("): ");
                 for (int i = 0; i < users.size(); i++) {
                     builder.append(users.get(i)).append(" ");
                 }
-                builder.setLength(builder.length()-1);
+                builder.setLength(builder.length() - 1);
                 result = builder.toString();
             } else {
                 result = "Nobody is minecrafting right now.";
             }
+            final int maxlen = 400; // Arbitrary!
+            String[] responses;
+            if (result.length() > maxlen) {
+                final StringBuilder builder = new StringBuilder(result.length());
+                final StringTokenizer tokenizer = new StringTokenizer(result, " ");
+                int currentLine = 0;
+                while (tokenizer.hasMoreTokens()) {
+                    final String nextWord = tokenizer.nextToken();
+                    if ((currentLine + nextWord.length()) > maxlen) {
+                        builder.append("\n");
+                        currentLine = 0;
+                    } else {
+                        builder.append(' ');
+                        currentLine++;
+                    }
+                    builder.append(nextWord);
+                    currentLine += (nextWord.length());
+                }
+                responses = builder.toString().split("\n");
+            } else {
+                responses = new String[] { result };
+            }
             //Reply to remote endpoint! 
-            final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "");
-            response.setField("message", result);
-            response.post();
+            for (final String message : responses) {
+                final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "");
+                response.setField("message", message);
+                response.post();
+            }
         }
     }
 
