@@ -1,8 +1,16 @@
 package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
@@ -21,6 +29,11 @@ public class Minebot extends PircBot implements Runnable {
     private String nickname;
 
     private final Thread thread;
+
+    private final Timer timer = new Timer();
+    private int lasttime;
+    private int gametime;
+    private int alertedtime;
 
     // Connection attributes
     private boolean ssl;
@@ -44,6 +57,26 @@ public class Minebot extends PircBot implements Runnable {
 
     Minebot(CraftIRC plugin, int botId, boolean debug) {
         super();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                if (lasttime == gametime && gametime != alertedtime) {
+                    alertedtime = gametime;
+                    for (final String chan : Minebot.this.channels.keySet()){
+                        Minebot.this.sendMessage(chan, "Server appears to have stopped responding");
+                    }
+                } else {
+                    lasttime = gametime;
+                }
+            }
+
+        }, 30000, 30000);
+        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+            public void run() {
+                gametime++;
+            }
+        }, 5, 5);
         this.plugin = plugin;
         this.botId = botId;
         this.debug = debug;
