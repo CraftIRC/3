@@ -168,6 +168,7 @@ public class Minebot extends PircBot implements Runnable {
     void start() {
         try {
             this.setAutoNickChange(true);
+            this.setAutoSplitMessage(true);
 
             final String localAddr = this.plugin.cBindLocalAddr();
             if (!localAddr.isEmpty()) {
