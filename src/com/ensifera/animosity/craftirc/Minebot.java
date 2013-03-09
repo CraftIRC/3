@@ -64,7 +64,7 @@ public class Minebot extends PircBot implements Runnable {
             public void run() {
                 if (lasttime == gametime && gametime != alertedtime) {
                     alertedtime = gametime;
-                    for (final String chan : Minebot.this.channels.keySet()){
+                    for (final String chan : Minebot.this.channels.keySet()) {
                         Minebot.this.sendMessage(chan, "Server appears to have stopped responding");
                     }
                 } else {
@@ -107,7 +107,7 @@ public class Minebot extends PircBot implements Runnable {
         this.authUser = this.plugin.cBotAuthUsername(this.botId);
         this.authPass = this.plugin.cBotAuthPassword(this.botId);
         this.authDelay = this.plugin.cBotAuthDelay(this.botId);
-        
+
         this.localBindPort = this.plugin.cBotBindPort(this.botId);
 
         this.whereAmI = new HashSet<String>();
@@ -136,32 +136,32 @@ public class Minebot extends PircBot implements Runnable {
             e.printStackTrace();
         }
     }
-    
-    public void delChannel(String tag){
-        IRCChannelPoint point=this.channels.remove(tag);
-        if(point==null){
+
+    public void delChannel(String tag) {
+        IRCChannelPoint point = this.channels.remove(tag);
+        if (point == null) {
             return;
         }
         this.plugin.unregisterEndPoint(tag);
         this.plugin.ungroupTag(tag);
-        this.partChannel("#"+tag, "No longer registered!");
+        this.partChannel("#" + tag, "No longer registered!");
     }
 
-    public void addChannel(String channel){
+    public void addChannel(String channel) {
         channel = channel.toLowerCase();
         if (this.channels.containsKey(channel)) {
             return;
         }
-        final IRCChannelPoint chan = new IRCChannelPoint(this, "#"+channel);
-        String tag="irc_"+channel;
+        final IRCChannelPoint chan = new IRCChannelPoint(this, "#" + channel);
+        String tag = "irc_" + channel;
         if (!this.plugin.registerEndPoint(tag, chan)) {
             return;
         }
         if (!this.plugin.cIrcTagGroup().equals("")) {
             this.plugin.groupTag(tag, this.plugin.cIrcTagGroup());
         }
-        this.channels.put("#"+channel, chan);
-        this.joinChannel("#"+channel);
+        this.channels.put("#" + channel, chan);
+        this.joinChannel("#" + channel);
     }
 
     /**
@@ -512,7 +512,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onAction(String sender, String login, String hostname, String target, String action) {
-        target=target.toLowerCase();
+        target = target.toLowerCase();
         final RelayedMessage msg = this.plugin.newMsg(this.channels.get(target), null, "action");
         if (msg == null) {
             return;
@@ -603,7 +603,7 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     protected void onBlockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
         channel = channel.toLowerCase();
-        if (!this.plugin.cChanForceColors(botId, channel)){
+        if (!this.plugin.cChanForceColors(botId, channel)) {
             return;
         }
         if (this.channels.containsKey(channel)) {
@@ -614,7 +614,7 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     protected void onUnblockColors(String channel, String moderator, String sourceLogin, String sourceHostname) {
         channel = channel.toLowerCase();
-        if (!this.plugin.cChanForceColors(botId, channel)){
+        if (!this.plugin.cChanForceColors(botId, channel)) {
             return;
         }
         if (this.channels.containsKey(channel)) {
