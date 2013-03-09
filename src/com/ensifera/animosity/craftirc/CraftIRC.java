@@ -1182,6 +1182,14 @@ public class CraftIRC extends JavaPlugin {
         return this.bots.get(bot).getString("auth.password", "");
     }
 
+    public int cBotAuthDelay(int bot) {
+        int delay = this.bots.get(bot).getInt("auth.delay", 0);
+        if (delay < 0) {
+            delay = 0;
+        }
+        return delay;
+    }
+
     public ArrayList<String> cBotOnConnect(int bot) {
         return new ArrayList<String>(this.bots.get(bot).getStringList("on-connect", null));
     }

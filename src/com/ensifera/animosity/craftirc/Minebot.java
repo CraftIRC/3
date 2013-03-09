@@ -46,6 +46,7 @@ public class Minebot extends PircBot implements Runnable {
     private String authMethod;
     private String authUser;
     private String authPass;
+    private int authDelay;
 
     // Channels
     private Set<String> whereAmI;
@@ -105,6 +106,7 @@ public class Minebot extends PircBot implements Runnable {
         this.authMethod = this.plugin.cBotAuthMethod(this.botId);
         this.authUser = this.plugin.cBotAuthUsername(this.botId);
         this.authPass = this.plugin.cBotAuthPassword(this.botId);
+        this.authDelay = this.plugin.cBotAuthDelay(this.botId);
         
         this.localBindPort = this.plugin.cBotBindPort(this.botId);
 
@@ -261,6 +263,12 @@ public class Minebot extends PircBot implements Runnable {
             this.sendMessage("Q@CServe.quakenet.org", "AUTH " + this.authUser + " " + this.authPass);
         }
 
+        if (!this.authMethod.equalsIgnoreCase("none") && (this.authDelay > 0)) {
+            try {
+                Thread.sleep(this.authDelay);
+            } catch (final InterruptedException e) {
+            }
+        }
     }
 
     void amNowInChannel(String channel) {

@@ -157,6 +157,7 @@ bots:
       method: 'nickserv' #Available methods: 'none', 'nickserv', 'gamesurge', 'quakenet'
       username: ''
       password: ''
+      delay: 1000 # Milliseconds to wait after authenticating before joining channels.
     
     #Send raw IRC commands to the server every time I connect.  
     on-connect:
