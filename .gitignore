@@ -39,3 +39,6 @@ debug.log
 # Doxygen
 /docs/html
 debug.txt
+
+# Test folder!
+/test
