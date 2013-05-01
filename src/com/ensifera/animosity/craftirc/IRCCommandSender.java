@@ -124,13 +124,7 @@ public class IRCCommandSender implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(String message) {
-        try {
-            final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "generic");
-            msg.setField("message", message);
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        sendMessage(message.split("\n"));
     }
 
     @Override

@@ -1152,6 +1152,7 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
             } else {
                 this.removeUser(sourceNick);
             }
+            _outQueue.clear();
             this.onQuit(sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
         } else if (command.equals("KICK")) {
             // Somebody has been kicked from a channel.
