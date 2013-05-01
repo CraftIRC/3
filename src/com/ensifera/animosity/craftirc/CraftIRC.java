@@ -734,7 +734,7 @@ public class CraftIRC extends JavaPlugin {
                     if ((dm == RelayedMessage.DeliveryMethod.ADMINS) && !this.cPathAttribute(sourceTag, targetTag, "attributes.admin")) {
                         continue;
                     }
-                    if (this.cPathAttribute(sourceTag, targetTag, "disabled")) {
+                    if (this.cPathAttribute(sourceTag, targetTag, "disable")) {
                         continue;
                     }
                     destinations.add(ep);
@@ -1244,7 +1244,7 @@ public class CraftIRC extends JavaPlugin {
 
     public boolean cPathExists(String source, String target) {
         final ConfigurationNode pathNode = this.getPathNode(source, target);
-        return (pathNode != null) && !pathNode.getBoolean("disabled", false);
+        return (pathNode != null) && !pathNode.getBoolean("disable", false);
     }
 
     public boolean cPathAttribute(String source, String target, String attribute) {
