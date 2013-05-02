@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
@@ -63,7 +64,7 @@ public class CraftIRC extends JavaPlugin {
     private Map<String, CommandEndPoint> irccmds;
     private Map<String, List<String>> taggroups;
     private Chat vault;
-    
+
     //Replacement Filters
     private Map<String, Map<String, String>> replaceFilters;
     private boolean cancelChat;
@@ -83,7 +84,7 @@ public class CraftIRC extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-        	//Checking if the configuration file exists and imports the default one from the .jar if it doesn't
+            //Checking if the configuration file exists and imports the default one from the .jar if it doesn't
             final File configFile = new File(this.getDataFolder(), "config.yml");
             if (!configFile.exists()) {
                 this.saveDefaultConfig();
@@ -117,7 +118,7 @@ public class CraftIRC extends JavaPlugin {
                     this.paths.put(identifier, path);
                 }
             }
-            
+
             //Replace filters
             this.replaceFilters = new HashMap<String, Map<String, String>>();
             try {
@@ -131,7 +132,7 @@ public class CraftIRC extends JavaPlugin {
                             for (String pattern : patterns.keySet())
                                 replaceMap.put(pattern, patterns.get(pattern).toString());
                     }
-                    
+
                     //Also supports non-map entries.
                     for (String unMappedEntry : this.configuration.getStringList("filters." + key, null))
                         if (unMappedEntry.length() > 0 && unMappedEntry.charAt(0) != '{') //mapped toString() begins with {, but regex can't begin with {.
@@ -227,18 +228,9 @@ public class CraftIRC extends JavaPlugin {
                 this.hold.put(HoldType.DEATHS, false);
             }
 
-            this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    if (CraftIRC.this.getServer().getPluginManager().isPluginEnabled("Vault")) {
-                        try {
-                            CraftIRC.this.vault = CraftIRC.this.getServer().getServicesManager().getRegistration(Chat.class).getProvider();
-                        } catch (final Exception e) {
-
-                        }
-                    }
-                }
-            });
+            if (CraftIRC.this.getServer().getPluginManager().isPluginEnabled("Vault")) {
+                this.loadVault();
+            }
 
             this.setDebug(this.cDebug());
         } catch (final Exception e) {
@@ -248,6 +240,13 @@ public class CraftIRC extends JavaPlugin {
             new Metrics(this).start();
         } catch (final IOException e) {
             //Meh.
+        }
+    }
+
+    private void loadVault() {
+        RegisteredServiceProvider<Chat> rsp = CraftIRC.this.getServer().getServicesManager().getRegistration(Chat.class);
+        if (rsp != null) {
+            this.vault = rsp.getProvider();
         }
     }
 
@@ -283,11 +282,11 @@ public class CraftIRC extends JavaPlugin {
         final String commandName = command.getName().toLowerCase();
 
         try {
-            if (commandName.equals("ircsay")){
+            if (commandName.equals("ircsay")) {
                 if (!sender.hasPermission("craftirc." + commandName)) {
                     return false;
                 }
-                return this.cmdMsgSay(sender,args);
+                return this.cmdMsgSay(sender, args);
             }
             if (commandName.equals("ircmsg")) {
                 if (!sender.hasPermission("craftirc." + commandName)) {
@@ -329,18 +328,18 @@ public class CraftIRC extends JavaPlugin {
             return false;
         }
     }
-    
+
     private boolean cmdMsgSay(CommandSender sender, String[] args) {
-        try{
+        try {
             RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), null, "chat");
             if (msg == null) {
                 return true;
             }
-            String senderName=sender.getName();
-            String world="";
-            String prefix="";
-            String suffix="";
-            if(sender instanceof Player){
+            String senderName = sender.getName();
+            String world = "";
+            String prefix = "";
+            String suffix = "";
+            if (sender instanceof Player) {
                 Player player = (Player) sender;
                 senderName = player.getDisplayName();
                 world = player.getWorld().getName();
@@ -412,7 +411,7 @@ public class CraftIRC extends JavaPlugin {
             //Don't actually deliver the message if the user is invisible to the sender.
             if (sameEndPoint && sender instanceof Player) {
                 Player recipient = getServer().getPlayer(args[1]);
-                if (recipient != null && recipient.isOnline() && ((Player)sender).canSee(recipient))
+                if (recipient != null && recipient.isOnline() && ((Player) sender).canSee(recipient))
                     msg.postToUser(args[1]);
             } else
                 msg.postToUser(args[1]);
@@ -750,7 +749,7 @@ public class CraftIRC extends JavaPlugin {
         boolean success = true;
         for (final EndPoint destination : destinations) {
             final String targetTag = this.getTag(destination);
-            if(targetTag.equals(this.cCancelledTag())){
+            if (targetTag.equals(this.cCancelledTag())) {
                 continue;
             }
             msg.setField("target", targetTag);
@@ -808,8 +807,8 @@ public class CraftIRC extends JavaPlugin {
     /***************************
      * Auxiliary methods
      ***************************/
-    
-    public Minebot getBot(int bot){
+
+    public Minebot getBot(int bot) {
         return this.instances.get(bot);
     }
 
@@ -886,7 +885,7 @@ public class CraftIRC extends JavaPlugin {
         Matcher find_colors = color_codes.matcher(name);
         while (find_colors.find()) {
             String color = this.cColorIrcFromGame(find_colors.group());
-            name = find_colors.replaceFirst(color.equals("-1") ? Colors.NORMAL: Character.toString((char) 3) + color);
+            name = find_colors.replaceFirst(color.equals("-1") ? Colors.NORMAL : Character.toString((char) 3) + color);
             find_colors = color_codes.matcher(name);
         }
         return name;
@@ -1029,7 +1028,7 @@ public class CraftIRC extends JavaPlugin {
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-            	//Forces sending two digit colour codes. 
+                //Forces sending two digit colour codes. 
                 return (color.getString("irc").length() == 1 ? "0" : "") + color.getString("irc", this.cColorIrcFromName("foreground"));
             }
         }
@@ -1053,9 +1052,9 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cColorGameFromIrc(String irc) {
-    	//Always convert to two digits.
-    	if (irc.length() == 1)
-    		irc = "0"+irc;
+        //Always convert to two digits.
+        if (irc.length() == 1)
+            irc = "0" + irc;
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
@@ -1103,7 +1102,7 @@ public class CraftIRC extends JavaPlugin {
     public int cBotPort(int bot) {
         return this.bots.get(bot).getInt("port", 6667);
     }
-    
+
     public int cBotBindPort(int bot) {
         return this.bots.get(bot).getInt("bind-port", 0);
     }
@@ -1259,7 +1258,7 @@ public class CraftIRC extends JavaPlugin {
     public List<ConfigurationNode> cPathFilters(String source, String target) {
         return this.getPathNode(source, target).getNodeList("filters", new ArrayList<ConfigurationNode>());
     }
-    
+
     public Map<String, Map<String, String>> cReplaceFilters() {
         return this.replaceFilters;
     }
@@ -1289,7 +1288,12 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public enum HoldType {
-        CHAT, JOINS, QUITS, KICKS, BANS, DEATHS
+        CHAT,
+        JOINS,
+        QUITS,
+        KICKS,
+        BANS,
+        DEATHS
     }
 
     class RemoveHoldTask extends TimerTask {
@@ -1311,7 +1315,7 @@ public class CraftIRC extends JavaPlugin {
     public boolean isHeld(HoldType ht) {
         return this.hold.get(ht);
     }
-    
+
     public List<ConfigurationNode> getColorMap() {
         return this.colormap;
     }
@@ -1321,7 +1325,7 @@ public class CraftIRC extends JavaPlugin {
 
         if (delimiter != null && !delimiter.isEmpty()) {
             StringBuilder builder = new StringBuilder();
-            for (int i=0; i < input.length(); i++) {
+            for (int i = 0; i < input.length(); i++) {
                 char c = input.charAt(i);
                 builder.append(c);
                 if (c != '\u00A7') {
