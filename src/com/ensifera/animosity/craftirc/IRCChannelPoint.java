@@ -73,14 +73,15 @@ public final class IRCChannelPoint implements SecuredEndPoint {
 
     @Override
     public boolean adminMessageIn(RelayedMessage msg) {
+        boolean success = false;
         final String message = msg.getMessage(this);
         for (final String nick : this.listDisplayUsers()) {
             if (this.bot.getPlugin().cBotAdminPrefixes(this.bot.getId()).contains(nick.substring(0, 1))) {
+                success = true;
                 this.bot.sendNotice(nick.substring(1), message);
-                return true;
             }
         }
-        return false;
+        return success;
     }
 
     @Override
