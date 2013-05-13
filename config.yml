@@ -21,7 +21,7 @@ settings:
   minecraft-tag: 'minecraft'  #A basic game-side endpoint (a chat plugin may provide better functionality).
   cancelled-tag: ''           #Cancelled chat is sent here. Give this tag a name only if you disable either auto-paths or minecraft-tag
   console-tag: 'console'      #The minecraft server console.
-  
+  encoding: 'utf-8'           #The encoding for the pircbot connection
   #Automatically establish paths between unsecured communication endpoints. Turn off if you always want to configure every path manually.
   #(Secured endpoints can still send messages through auto-paths, but not receive them)
   auto-paths: true
