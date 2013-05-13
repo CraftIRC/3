@@ -49,6 +49,7 @@ public class CraftIRC extends JavaPlugin {
     private boolean debug;
     private Timer holdTimer = new Timer();
     private Timer retryTimer = new Timer();
+    private String encoding;
     Map<HoldType, Boolean> hold;
     Map<String, RetryTask> retry;
 
@@ -94,7 +95,8 @@ public class CraftIRC extends JavaPlugin {
             this.configuration = new Configuration(configFile);
             this.configuration.load();
             this.cancelChat = this.configuration.getBoolean("settings.cancel-chat", false);
-
+            
+            this.encoding = this.configuration.getString("settings.encoding");
             this.endpoints = new HashMap<String, EndPoint>();
             this.tags = new HashMap<EndPoint, String>();
             this.irccmds = new HashMap<String, CommandEndPoint>();
@@ -181,7 +183,7 @@ public class CraftIRC extends JavaPlugin {
             //Create bots
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
-                this.instances.add(new Minebot(this, i, this.cDebug()));
+                this.instances.add(new Minebot(this, i, this.cDebug(), this.encoding));
             }
 
             this.loadTagGroups();

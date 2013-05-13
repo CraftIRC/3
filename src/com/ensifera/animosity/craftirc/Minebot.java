@@ -16,6 +16,9 @@ import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationN
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Animosity
@@ -41,6 +44,7 @@ public class Minebot extends PircBot implements Runnable {
     private int ircPort;
     private String ircPass;
     private int localBindPort;
+    private String encoding;
 
     // Nickname authentication
     private String authMethod;
@@ -56,10 +60,9 @@ public class Minebot extends PircBot implements Runnable {
     private List<String> ignores;
     private String cmdPrefix;
 
-    Minebot(CraftIRC plugin, int botId, boolean debug) {
+    Minebot(CraftIRC plugin, int botId, boolean debug, String encoding) {
         super();
         timer.scheduleAtFixedRate(new TimerTask() {
-
             @Override
             public void run() {
                 if (lasttime == gametime && gametime != alertedtime) {
@@ -81,59 +84,65 @@ public class Minebot extends PircBot implements Runnable {
         this.plugin = plugin;
         this.botId = botId;
         this.debug = debug;
+        this.encoding = encoding;
         this.thread = new Thread(this);
         this.thread.start();
     }
 
     @Override
     public synchronized void run() {
-        this.setVerbose(this.debug);
-        this.setMessageDelay(this.plugin.cBotMessageDelay(this.botId));
-        this.setQueueSize(this.plugin.cBotQueueSize(this.botId));
-        this.setName(this.plugin.cBotNickname(this.botId));
-        String versionString = CraftIRC.NAME + " v" + CraftIRC.VERSION;
-        this.setFinger(versionString);
-        this.setLogin(this.plugin.cBotLogin(this.botId));
-        this.setVersion(versionString);
-
-        this.nickname = this.plugin.cBotNickname(this.botId);
-
-        this.ssl = this.plugin.cBotSsl(this.botId);
-        this.ircServer = this.plugin.cBotServer(this.botId);
-        this.ircPort = this.plugin.cBotPort(this.botId);
-        this.ircPass = this.plugin.cBotPassword(this.botId);
-
-        this.authMethod = this.plugin.cBotAuthMethod(this.botId);
-        this.authUser = this.plugin.cBotAuthUsername(this.botId);
-        this.authPass = this.plugin.cBotAuthPassword(this.botId);
-        this.authDelay = this.plugin.cBotAuthDelay(this.botId);
-
-        this.localBindPort = this.plugin.cBotBindPort(this.botId);
-
-        this.whereAmI = new HashSet<String>();
-        this.channels = new HashMap<String, IRCChannelPoint>();
-        for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
-            final String name = channelNode.getString("name").toLowerCase();
-            if (this.channels.containsKey(name)) {
-                continue;
-            }
-            final IRCChannelPoint chan = new IRCChannelPoint(this, name);
-            if (!this.plugin.registerEndPoint(channelNode.getString("tag"), chan)) {
-                continue;
-            }
-            if (!this.plugin.cIrcTagGroup().equals("")) {
-                this.plugin.groupTag(channelNode.getString("tag"), this.plugin.cIrcTagGroup());
-            }
-            this.channels.put(name, chan);
-        }
-
-        this.ignores = this.plugin.cBotIgnoredUsers(this.botId);
-        this.cmdPrefix = this.plugin.cCommandPrefix(this.botId);
 
         try {
-            this.start();
-        } catch (final Exception e) {
-            e.printStackTrace();
+            this.setVerbose(this.debug);
+            this.setMessageDelay(this.plugin.cBotMessageDelay(this.botId));
+            this.setQueueSize(this.plugin.cBotQueueSize(this.botId));
+            this.setName(this.plugin.cBotNickname(this.botId));
+            String versionString = CraftIRC.NAME + " v" + CraftIRC.VERSION;
+            this.setFinger(versionString);
+            this.setLogin(this.plugin.cBotLogin(this.botId));
+            this.setVersion(versionString);
+            this.setEncoding(this.encoding);
+            this.nickname = this.plugin.cBotNickname(this.botId);
+
+            this.ssl = this.plugin.cBotSsl(this.botId);
+            this.ircServer = this.plugin.cBotServer(this.botId);
+            this.ircPort = this.plugin.cBotPort(this.botId);
+            this.ircPass = this.plugin.cBotPassword(this.botId);
+
+            this.authMethod = this.plugin.cBotAuthMethod(this.botId);
+            this.authUser = this.plugin.cBotAuthUsername(this.botId);
+            this.authPass = this.plugin.cBotAuthPassword(this.botId);
+            this.authDelay = this.plugin.cBotAuthDelay(this.botId);
+
+            this.localBindPort = this.plugin.cBotBindPort(this.botId);
+
+            this.whereAmI = new HashSet<String>();
+            this.channels = new HashMap<String, IRCChannelPoint>();
+            for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
+                final String name = channelNode.getString("name").toLowerCase();
+                if (this.channels.containsKey(name)) {
+                    continue;
+                }
+                final IRCChannelPoint chan = new IRCChannelPoint(this, name);
+                if (!this.plugin.registerEndPoint(channelNode.getString("tag"), chan)) {
+                    continue;
+                }
+                if (!this.plugin.cIrcTagGroup().equals("")) {
+                    this.plugin.groupTag(channelNode.getString("tag"), this.plugin.cIrcTagGroup());
+                }
+                this.channels.put(name, chan);
+            }
+
+            this.ignores = this.plugin.cBotIgnoredUsers(this.botId);
+            this.cmdPrefix = this.plugin.cCommandPrefix(this.botId);
+
+            try {
+                this.start();
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Minebot.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
