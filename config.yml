@@ -144,6 +144,7 @@ bots:
     userident: 'bot'              #Username/ident, anything you want
     serverpass: ''                #This isn't the nickserv password
     ssl: false
+    encoding: 'UTF-8'
     
     #Prevent flood by setting a delay (in ms) between messages to IRC and a maximum queue size.
     message-delay: 1000

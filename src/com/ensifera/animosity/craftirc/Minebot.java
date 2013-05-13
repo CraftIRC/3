@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
@@ -129,6 +131,12 @@ public class Minebot extends PircBot implements Runnable {
 
         this.ignores = this.plugin.cBotIgnoredUsers(this.botId);
         this.cmdPrefix = this.plugin.cCommandPrefix(this.botId);
+
+        try {
+            this.setEncoding(this.plugin.cBotEncoding(this.botId));
+        } catch (UnsupportedEncodingException e) {
+            this.plugin.getLogger().log(Level.SEVERE, "Unsupported encoding in bot " + this.nickname + " on " + this.ircServer, e);
+        }
 
         try {
             this.start();

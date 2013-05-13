@@ -1077,6 +1077,10 @@ public class CraftIRC extends JavaPlugin {
         return this.configuration.getInt("settings.retry-delay", 10) * 1000;
     }
 
+    public String cBotEncoding(int bot) {
+        return this.bots.get(bot).getString("encoding", "UTF-8");
+    }
+
     public String cBotNickname(int bot) {
         return this.bots.get(bot).getString("nickname", "CraftIRCbot");
     }
