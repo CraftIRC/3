@@ -92,57 +92,57 @@ public class Minebot extends PircBot implements Runnable {
     @Override
     public synchronized void run() {
 
+        this.setVerbose(this.debug);
+        this.setMessageDelay(this.plugin.cBotMessageDelay(this.botId));
+        this.setQueueSize(this.plugin.cBotQueueSize(this.botId));
+        this.setName(this.plugin.cBotNickname(this.botId));
+        String versionString = CraftIRC.NAME + " v" + CraftIRC.VERSION;
+        this.setFinger(versionString);
+        this.setLogin(this.plugin.cBotLogin(this.botId));
+        this.setVersion(versionString);
         try {
-            this.setVerbose(this.debug);
-            this.setMessageDelay(this.plugin.cBotMessageDelay(this.botId));
-            this.setQueueSize(this.plugin.cBotQueueSize(this.botId));
-            this.setName(this.plugin.cBotNickname(this.botId));
-            String versionString = CraftIRC.NAME + " v" + CraftIRC.VERSION;
-            this.setFinger(versionString);
-            this.setLogin(this.plugin.cBotLogin(this.botId));
-            this.setVersion(versionString);
             this.setEncoding(this.encoding);
-            this.nickname = this.plugin.cBotNickname(this.botId);
-
-            this.ssl = this.plugin.cBotSsl(this.botId);
-            this.ircServer = this.plugin.cBotServer(this.botId);
-            this.ircPort = this.plugin.cBotPort(this.botId);
-            this.ircPass = this.plugin.cBotPassword(this.botId);
-
-            this.authMethod = this.plugin.cBotAuthMethod(this.botId);
-            this.authUser = this.plugin.cBotAuthUsername(this.botId);
-            this.authPass = this.plugin.cBotAuthPassword(this.botId);
-            this.authDelay = this.plugin.cBotAuthDelay(this.botId);
-
-            this.localBindPort = this.plugin.cBotBindPort(this.botId);
-
-            this.whereAmI = new HashSet<String>();
-            this.channels = new HashMap<String, IRCChannelPoint>();
-            for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
-                final String name = channelNode.getString("name").toLowerCase();
-                if (this.channels.containsKey(name)) {
-                    continue;
-                }
-                final IRCChannelPoint chan = new IRCChannelPoint(this, name);
-                if (!this.plugin.registerEndPoint(channelNode.getString("tag"), chan)) {
-                    continue;
-                }
-                if (!this.plugin.cIrcTagGroup().equals("")) {
-                    this.plugin.groupTag(channelNode.getString("tag"), this.plugin.cIrcTagGroup());
-                }
-                this.channels.put(name, chan);
-            }
-
-            this.ignores = this.plugin.cBotIgnoredUsers(this.botId);
-            this.cmdPrefix = this.plugin.cCommandPrefix(this.botId);
-
-            try {
-                this.start();
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Minebot.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.nickname = this.plugin.cBotNickname(this.botId);
+
+        this.ssl = this.plugin.cBotSsl(this.botId);
+        this.ircServer = this.plugin.cBotServer(this.botId);
+        this.ircPort = this.plugin.cBotPort(this.botId);
+        this.ircPass = this.plugin.cBotPassword(this.botId);
+
+        this.authMethod = this.plugin.cBotAuthMethod(this.botId);
+        this.authUser = this.plugin.cBotAuthUsername(this.botId);
+        this.authPass = this.plugin.cBotAuthPassword(this.botId);
+        this.authDelay = this.plugin.cBotAuthDelay(this.botId);
+
+        this.localBindPort = this.plugin.cBotBindPort(this.botId);
+
+        this.whereAmI = new HashSet<String>();
+        this.channels = new HashMap<String, IRCChannelPoint>();
+        for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
+            final String name = channelNode.getString("name").toLowerCase();
+            if (this.channels.containsKey(name)) {
+                continue;
+            }
+            final IRCChannelPoint chan = new IRCChannelPoint(this, name);
+            if (!this.plugin.registerEndPoint(channelNode.getString("tag"), chan)) {
+                continue;
+            }
+            if (!this.plugin.cIrcTagGroup().equals("")) {
+                this.plugin.groupTag(channelNode.getString("tag"), this.plugin.cIrcTagGroup());
+            }
+            this.channels.put(name, chan);
+        }
+
+        this.ignores = this.plugin.cBotIgnoredUsers(this.botId);
+        this.cmdPrefix = this.plugin.cCommandPrefix(this.botId);
+
+        try {
+            this.start();
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
     }
 
