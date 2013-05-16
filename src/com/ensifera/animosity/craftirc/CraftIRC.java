@@ -181,7 +181,7 @@ public class CraftIRC extends JavaPlugin {
             //Create bots
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
-                this.instances.add(new Minebot(this, i, this.cDebug(), this.configuration.getString("settings.encoding")));
+                this.instances.add(new Minebot(this, i, this.cDebug(), this.cBotEncoding()));
             }
 
             this.loadTagGroups();
@@ -1090,6 +1090,10 @@ public class CraftIRC extends JavaPlugin {
     public int cRetryDelay() {
         return this.configuration.getInt("settings.retry-delay", 10) * 1000;
     }
+
+    public String cBotEncoding() {
+        return this.configuration.getString(this.configuration.getString("settings.encoding", "UTF-8"));
+    }    
 
     public String cBotNickname(int bot) {
         return this.bots.get(bot).getString("nickname", "CraftIRCbot");
