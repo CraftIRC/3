@@ -175,7 +175,7 @@ public class Minebot extends PircBot implements Runnable {
             if (!localAddr.isEmpty()) {
 
                 if (this.bindLocalAddr(localAddr, this.localBindPort)) {
-                    CraftIRC.dolog("BINDING socket to " + localAddr + ":" + this.ircPort);
+                    this.plugin.log("BINDING socket to " + localAddr + ":" + this.ircPort);
                 }
             }
 
@@ -192,10 +192,10 @@ public class Minebot extends PircBot implements Runnable {
     void connectToIrc() {
         try {
             if (this.ssl) {
-                CraftIRC.dolog("Connecting to " + this.ircServer + ":" + this.ircPort + " [SSL]");
+                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort + " [SSL]");
                 this.connect(this.ircServer, this.ircPort, this.ircPass, new TrustingSSLSocketFactory());
             } else {
-                CraftIRC.dolog("Connecting to " + this.ircServer + ":" + this.ircPort);
+                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort);
                 this.connect(this.ircServer, this.ircPort, this.ircPass);
             }
         } catch (final IOException e) {
@@ -223,7 +223,7 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public void onConnect() {
-        CraftIRC.dolog("Connected");
+        this.plugin.log("Connected");
         this.authenticateBot();
 
         final ArrayList<String> onConnect = this.plugin.cBotOnConnect(this.botId);
@@ -239,7 +239,7 @@ public class Minebot extends PircBot implements Runnable {
 
     void authenticateBot() {
         if (this.authMethod.equalsIgnoreCase("nickserv") && !this.authPass.isEmpty()) {
-            CraftIRC.dolog("Using Nickserv authentication.");
+            this.plugin.log("Using Nickserv authentication.");
             this.sendMessage("nickserv", "GHOST " + this.nickname + " " + this.authPass);
 
             // Some IRC servers have quite a delay when ghosting... ***** TO IMPROVE
@@ -253,12 +253,12 @@ public class Minebot extends PircBot implements Runnable {
             this.identify(this.authPass);
 
         } else if (this.authMethod.equalsIgnoreCase("gamesurge")) {
-            CraftIRC.dolog("Using GameSurge authentication.");
+            this.plugin.log("Using GameSurge authentication.");
             this.changeNick(this.nickname);
             this.sendMessage("AuthServ@Services.GameSurge.net", "AUTH " + this.authUser + " " + this.authPass);
 
         } else if (this.authMethod.equalsIgnoreCase("quakenet")) {
-            CraftIRC.dolog("Using QuakeNet authentication.");
+            this.plugin.log("Using QuakeNet authentication.");
             this.changeNick(this.nickname);
             this.sendMessage("Q@CServe.quakenet.org", "AUTH " + this.authUser + " " + this.authPass);
         }
@@ -273,7 +273,7 @@ public class Minebot extends PircBot implements Runnable {
 
     void amNowInChannel(String channel) {
         channel = channel.toLowerCase();
-        CraftIRC.dolog("Joined channel: " + channel);
+        this.plugin.log("Joined channel: " + channel);
         this.whereAmI.add(channel);
         final String tag = this.plugin.cChanTag(this.botId, channel);
         if ((tag != null) && !this.plugin.endPointRegistered(tag)) {
@@ -506,7 +506,7 @@ public class Minebot extends PircBot implements Runnable {
             }
         } catch (final Exception e) {
             e.printStackTrace();
-            CraftIRC.dowarn("error while relaying IRC message: " + message);
+            this.plugin.logWarn("error while relaying IRC message: " + message);
         }
     }
 
@@ -588,7 +588,7 @@ public class Minebot extends PircBot implements Runnable {
     public void onDisconnect() {
         try {
             if (this.plugin.isEnabled()) {
-                CraftIRC.log.info(CraftIRC.NAME + " - disconnected from IRC server... reconnecting!");
+                this.plugin.log("disconnected from IRC server... reconnecting!");
 
                 //this.connectToIrc();
                 this.plugin.scheduleForRetry(this, null);

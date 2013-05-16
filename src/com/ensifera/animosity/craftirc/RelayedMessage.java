@@ -190,11 +190,11 @@ public class RelayedMessage {
                     try {
                         replacement = replacement.replaceAll(search, replaceFilters.get(fieldName).get(search));
                     } catch (PatternSyntaxException e) {
-                        CraftIRC.dowarn("Pattern is invalid: "+e.getPattern());
+                        this.plugin.logWarn("Pattern is invalid: "+e.getPattern());
                     }
                     catch (IllegalArgumentException e) {
                         if ("Illegal group reference".equals(e.getMessage()))
-                            CraftIRC.dowarn("Invalid replacement - backreference not found.");
+                            this.plugin.logWarn("Invalid replacement - backreference not found.");
                         else throw e;
                     }
             result = result.replace("%"+fieldName+"%", replacement);

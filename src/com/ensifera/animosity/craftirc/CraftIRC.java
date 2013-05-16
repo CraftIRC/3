@@ -36,7 +36,6 @@ public class CraftIRC extends JavaPlugin {
 
     public static final String NAME = "CraftIRC";
     public static String VERSION;
-    static final Logger log = Logger.getLogger("Minecraft");
 
     Configuration configuration;
 
@@ -69,12 +68,12 @@ public class CraftIRC extends JavaPlugin {
     private Map<String, Map<String, String>> replaceFilters;
     private boolean cancelChat;
 
-    static void dolog(String message) {
-        CraftIRC.log.info("[" + CraftIRC.NAME + "] " + message);
+    void log(String message) {
+        this.getLogger().info("[" + CraftIRC.NAME + "] " + message);
     }
 
-    static void dowarn(String message) {
-        CraftIRC.log.log(Level.WARNING, "[" + CraftIRC.NAME + "] " + message);
+    void logWarn(String message) {
+        this.getLogger().warning("[" + CraftIRC.NAME + "] " + message);
     }
 
     /***************************
@@ -186,7 +185,7 @@ public class CraftIRC extends JavaPlugin {
 
             this.loadTagGroups();
 
-            CraftIRC.dolog("Enabled.");
+            this.log("Enabled.");
 
             //Hold timers
             this.hold = new HashMap<HoldType, Boolean>();
@@ -251,7 +250,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     private void autoDisable() {
-        CraftIRC.dolog("Auto-disabling...");
+        this.log("Auto-disabling...");
         this.getServer().getPluginManager().disablePlugin(this);
     }
 
@@ -267,7 +266,7 @@ public class CraftIRC extends JavaPlugin {
                     this.instances.get(i).dispose();
                 }
             }
-            CraftIRC.dolog("Disabled.");
+            this.log("Disabled.");
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -364,7 +363,7 @@ public class CraftIRC extends JavaPlugin {
     private boolean cmdMsgToTag(CommandSender sender, String[] args) {
         try {
             if (this.isDebug()) {
-                CraftIRC.dolog("CraftIRCListener cmdMsgToAll()");
+                this.log("CraftIRCListener cmdMsgToAll()");
             }
             if (args.length < 2) {
                 return false;
@@ -443,11 +442,11 @@ public class CraftIRC extends JavaPlugin {
     private boolean cmdNotifyIrcAdmins(CommandSender sender, String[] args) {
         try {
             if (this.isDebug()) {
-                CraftIRC.dolog("CraftIRCListener cmdNotifyIrcAdmins()");
+                this.log("CraftIRCListener cmdNotifyIrcAdmins()");
             }
             if ((args.length == 0) || !(sender instanceof Player)) {
                 if (this.isDebug()) {
-                    CraftIRC.dolog("CraftIRCListener cmdNotifyIrcAdmins() - args.length == 0 or Sender != player ");
+                    this.log("CraftIRCListener cmdNotifyIrcAdmins() - args.length == 0 or Sender != player ");
                 }
                 return false;
             }
@@ -471,7 +470,7 @@ public class CraftIRC extends JavaPlugin {
     private boolean cmdRawIrcCommand(CommandSender sender, String[] args) {
         try {
             if (this.isDebug()) {
-                CraftIRC.dolog("cmdRawIrcCommand(sender=" + sender.toString() + ", args=" + Util.combineSplit(0, args, " "));
+                this.log("cmdRawIrcCommand(sender=" + sender.toString() + ", args=" + Util.combineSplit(0, args, " "));
             }
             if (args.length < 2) {
                 return false;
@@ -504,7 +503,7 @@ public class CraftIRC extends JavaPlugin {
             return new RelayedMessage(this, source, target, eventType);
         } else {
             if (this.isDebug()) {
-                CraftIRC.dolog("Failed to prepare message: " + this.getTag(source) + " -> " + this.getTag(target) + " (missing path)");
+                this.log("Failed to prepare message: " + this.getTag(source) + " -> " + this.getTag(target) + " (missing path)");
             }
             return null;
         }
@@ -519,7 +518,7 @@ public class CraftIRC extends JavaPlugin {
             if (this.cPathExists(this.getTag(source), target)) {
                 targetpoint = this.getEndPoint(target);
                 if (targetpoint == null) {
-                    CraftIRC.dolog("The requested target tag '" + target + "' isn't registered.");
+                    this.log("The requested target tag '" + target + "' isn't registered.");
                 }
             } else {
                 return null;
@@ -550,18 +549,18 @@ public class CraftIRC extends JavaPlugin {
             return false;
         }
         if (this.isDebug()) {
-            CraftIRC.dolog("Registering endpoint: " + tag);
+            this.log("Registering endpoint: " + tag);
         }
         if (tag == null) {
-            CraftIRC.dolog("Failed to register endpoint - No tag!");
+            this.log("Failed to register endpoint - No tag!");
             return false;
         }
         if ((this.endpoints.get(tag) != null) || (this.tags.get(ep) != null)) {
-            CraftIRC.dolog("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist.");
+            this.log("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist.");
             return false;
         }
         if (tag == "*") {
-            CraftIRC.dolog("Couldn't register an endpoint - the character * can't be used as a tag.");
+            this.log("Couldn't register an endpoint - the character * can't be used as a tag.");
             return false;
         }
         this.endpoints.put(tag, ep);
@@ -583,19 +582,19 @@ public class CraftIRC extends JavaPlugin {
 
     public boolean registerCommand(String tag, String command) {
         if (this.isDebug()) {
-            CraftIRC.dolog("Registering command: " + command + " to endpoint:" + tag);
+            this.log("Registering command: " + command + " to endpoint:" + tag);
         }
         final EndPoint ep = this.getEndPoint(tag);
         if (ep == null) {
-            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because there is no such tag.");
+            this.log("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because there is no such tag.");
             return false;
         }
         if (!(ep instanceof CommandEndPoint)) {
-            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because it's not capable of handling commands.");
+            this.log("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because it's not capable of handling commands.");
             return false;
         }
         if (this.irccmds.containsKey(command)) {
-            CraftIRC.dolog("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because that command is already registered.");
+            this.log("Couldn't register the command '" + command + "' at the endpoint tagged '" + tag + "' because that command is already registered.");
             return false;
         }
         this.irccmds.put(command, (CommandEndPoint) ep);
@@ -691,7 +690,7 @@ public class CraftIRC extends JavaPlugin {
         msg.setField("source", sourceTag);
         List<EndPoint> destinations;
         if (this.isDebug()) {
-            CraftIRC.dolog("X->" + (knownDestinations.size() > 0 ? knownDestinations.toString() : "*") + ": " + msg.toString());
+            this.log("X->" + (knownDestinations.size() > 0 ? knownDestinations.toString() : "*") + ": " + msg.toString());
         }
         //If we weren't explicitly given a recipient for the message, let's try to find one (or more)
         if (knownDestinations.size() < 1) {
@@ -764,7 +763,7 @@ public class CraftIRC extends JavaPlugin {
             }
             //Finally deliver!
             if (this.isDebug()) {
-                CraftIRC.dolog("-->X: " + msg.toString());
+                this.log("-->X: " + msg.toString());
             }
             if (username != null) {
                 success = success && destination.userMessageIn(username, msg);
@@ -816,7 +815,7 @@ public class CraftIRC extends JavaPlugin {
 
     public void sendRawToBot(String rawMessage, int bot) {
         if (this.isDebug()) {
-            CraftIRC.dolog("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
+            this.log("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
         }
         final Minebot targetBot = this.instances.get(bot);
         targetBot.sendRawLineViaQueue(rawMessage);
@@ -838,7 +837,7 @@ public class CraftIRC extends JavaPlugin {
             this.instances.get(i).setVerbose(d);
         }
 
-        CraftIRC.dolog("DEBUG [" + (d ? "ON" : "OFF") + "]");
+        this.log("DEBUG [" + (d ? "ON" : "OFF") + "]");
     }
 
     public String getPrefix(Player p) {
@@ -991,7 +990,7 @@ public class CraftIRC extends JavaPlugin {
     public String cFormatting(String eventType, RelayedMessage msg, EndPoint realTarget) {
         final String source = this.getTag(msg.getSource()), target = this.getTag(realTarget != null ? realTarget : msg.getTarget());
         if ((source == null) || (target == null)) {
-            CraftIRC.dowarn("Attempted to obtain formatting for invalid path " + source + " -> " + target + " .");
+            this.logWarn("Attempted to obtain formatting for invalid path " + source + " -> " + target + " .");
             return this.cDefaultFormatting(eventType, msg);
         }
         final ConfigurationNode pathConfig = this.paths.get(new Path(source, target));
@@ -1018,7 +1017,7 @@ public class CraftIRC extends JavaPlugin {
         String result = this.configuration.getString(lookup);
 
         if (result == null) {
-            CraftIRC.dowarn("Could not find record " + lookup);
+            this.logWarn("Could not find record " + lookup);
             result = "Error: See CraftIRC console";
         }
         return result;
