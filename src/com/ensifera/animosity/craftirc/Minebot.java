@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,14 +12,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Animosity
