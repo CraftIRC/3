@@ -94,7 +94,7 @@ public class CraftIRC extends JavaPlugin {
             this.configuration = new Configuration(configFile);
             this.configuration.load();
             this.cancelChat = this.configuration.getBoolean("settings.cancel-chat", false);
-            
+
             this.endpoints = new HashMap<String, EndPoint>();
             this.tags = new HashMap<EndPoint, String>();
             this.irccmds = new HashMap<String, CommandEndPoint>();

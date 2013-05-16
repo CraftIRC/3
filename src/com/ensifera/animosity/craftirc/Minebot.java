@@ -63,6 +63,7 @@ public class Minebot extends PircBot implements Runnable {
     Minebot(CraftIRC plugin, int botId, boolean debug, String encoding) {
         super();
         timer.scheduleAtFixedRate(new TimerTask() {
+
             @Override
             public void run() {
                 if (lasttime == gametime && gametime != alertedtime) {
@@ -91,7 +92,6 @@ public class Minebot extends PircBot implements Runnable {
 
     @Override
     public synchronized void run() {
-
         this.setVerbose(this.debug);
         this.setMessageDelay(this.plugin.cBotMessageDelay(this.botId));
         this.setQueueSize(this.plugin.cBotQueueSize(this.botId));
@@ -100,10 +100,11 @@ public class Minebot extends PircBot implements Runnable {
         this.setFinger(versionString);
         this.setLogin(this.plugin.cBotLogin(this.botId));
         this.setVersion(versionString);
+
         try {
             this.setEncoding(this.encoding);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Minebot.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Minebot.class.getName()).log(Level.SEVERE, "Unsupported encoding", ex);
         }
         this.nickname = this.plugin.cBotNickname(this.botId);
 
