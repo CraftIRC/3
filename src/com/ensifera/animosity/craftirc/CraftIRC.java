@@ -547,12 +547,14 @@ public class CraftIRC extends JavaPlugin {
     public boolean registerEndPoint(String tag, EndPoint ep) {
         if (!this.isEnabled()) {
             this.getLogger().log(Level.WARNING, "CraftIRC EndPoints cannot be registered while CraftIRC is disabled", new Throwable());
+            return false;
         }
         if (this.isDebug()) {
             CraftIRC.dolog("Registering endpoint: " + tag);
         }
         if (tag == null) {
             CraftIRC.dolog("Failed to register endpoint - No tag!");
+            return false;
         }
         if ((this.endpoints.get(tag) != null) || (this.tags.get(ep) != null)) {
             CraftIRC.dolog("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist.");
