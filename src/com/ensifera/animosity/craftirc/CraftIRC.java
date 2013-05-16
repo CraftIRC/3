@@ -4,18 +4,15 @@ import java.io.*;
 import java.lang.StringBuilder;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.milkbowl.vault.chat.Chat;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,31 +27,23 @@ import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
  * @author mbaxter
  * 
  */
-
-//TODO: Better handling of null method returns (try to crash the bot and then stop that from happening again)
 public class CraftIRC extends JavaPlugin {
 
     public static final String NAME = "CraftIRC";
-    public static String VERSION;
 
-    Configuration configuration;
+    private Configuration configuration;
 
     //Misc class attributes
-    PluginDescriptionFile desc = null;
-    public Server server = null;
-    private final CraftIRCListener listener = new CraftIRCListener(this);
-    private final ConsoleListener sayListener = new ConsoleListener(this);
-    private ArrayList<Minebot> instances;
+    private List<Minebot> instances;
     private boolean debug;
     private Timer holdTimer = new Timer();
     private Timer retryTimer = new Timer();
-    Map<HoldType, Boolean> hold;
-    Map<String, RetryTask> retry;
+    private Map<HoldType, Boolean> hold;
 
     //Bots and channels config storage
     private List<ConfigurationNode> bots;
     private List<ConfigurationNode> colormap;
-    private Map<Integer, ArrayList<ConfigurationNode>> channodes;
+    private Map<Integer, List<ConfigurationNode>> channodes;
     private Map<Path, ConfigurationNode> paths;
 
     //Endpoints
@@ -99,11 +88,8 @@ public class CraftIRC extends JavaPlugin {
             this.irccmds = new HashMap<String, CommandEndPoint>();
             this.taggroups = new HashMap<String, List<String>>();
 
-            final PluginDescriptionFile desc = this.getDescription();
-            CraftIRC.VERSION = desc.getVersion();
-            this.server = this.getServer();
             this.bots = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("bots", null));
-            this.channodes = new HashMap<Integer, ArrayList<ConfigurationNode>>();
+            this.channodes = new HashMap<Integer, List<ConfigurationNode>>();
             for (int botID = 0; botID < this.bots.size(); botID++) {
                 this.channodes.put(botID, new ArrayList<ConfigurationNode>(this.bots.get(botID).getNodeList("channels", null)));
             }
@@ -141,12 +127,11 @@ public class CraftIRC extends JavaPlugin {
             }
 
             //Retry timers
-            this.retry = new HashMap<String, RetryTask>();
             this.retryTimer = new Timer();
 
             //Event listeners
-            this.getServer().getPluginManager().registerEvents(this.listener, this);
-            this.getServer().getPluginManager().registerEvents(this.sayListener, this);
+            this.getServer().getPluginManager().registerEvents(new CraftIRCListener(this), this);
+            this.getServer().getPluginManager().registerEvents(new ConsoleListener(this), this);
 
             //Native endpoints!
             if ((this.cMinecraftTag() != null) && !this.cMinecraftTag().equals("")) {
@@ -915,8 +900,7 @@ public class CraftIRC extends JavaPlugin {
      ***************************/
 
     private ConfigurationNode getChanNode(int bot, String channel) {
-        final ArrayList<ConfigurationNode> botChans = this.channodes.get(bot);
-        for (final ConfigurationNode chan : botChans) {
+        for (final ConfigurationNode chan : this.channodes.get(bot)) {
             if (chan.getString("name").equalsIgnoreCase(channel)) {
                 return chan;
             }
