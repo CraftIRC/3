@@ -32,6 +32,8 @@ public class MinecraftPoint implements CommandEndPoint {
     @Override
     public void messageIn(RelayedMessage msg) {
         final String message = msg.getMessage(this);
+        final String source = msg.getField("source");
+        this.plugin.getLogger().info("[" + source + "] " + message);
         for (final Player p : this.server.getOnlinePlayers()) {
             p.sendMessage(message);
         }
@@ -43,7 +45,10 @@ public class MinecraftPoint implements CommandEndPoint {
         if (p == null) {
             return false;
         }
-        p.sendMessage(msg.getMessage(this));
+        final String message = msg.getMessage(this);
+        p.sendMessage(message);
+        final String source = msg.getField("source");
+        this.plugin.getLogger().info("[" + source + "->" + username + "] " + message);
         return true;
     }
 
