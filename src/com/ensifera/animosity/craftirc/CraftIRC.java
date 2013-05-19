@@ -25,11 +25,8 @@ import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
  * @author ricin
  * @author Protected
  * @author mbaxter
- * 
  */
 public class CraftIRC extends JavaPlugin {
-
-    public static final String NAME = "CraftIRC";
 
     private Configuration configuration;
 
