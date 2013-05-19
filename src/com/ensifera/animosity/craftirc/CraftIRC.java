@@ -58,11 +58,11 @@ public class CraftIRC extends JavaPlugin {
     private boolean cancelChat;
 
     void log(String message) {
-        this.getLogger().info("[" + CraftIRC.NAME + "] " + message);
+        this.getLogger().info(message);
     }
 
     void logWarn(String message) {
-        this.getLogger().warning("[" + CraftIRC.NAME + "] " + message);
+        this.getLogger().warning(message);
     }
 
     /***************************
