@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -34,7 +35,7 @@ public class MinecraftPoint implements CommandEndPoint {
         final String message = msg.getMessage(this);
         final String source = msg.getField("source");
         if (this.plugin.cLog()) {
-            this.plugin.getLogger().info("[" + source + "] " + message);
+            this.plugin.getLogger().info("[" + source + "] " + ChatColor.stripColor(message));
         }
         for (final Player p : this.server.getOnlinePlayers()) {
             p.sendMessage(message);
@@ -51,7 +52,7 @@ public class MinecraftPoint implements CommandEndPoint {
         p.sendMessage(message);
         final String source = msg.getField("source");
         if (this.plugin.cLog()) {
-            this.plugin.getLogger().info("[" + source + "->" + username + "] " + message);
+            this.plugin.getLogger().info("[" + source + "->" + username + "] " + ChatColor.stripColor(message));
         }
         return true;
     }
