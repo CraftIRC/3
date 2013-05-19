@@ -99,6 +99,7 @@ public class MinecraftPoint implements CommandEndPoint {
             final RelayedMessage fwd = this.plugin.newMsg(cmd.getSource(), this, "chat");
             fwd.copyFields(cmd);
             fwd.setField("message", cmd.getField("args"));
+            fwd.setField("source", this.plugin.getTag(cmd.getSource()));
             fwd.doNotColor("message");
             this.messageIn(fwd);
         } else if (this.plugin.cCmdWordPlayers(null).contains(command)) {
