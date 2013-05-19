@@ -46,6 +46,9 @@ settings:
   #Set this to true to have CraftIRC cancel all minecraft chat if no other plugin is doing it.
   cancel-chat: false
   
+  # If true, any messages appearing to anyone in minecraft chat will be logged by the tag of the endpoint they came from
+  log: true
+  
   #IRC commands start with this, for example '.players' (it's not part of the command name though)
   command-prefix: '.'
   

@@ -905,6 +905,10 @@ public class CraftIRC extends JavaPlugin {
         return Configuration.getEmptyNode();
     }
 
+    public boolean cLog() {
+        return this.configuration.getBoolean("settings.log", true);
+    }
+
     public List<ConfigurationNode> cChannels(int bot) {
         return this.channodes.get(bot);
     }
