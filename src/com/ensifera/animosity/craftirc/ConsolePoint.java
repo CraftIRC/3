@@ -69,6 +69,11 @@ public class ConsolePoint implements CommandEndPoint {
                 }
                 if (this.plugin.cConsoleCommands().contains(ccmd) || this.plugin.cConsoleCommands().contains("*") || this.plugin.cConsoleCommands().contains("all")) {
                     final IRCCommandSender sender = new IRCCommandSender(this.server, cmd, this, this.server.getConsoleSender());
+                    if (this.plugin.cLog()) {
+                        String tag = this.plugin.getTag(cmd.getSource());
+                        String user = cmd.getField("realSender") + "!" + cmd.getField("username") + "@" + cmd.getField("hostname");
+                        this.plugin.log("[" + tag + "][" + user + "] " + args);
+                    }
                     this.plugin.getServer().getScheduler().runTask(this.plugin, new Runnable() {
                         @Override
                         public void run() {
