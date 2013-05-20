@@ -104,7 +104,7 @@ public class Minebot extends PircBot implements Runnable {
         try {
             this.setEncoding(this.encoding);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Minebot.class.getName()).log(Level.SEVERE, "Unsupported encoding", ex);
+            plugin.getLogger().log(Level.SEVERE, "Unsupported encoding", ex);
         }
         this.nickname = this.plugin.cBotNickname(this.botId);
 

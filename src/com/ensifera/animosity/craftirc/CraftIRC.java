@@ -1092,7 +1092,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cBotEncoding() {
-        return this.configuration.getString(this.configuration.getString("settings.encoding", "UTF-8"));
+        return this.configuration.getString("settings.encoding", "UTF-8");
     }    
 
     public String cBotNickname(int bot) {
