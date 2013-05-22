@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
@@ -41,6 +44,7 @@ public class Minebot extends PircBot implements Runnable {
     private int ircPort;
     private String ircPass;
     private int localBindPort;
+    private String encoding;
 
     // Nickname authentication
     private String authMethod;
@@ -56,7 +60,7 @@ public class Minebot extends PircBot implements Runnable {
     private List<String> ignores;
     private String cmdPrefix;
 
-    Minebot(CraftIRC plugin, int botId, boolean debug) {
+    Minebot(CraftIRC plugin, int botId, boolean debug, String encoding) {
         super();
         timer.scheduleAtFixedRate(new TimerTask() {
 
@@ -81,6 +85,7 @@ public class Minebot extends PircBot implements Runnable {
         this.plugin = plugin;
         this.botId = botId;
         this.debug = debug;
+        this.encoding = encoding;
         this.thread = new Thread(this);
         this.thread.start();
     }
@@ -96,6 +101,11 @@ public class Minebot extends PircBot implements Runnable {
         this.setLogin(this.plugin.cBotLogin(this.botId));
         this.setVersion(versionString);
 
+        try {
+            this.setEncoding(this.encoding);
+        } catch (UnsupportedEncodingException ex) {
+            plugin.getLogger().log(Level.SEVERE, "Unsupported encoding", ex);
+        }
         this.nickname = this.plugin.cBotNickname(this.botId);
 
         this.ssl = this.plugin.cBotSsl(this.botId);
