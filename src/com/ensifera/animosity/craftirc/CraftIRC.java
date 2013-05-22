@@ -1086,7 +1086,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cBotServer(int bot) {
-        return this.bots.get(bot).getString("server", "irc.esper.net");
+        return this.bots.get(bot).getString("server", "localhost");
     }
 
     public int cBotPort(int bot) {
