@@ -6,13 +6,3 @@ My license is simple: you must gain permission from me if you wish to release an
 Educational use, as to learn the good and bad coding practices found in these sources is free; you may not redistribute a derivative of these sources as another product however without express permission.
 
 I reserve the right to utilize any changes found on your forks which have not been pushed/contributed to this main repository if it is deemed awesome.
-
-
-BUILDING
-
-Requires: Bukkit and Vault on your classpath
-Package the plugin.yml in the root of the jar.
-
-MAVEN BUILDING
-
-Build Vault first from it's repos, then maven clean package install in this one. (Vault's repository pom has no place to automatically download a build from.)
