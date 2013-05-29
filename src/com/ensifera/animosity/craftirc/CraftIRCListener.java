@@ -8,11 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 
-public class CraftIRCListener implements Listener {
-
+final class CraftIRCListener implements Listener {
     private CraftIRC plugin = null;
 
-    public CraftIRCListener(CraftIRC plugin) {
+    CraftIRCListener(CraftIRC plugin) {
         this.plugin = plugin;
     }
 
@@ -176,5 +175,4 @@ public class CraftIRCListener implements Listener {
         msg.setField("suffix", this.plugin.getSuffix(event.getEntity()));
         msg.post();
     }
-
 }

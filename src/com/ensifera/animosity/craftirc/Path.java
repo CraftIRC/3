@@ -1,6 +1,6 @@
 package com.ensifera.animosity.craftirc;
 
-public class Path {
+final class Path {
     private final String sourceTag;
     private final String targetTag;
 

@@ -2,8 +2,7 @@ package com.ensifera.animosity.craftirc;
 
 import java.util.TimerTask;
 
-public class RetryTask extends TimerTask {
-
+final class RetryTask extends TimerTask {
     private final Minebot bot;
     private final String channel;
     private final CraftIRC plugin;
@@ -28,5 +27,4 @@ public class RetryTask extends TimerTask {
             }
         }
     }
-
 }

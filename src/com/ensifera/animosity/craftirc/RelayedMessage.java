@@ -9,7 +9,6 @@ import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationN
 
 import org.bukkit.ChatColor;
 public class RelayedMessage {
-
     enum DeliveryMethod {
         STANDARD, ADMINS, COMMAND
     }
@@ -268,5 +267,4 @@ public class RelayedMessage {
         }
         return rep;
     }
-
 }

@@ -11,8 +11,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-public class IRCCommandSender implements ConsoleCommandSender {
-
+public final class IRCCommandSender implements ConsoleCommandSender {
     private final RelayedCommand cmd;
     private final EndPoint console;
     private final ConsoleCommandSender sender;

@@ -6,7 +6,6 @@ import java.util.List;
  * Basic null endpoint that can be extended by a plugin writer.
  */
 public abstract class BasePoint implements SecuredEndPoint {
-
     @Override
     public Security getSecurity() {
         return Security.UNSECURED;
@@ -35,5 +34,4 @@ public abstract class BasePoint implements SecuredEndPoint {
     public List<String> listDisplayUsers() {
         return null;
     }
-
 }

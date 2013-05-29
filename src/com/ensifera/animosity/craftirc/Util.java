@@ -3,8 +3,7 @@ package com.ensifera.animosity.craftirc;
 /**
  * Utility class
  */
-public class Util {
-
+public final class Util {
     /**
      * Combine string array with delimiter
      * 
@@ -25,5 +24,4 @@ public class Util {
         }
         return result.toString();
     }
-
 }

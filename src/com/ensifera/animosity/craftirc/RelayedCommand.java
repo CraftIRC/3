@@ -3,10 +3,7 @@ package com.ensifera.animosity.craftirc;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RelayedCommand extends RelayedMessage {
-
-    static String typeString = "CMD";
-
+public final class RelayedCommand extends RelayedMessage {
     private final Map<String, Boolean> flags; //Command flags
 
     RelayedCommand(CraftIRC plugin, EndPoint source, CommandEndPoint target) {
@@ -25,5 +22,4 @@ public class RelayedCommand extends RelayedMessage {
     public void act() {
         this.post(DeliveryMethod.COMMAND, null);
     }
-
 }

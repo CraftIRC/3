@@ -8,37 +8,35 @@ import java.util.List;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.User;
 
-class NicknameComparator implements Comparator<String> {
+public final class IRCChannelPoint implements SecuredEndPoint {
+    private class NicknameComparator implements Comparator<String> {
+        private Minebot bot;
 
-    Minebot bot;
-
-    NicknameComparator(Minebot bot) {
-        this.bot = bot;
-    }
-
-    @Override
-    public int compare(String o1, String o2) {
-        final String prefixes = this.bot.getUserPrefixesInOrder();
-        final String o1sub = o1.substring(0, 1);
-        final String o2sub = o2.substring(0, 1);
-        if (!prefixes.contains(o1sub) && !prefixes.contains(o2sub)) {
-            return o1.compareToIgnoreCase(o2);
-        } else if (!prefixes.contains(o1sub)) {
-            return 1;
-        } else if (!prefixes.contains(o2sub)) {
-            return -1;
-        } else {
-            return prefixes.indexOf(o1sub) - prefixes.indexOf(o2sub);
+        private NicknameComparator(Minebot bot) {
+            this.bot = bot;
         }
+
+        @Override
+        public int compare(String o1, String o2) {
+            final String prefixes = this.bot.getUserPrefixesInOrder();
+            final String o1sub = o1.substring(0, 1);
+            final String o2sub = o2.substring(0, 1);
+            if (!prefixes.contains(o1sub) && !prefixes.contains(o2sub)) {
+                return o1.compareToIgnoreCase(o2);
+            } else if (!prefixes.contains(o1sub)) {
+                return 1;
+            } else if (!prefixes.contains(o2sub)) {
+                return -1;
+            } else {
+                return prefixes.indexOf(o1sub) - prefixes.indexOf(o2sub);
+            }
+        }
+
     }
 
-}
-
-public class IRCChannelPoint implements SecuredEndPoint {
-
-    Minebot bot;
-    String channel;
-    boolean allowColors = true;
+    private Minebot bot;
+    private String channel;
+    private boolean allowColors = true;
 
     IRCChannelPoint(Minebot bot, String channel) {
         this.bot = bot;

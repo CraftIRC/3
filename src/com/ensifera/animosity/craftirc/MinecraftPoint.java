@@ -11,9 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
 public class MinecraftPoint implements CommandEndPoint {
-
-    Server server;
-    CraftIRC plugin;
+    private Server server;
+    private CraftIRC plugin;
 
     MinecraftPoint(CraftIRC plugin, Server server) {
         this.server = server;
@@ -152,5 +151,4 @@ public class MinecraftPoint implements CommandEndPoint {
             }
         }
     }
-
 }

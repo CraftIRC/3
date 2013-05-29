@@ -3,7 +3,6 @@ package com.ensifera.animosity.craftirc;
 import java.util.List;
 
 public interface EndPoint {
-
     /**
      * The type is used to format the message and such.
      */
@@ -53,5 +52,4 @@ public interface EndPoint {
      * @return
      */
     public List<String> listDisplayUsers();
-
 }

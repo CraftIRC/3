@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.bukkit.Server;
 
-public class ConsolePoint implements CommandEndPoint {
-
+public final class ConsolePoint implements CommandEndPoint {
     private Server server;
     private CraftIRC plugin;
 
@@ -84,5 +83,4 @@ public class ConsolePoint implements CommandEndPoint {
             }
         }
     }
-
 }

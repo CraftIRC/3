@@ -19,12 +19,7 @@ import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
 
-/**
- * @author Animosity
- * @author Protected
- */
-public class Minebot extends PircBot implements Runnable {
-
+public final class Minebot extends PircBot implements Runnable {
     private CraftIRC plugin = null;
     private final boolean debug;
     private final int botId;
@@ -629,5 +624,4 @@ public class Minebot extends PircBot implements Runnable {
             this.channels.get(channel).setAllowColors(true);
         }
     }
-
-}// EO Minebot
+}

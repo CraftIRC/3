@@ -5,10 +5,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerCommandEvent;
 
-public class ConsoleListener implements Listener {
-    CraftIRC plugin;
+final class ConsoleListener implements Listener {
+    private CraftIRC plugin;
 
-    public ConsoleListener(CraftIRC craftIRC) {
+    ConsoleListener(CraftIRC craftIRC) {
         this.plugin = craftIRC;
     }
 
