@@ -130,7 +130,7 @@ public class RelayedMessage {
             for(ConfigurationNode node : plugin.getColorMap()) {
                 String colorName = node.getString("name", ""); 
                 if (colorName.length() > 0)
-                    result = result.replace("%"+colorName+"%", ircColor + node.getString("irc", "01"));
+                    result = result.replace("%"+colorName+"%", ircColor + plugin.cColorIrcNormalize(node.getString("irc", "01")));
             }
             result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", ircColor + "$1,$2");
