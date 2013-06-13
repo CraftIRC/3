@@ -159,9 +159,15 @@ public class CraftIRC extends JavaPlugin {
             }
 
             //Create bots
+            if (this.bots.size() == 0) {
+                this.logWarn("No bots defined in the config file");
+            }
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
                 this.instances.add(new Minebot(this, i, this.cDebug()));
+                if (this.channodes.get(i).size() == 0) {
+                    this.logWarn("No channels defined for bot #" + i);
+                }
             }
 
             this.loadTagGroups();
