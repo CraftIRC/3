@@ -178,7 +178,7 @@ public final class Minebot extends PircBot implements Runnable {
             if (!localAddr.isEmpty()) {
 
                 if (this.bindLocalAddr(localAddr, this.localBindPort)) {
-                    this.plugin.log("BINDING socket to " + localAddr + ":" + this.ircPort);
+                    this.plugin.log("BINDING socket to " + localAddr + ":" + this.localBindPort);
                 }
             }
 
