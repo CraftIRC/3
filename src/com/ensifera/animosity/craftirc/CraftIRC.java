@@ -736,7 +736,7 @@ public class CraftIRC extends JavaPlugin {
             }
             msg.setField("target", targetTag);
             //Check against path filters
-            if ((msg instanceof RelayedCommand) && this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
+            if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
                 if (knownDestinations != null) {
                     success = false;
                 }

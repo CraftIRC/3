@@ -211,10 +211,14 @@ paths:
   #- source: 'changeme'     # These are endpoint tags
   #  target: 'minecraft'    #
   #  
-  #  #Every path can contain a list of filters. Use for swear word censorship, blocking by user, etc.
+  #  #Every path can contain a list of filters that block any matched messages.
+  #  #To replace instead of blocking, see the replacement filters section below.
   #  filters:
   #    #Each filter contains regular expressions for formatting variables. This one ignores commands (.TEXT)
   #    - message: '^\.[^ ]+'
+  #    #Slightly more advanced example, ignores specific messages from a specific user.
+  #    - sender: '^Lain.*$'
+  #      message: "\x0312Automsg\x0304"
   #
   #  #Every path can override the formatting strings defined in settings.formatting .
   #  formatting:
