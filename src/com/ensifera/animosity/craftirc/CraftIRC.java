@@ -1013,14 +1013,19 @@ public class CraftIRC extends JavaPlugin {
         return result;
     }
 
+    public String cColorIrcNormalize(String color) {
+        //Forces sending two digit colour codes.
+        //As a function because it's more handy to use like this.
+        return (color.length() == 1 ? "0" : "") + color;
+    }
+
     public String cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                //Forces sending two digit colour codes. 
-                return (color.getString("irc").length() == 1 ? "0" : "") + color.getString("irc", this.cColorIrcFromName("foreground"));
+                return this.cColorIrcNormalize(color.getString("irc", this.cColorIrcFromName("foreground")));
             }
         }
         return this.cColorIrcFromName("foreground");
@@ -1032,7 +1037,7 @@ public class CraftIRC extends JavaPlugin {
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
-                return color.getString("irc", "01");
+                return this.cColorIrcNormalize(color.getString("irc", "01"));
             }
         }
         if (name.equalsIgnoreCase("foreground")) {
@@ -1043,9 +1048,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cColorGameFromIrc(String irc) {
-        //Always convert to two digits.
-        if (irc.length() == 1)
-            irc = "0" + irc;
+        irc = this.cColorIrcNormalize(irc);
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
