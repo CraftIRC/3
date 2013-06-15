@@ -25,7 +25,7 @@ public final class ConsolePoint implements CommandEndPoint {
 
     @Override
     public void messageIn(RelayedMessage msg) {
-        this.plugin.log(msg.getMessage(this));
+        return;
     }
 
     @Override
