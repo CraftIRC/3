@@ -141,6 +141,8 @@ public class CraftIRC extends JavaPlugin {
                 if (!this.cMinecraftTagGroup().equals("")) {
                     this.groupTag(this.cMinecraftTag(), this.cMinecraftTagGroup());
                 }
+            } else {
+                this.logWarn("No minecraft tag defined");
             }
             if ((this.cCancelledTag() != null) && !this.cCancelledTag().equals("")) {
                 this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); //Handles cancelled chat
@@ -159,14 +161,24 @@ public class CraftIRC extends JavaPlugin {
             }
 
             //Create bots
+            if (this.bots.size() == 0) {
+                this.logWarn("No bots defined in the config file");
+            }
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
                 this.instances.add(new Minebot(this, i, this.cDebug()));
+                if (this.channodes.get(i).size() == 0) {
+                    this.logWarn("No channels defined for bot #" + i);
+                }
             }
 
             this.loadTagGroups();
 
             this.log("Enabled.");
+
+            if (this.configuration.getNode("default-attributes").getBoolean("disabled", false)) {
+                this.logWarn("All communication paths disabled");
+            }
 
             //Hold timers
             this.hold = new HashMap<HoldType, Boolean>();
@@ -408,11 +420,24 @@ public class CraftIRC extends JavaPlugin {
             if (args.length == 0) {
                 return false;
             }
-            sender.sendMessage("Users in " + args[0] + ":");
             final List<String> userlists = this.ircUserLists(args[0]);
-            for (final String string : userlists) {
-                sender.sendMessage(string);
+            if (userlists == null) {
+                sender.sendMessage("Unknown tag");
+                return false;
             }
+            sender.sendMessage("Users in " + args[0] + " (" + userlists.size() + "):");
+
+            StringBuilder builder = new StringBuilder();
+            boolean first = true;
+
+            for (final String string : userlists) {
+                if (!first) {
+                    builder.append(", ");
+                }
+                builder.append(string);
+                first = false;
+            }
+            sender.sendMessage(builder.toString());
             return true;
         } catch (final Exception e) {
             e.printStackTrace();
@@ -736,7 +761,7 @@ public class CraftIRC extends JavaPlugin {
             }
             msg.setField("target", targetTag);
             //Check against path filters
-            if ((msg instanceof RelayedCommand) && this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
+            if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
                 if (knownDestinations != null) {
                     success = false;
                 }
@@ -808,7 +833,12 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public List<String> ircUserLists(String tag) {
-        return this.getEndPoint(tag).listDisplayUsers();
+        final EndPoint endpoint = this.getEndPoint(tag);
+        if (endpoint != null) {
+            return endpoint.listDisplayUsers();
+        } else {
+            return null;
+        }
     }
 
     void setDebug(boolean d) {
@@ -1007,14 +1037,19 @@ public class CraftIRC extends JavaPlugin {
         return result;
     }
 
+    public String cColorIrcNormalize(String color) {
+        //Forces sending two digit colour codes.
+        //As a function because it's more handy to use like this.
+        return (color.length() == 1 ? "0" : "") + color;
+    }
+
     public String cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                //Forces sending two digit colour codes. 
-                return (color.getString("irc").length() == 1 ? "0" : "") + color.getString("irc", this.cColorIrcFromName("foreground"));
+                return this.cColorIrcNormalize(color.getString("irc", this.cColorIrcFromName("foreground")));
             }
         }
         return this.cColorIrcFromName("foreground");
@@ -1026,7 +1061,7 @@ public class CraftIRC extends JavaPlugin {
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
-                return color.getString("irc", "01");
+                return this.cColorIrcNormalize(color.getString("irc", "01"));
             }
         }
         if (name.equalsIgnoreCase("foreground")) {
@@ -1037,9 +1072,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cColorGameFromIrc(String irc) {
-        //Always convert to two digits.
-        if (irc.length() == 1)
-            irc = "0" + irc;
+        irc = this.cColorIrcNormalize(irc);
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
         while (it.hasNext()) {
