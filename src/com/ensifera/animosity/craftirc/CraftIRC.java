@@ -419,10 +419,19 @@ public class CraftIRC extends JavaPlugin {
                 sender.sendMessage("Unknown tag");
                 return false;
             }
-            sender.sendMessage("Users in " + args[0] + ":");
+            sender.sendMessage("Users in " + args[0] + " (" + userlists.size() + "):");
+
+            StringBuilder builder = new StringBuilder();
+            boolean first = true;
+
             for (final String string : userlists) {
-                sender.sendMessage(string);
+                if (!first) {
+                    builder.append(", ");
+                }
+                builder.append(string);
+                first = false;
             }
+            sender.sendMessage(builder.toString());
             return true;
         } catch (final Exception e) {
             e.printStackTrace();
