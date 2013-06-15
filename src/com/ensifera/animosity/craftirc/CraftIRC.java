@@ -414,8 +414,12 @@ public class CraftIRC extends JavaPlugin {
             if (args.length == 0) {
                 return false;
             }
-            sender.sendMessage("Users in " + args[0] + ":");
             final List<String> userlists = this.ircUserLists(args[0]);
+            if (userlists == null) {
+                sender.sendMessage("Unknown tag");
+                return false;
+            }
+            sender.sendMessage("Users in " + args[0] + ":");
             for (final String string : userlists) {
                 sender.sendMessage(string);
             }
@@ -814,7 +818,12 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public List<String> ircUserLists(String tag) {
-        return this.getEndPoint(tag).listDisplayUsers();
+        final EndPoint endpoint = this.getEndPoint(tag);
+        if (endpoint != null) {
+            return endpoint.listDisplayUsers();
+        } else {
+            return null;
+        }
     }
 
     void setDebug(boolean d) {
