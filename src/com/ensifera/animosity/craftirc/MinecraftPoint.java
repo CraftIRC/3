@@ -3,7 +3,6 @@ package com.ensifera.animosity.craftirc;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -121,34 +120,10 @@ public class MinecraftPoint implements CommandEndPoint {
             } else {
                 result = "Nobody is minecrafting right now.";
             }
-            final int maxlen = 400; // Arbitrary!
-            String[] responses;
-            if (result.length() > maxlen) {
-                final StringBuilder builder = new StringBuilder(result.length());
-                final StringTokenizer tokenizer = new StringTokenizer(result, " ");
-                int currentLine = 0;
-                while (tokenizer.hasMoreTokens()) {
-                    final String nextWord = tokenizer.nextToken();
-                    if ((currentLine + nextWord.length()) > maxlen) {
-                        builder.append("\n");
-                        currentLine = 0;
-                    } else {
-                        builder.append(' ');
-                        currentLine++;
-                    }
-                    builder.append(nextWord);
-                    currentLine += (nextWord.length());
-                }
-                responses = builder.toString().split("\n");
-            } else {
-                responses = new String[] { result };
-            }
             //Reply to remote endpoint! 
-            for (final String message : responses) {
-                final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "");
-                response.setField("message", message);
-                response.post();
-            }
+            final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "");
+            response.setField("message", result);
+            response.post();
         }
     }
 }
