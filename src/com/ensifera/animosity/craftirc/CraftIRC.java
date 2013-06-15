@@ -141,6 +141,8 @@ public class CraftIRC extends JavaPlugin {
                 if (!this.cMinecraftTagGroup().equals("")) {
                     this.groupTag(this.cMinecraftTag(), this.cMinecraftTagGroup());
                 }
+            } else {
+                this.logWarn("No minecraft tag defined");
             }
             if ((this.cCancelledTag() != null) && !this.cCancelledTag().equals("")) {
                 this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); //Handles cancelled chat
@@ -173,6 +175,10 @@ public class CraftIRC extends JavaPlugin {
             this.loadTagGroups();
 
             this.log("Enabled.");
+
+            if (this.configuration.getNode("default-attributes").getBoolean("disable", false)) {
+                this.logWarn("All communication paths disabled");
+            }
 
             //Hold timers
             this.hold = new HashMap<HoldType, Boolean>();
