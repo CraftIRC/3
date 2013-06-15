@@ -471,6 +471,7 @@ public final class Minebot extends PircBot implements Runnable {
                 cmd.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 cmd.setField("realSender", sender);
                 cmd.setField("srcChannel", channel);
+                cmd.setField("message", message);
                 cmd.setField("args", args);
                 cmd.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, channel)));
                 cmd.setField("username", login);
