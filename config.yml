@@ -19,8 +19,8 @@ settings:
 
   #These tags identify built-in endpoints (for the paths: section). Other endpoints may be provided by plugins.
   minecraft-tag: 'minecraft'  #A basic game-side endpoint (a chat plugin may provide better functionality).
-  cancelled-tag: ''           #Cancelled chat is sent here. Give this tag a name only if you disable either auto-paths or minecraft-tag
-  console-tag: 'console'      #The minecraft server console.
+  cancelled-tag: ''           #Cancelled chat is sent here. Give this tag a name to handle messages cancelled by a chat plugin.
+  console-tag: 'console'      #The minecraft server console. Handles /say and .cmd.
   
   #Automatically establish paths between unsecured communication endpoints. Turn off if you always want to configure every path manually.
   #(Secured endpoints can still send messages through auto-paths, but not receive them)
@@ -52,7 +52,7 @@ settings:
   #IRC commands start with this, for example '.players' (it's not part of the command name though)
   command-prefix: '.'
   
-  #Use different words for IRC commands
+  #Use different words for IRC commands. This won't add additional irc commands, only aliases for the existing ones.
   irc-commands:
     say: ['say','mc']
     players: ['players']
@@ -61,7 +61,12 @@ settings:
   #Output a LOT of crap to the console in case you're having problems or are a plugin developer.
   debug: false
   
-  #Console commands that can be called by an admin using .cmd/.c in an admin channel
+  #Console commands that can be called by an admin using .cmd/.c
+  #This is restricted to:
+  # - Any irc channel when admin is enabled in default-attributes
+  # - For manual paths: irc to console paths with admin attribute
+  # - IRC users matching admin-prefixes in the bot section below (usually channel OPs or owners)
+  #Use '*' to enable all commands. Use with care only if you understand the restrictions above.
   console-commands: ['reload', 'save-all']
   
   #Delay before allowing these event types to be relayed (prevent startup flood)
@@ -70,7 +75,7 @@ settings:
   #How long in seconds before attempting a reconnect/rejoin when a connection/join fails.
   retry-delay: 10
   
-  #Bind to a specific IP address in your server.
+  #Bind to a specific IP address in your server. If you're not sure what this means, don't set it.
   #bind-address: 127.0.0.1
   
   #Default formatting templates used in all messages. Plugins may require you to add more.
@@ -211,10 +216,14 @@ paths:
   #- source: 'changeme'     # These are endpoint tags
   #  target: 'minecraft'    #
   #  
-  #  #Every path can contain a list of filters. Use for swear word censorship, blocking by user, etc.
+  #  #Every path can contain a list of filters that block any matched messages.
+  #  #To replace instead of blocking, see the replacement filters section below.
   #  filters:
   #    #Each filter contains regular expressions for formatting variables. This one ignores commands (.TEXT)
   #    - message: '^\.[^ ]+'
+  #    #Slightly more advanced example, ignores specific messages from a specific user.
+  #    - sender: '^Lain.*$'
+  #      message: "\x0312Automsg\x0304"
   #
   #  #Every path can override the formatting strings defined in settings.formatting .
   #  formatting:

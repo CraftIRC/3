@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.User;
@@ -37,6 +38,7 @@ public final class IRCChannelPoint implements SecuredEndPoint {
     private Minebot bot;
     private String channel;
     private boolean allowColors = true;
+    private final int maxlen = 400;
 
     IRCChannelPoint(Minebot bot, String channel) {
         this.bot = bot;
@@ -59,7 +61,30 @@ public final class IRCChannelPoint implements SecuredEndPoint {
         if (!this.allowColors) {
             message = Colors.removeFormattingAndColors(message);
         }
-        this.bot.sendMessage(this.channel, message);
+        if (message.length() > maxlen) {
+            String[] messages;
+            final StringBuilder builder = new StringBuilder(message.length());
+            final StringTokenizer tokenizer = new StringTokenizer(message, " ");
+            int currentLine = 0;
+            while (tokenizer.hasMoreTokens()) {
+                final String nextWord = tokenizer.nextToken();
+                if ((currentLine + nextWord.length()) > maxlen) {
+                    builder.append("\n");
+                    currentLine = 0;
+                } else {
+                    builder.append(' ');
+                    currentLine++;
+                }
+                builder.append(nextWord);
+                currentLine += (nextWord.length());
+            }
+            messages = builder.toString().split("\n");
+            for (final String messagePart : messages) {
+                this.bot.sendMessage(this.channel, messagePart);
+            }
+        } else {
+            this.bot.sendMessage(this.channel, message);
+        }
     }
 
     @Override
@@ -73,14 +98,15 @@ public final class IRCChannelPoint implements SecuredEndPoint {
 
     @Override
     public boolean adminMessageIn(RelayedMessage msg) {
+        boolean success = false;
         final String message = msg.getMessage(this);
         for (final String nick : this.listDisplayUsers()) {
             if (this.bot.getPlugin().cBotAdminPrefixes(this.bot.getId()).contains(nick.substring(0, 1))) {
+                success = true;
                 this.bot.sendNotice(nick.substring(1), message);
-                return true;
             }
         }
-        return false;
+        return success;
     }
 
     @Override

@@ -178,7 +178,7 @@ public final class Minebot extends PircBot implements Runnable {
             if (!localAddr.isEmpty()) {
 
                 if (this.bindLocalAddr(localAddr, this.localBindPort)) {
-                    this.plugin.log("BINDING socket to " + localAddr + ":" + this.ircPort);
+                    this.plugin.log("BINDING socket to " + localAddr + ":" + this.localBindPort);
                 }
             }
 
@@ -471,6 +471,7 @@ public final class Minebot extends PircBot implements Runnable {
                 cmd.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 cmd.setField("realSender", sender);
                 cmd.setField("srcChannel", channel);
+                cmd.setField("message", message);
                 cmd.setField("args", args);
                 cmd.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, channel)));
                 cmd.setField("username", login);
