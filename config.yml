@@ -300,7 +300,7 @@ colormap:
   - {irc: 13, game: "\u00A7d", name: 'magenta'}
   - {irc: 8, game: "\u00A7e", name: 'yellow'}
   - {irc: 1, game: "\u00A7f", name: 'foreground'}
-  - {irc: -1, game: "\u00Afr", name: 'reset'}
+  - {irc: -1, game: "\u00A7r", name: 'reset'}
 
 
 # ******************* REPLACEMENT FILTERS *******************
