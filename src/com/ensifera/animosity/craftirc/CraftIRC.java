@@ -611,6 +611,9 @@ public class CraftIRC extends JavaPlugin {
         if (!this.irccmds.containsKey(command)) {
             return false;
         }
+        if (this.isDebug()) {
+            this.log("Unregistering command: " + command);
+        }
         this.irccmds.remove(command);
         return true;
     }
@@ -619,6 +622,9 @@ public class CraftIRC extends JavaPlugin {
         final EndPoint ep = this.getEndPoint(tag);
         if (ep == null) {
             return false;
+        }
+        if (this.isDebug()) {
+            this.log("Unregistering endpoint: " + tag);
         }
         this.endpoints.remove(tag);
         this.tags.remove(ep);

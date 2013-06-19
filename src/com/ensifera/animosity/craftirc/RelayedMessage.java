@@ -261,10 +261,17 @@ public class RelayedMessage {
 
     @Override
     public String toString() {
-        String rep = "{" + this.eventType + " " + RelayedMessage.typeString + "}";
-        for (final String key : this.fields.keySet()) {
-            rep = rep + " (" + key + ": " + this.fields.get(key) + ")";
+        // create an ordered set so the most important keys are always first
+        LinkedHashSet<String> orderedKeys = new LinkedHashSet<String>();
+        orderedKeys.addAll(Arrays.asList("source", "target", "sender", "message"));
+        orderedKeys.addAll(this.fields.keySet());
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("{TYPE: " + this.eventType + "}");
+
+        for (final String key : orderedKeys) {
+            builder.append(" (" + key + ": " + this.fields.get(key) + ")");
         }
-        return rep;
+        return builder.toString();
     }
 }
