@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 
 import org.bukkit.ChatColor;
 public class RelayedMessage {
@@ -129,8 +130,10 @@ public class RelayedMessage {
             //Replace named colours
             for(ConfigurationNode node : plugin.getColorMap()) {
                 String colorName = node.getString("name", ""); 
-                if (colorName.length() > 0)
-                    result = result.replace("%"+colorName+"%", ircColor + plugin.cColorIrcNormalize(node.getString("irc", "01")));
+                if (colorName.length() > 0) {
+                    String c = plugin.cColorIrcNormalize(node.getString("irc", "01"));
+                    result = result.replace("%"+colorName+"%", c.equals("-1") ? Colors.NORMAL : "\u0003" + c);
+                }
             }
             result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", ircColor + "$1,$2");
