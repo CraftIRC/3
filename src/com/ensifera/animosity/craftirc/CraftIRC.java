@@ -897,18 +897,6 @@ public class CraftIRC extends JavaPlugin {
         return false;
     }
 
-    // TODO: Make sure this works
-    public String colorizeName(String name) {
-        final Pattern color_codes = Pattern.compile(ChatColor.COLOR_CHAR + "[0-9a-fk-r]");
-        Matcher find_colors = color_codes.matcher(name);
-        while (find_colors.find()) {
-            String color = this.cColorIrcFromGame(find_colors.group());
-            name = find_colors.replaceFirst(color.equals("-1") ? Colors.NORMAL : Character.toString((char) 3) + color);
-            find_colors = color_codes.matcher(name);
-        }
-        return name;
-    }
-
     protected void enqueueConsoleCommand(String cmd) {
         try {
             this.getServer().dispatchCommand(this.getServer().getConsoleSender(), cmd);
@@ -1052,13 +1040,18 @@ public class CraftIRC extends JavaPlugin {
     public String cColorIrcFromGame(String game) {
         ConfigurationNode color;
         final Iterator<ConfigurationNode> it = this.colormap.iterator();
+        String c = null;
         while (it.hasNext()) {
             color = it.next();
             if (color.getString("game").equals(game)) {
-                return this.cColorIrcNormalize(color.getString("irc", this.cColorIrcFromName("foreground")));
+                c = this.cColorIrcNormalize(color.getString("irc", this.cColorIrcFromName("foreground")));
+                break;
             }
         }
-        return this.cColorIrcFromName("foreground");
+        if(c==null){
+            c = this.cColorIrcFromName("foreground");
+        }
+        return c.equals("-1") ? Colors.NORMAL : "\u0003" + c;
     }
 
     public String cColorIrcFromName(String name) {
