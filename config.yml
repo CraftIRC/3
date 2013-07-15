@@ -105,6 +105,7 @@ settings:
       kick: '[%srcChannel%] * %sender% was kicked by %moderator% (%message%)'
       nick: '[%srcChannel%] * %sender% is now known as %message%'
       generic: '%message%'
+      mode: '[%srcChannel%] * %moderator% sets mode %message%'
     from-plain:
       action: '* %sender% %message%'
       say: '[Server] %message%'
@@ -132,6 +133,7 @@ settings:
     #  kick: '%grey%[%srcChannel%]%darkgreen% * %sender% was kicked by %ircModPrefix%%moderator%'
     #  nick: '%grey%[%srcChannel%]%darkgreen% * %sender% is now known as %message%'
     #  generic: '%grey%%message%'
+    #  mode: '%grey%[%srcChannel%]%darkgreen% * %moderator% sets mode %message%'
     #from-plain:
     #  action: '%purple%* %sender%%purple% %message%'
     #  say: '%magenta%[Server] %message%'
@@ -271,6 +273,7 @@ default-attributes:
     say: true
     generic: true
     death: true
+    mode: false
     
     #Admin commands and /admins! can only be sent through a path where admin is set to true
     admin: false
