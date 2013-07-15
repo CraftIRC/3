@@ -105,6 +105,7 @@ settings:
       kick: '[%srcChannel%] * %sender% was kicked by %moderator% (%message%)'
       nick: '[%srcChannel%] * %sender% is now known as %message%'
       generic: '%message%'
+      mode: "[%srcChannel%] * %moderator% sets mode %message%"
     from-plain:
       action: '* %sender% %message%'
       say: '[Server] %message%'
