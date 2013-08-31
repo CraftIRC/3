@@ -32,6 +32,7 @@ public class RelayedMessage {
     private String template; //Formatting string
     private final Map<String, String> fields; //All message attributes
     private final Set<String> doNotColorFields; //Do not allow color codes on these fields
+    private final Map<String, Boolean> flags;
 
     RelayedMessage(CraftIRC plugin, EndPoint source) {
         this(plugin, source, null, "");
@@ -55,6 +56,7 @@ public class RelayedMessage {
         }
         this.fields = new HashMap<String, String>();
         this.doNotColorFields = new HashSet<String>();
+        this.flags = new HashMap<String, Boolean>();
     }
 
     public CraftIRC getPlugin() {
@@ -97,6 +99,15 @@ public class RelayedMessage {
 
     public void doNotColor(String key) {
         this.doNotColorFields.add(key);
+    }
+
+    public void setFlag(String key, boolean value) {
+        this.flags.put(key, value);
+    }
+
+    public boolean getFlag(String key) {
+        Boolean flag = this.flags.get(key);
+        return (flag != null) ? flag : false;
     }
 
     public boolean addExtraTarget(EndPoint ep) {
