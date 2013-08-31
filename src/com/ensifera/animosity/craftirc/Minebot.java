@@ -2,6 +2,8 @@ package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -193,14 +195,23 @@ public final class Minebot extends PircBot implements Runnable {
     }
 
     void connectToIrc() {
+        final String serverDescription = this.ircServer + ":" + this.ircPort + ((this.ssl) ? " [SSL]" : "");
+        this.plugin.log("Connecting to " + serverDescription);
         try {
             if (this.ssl) {
-                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort + " [SSL]");
                 this.connect(this.ircServer, this.ircPort, this.ircPass, new TrustingSSLSocketFactory());
             } else {
-                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort);
                 this.connect(this.ircServer, this.ircPort, this.ircPass);
             }
+        } catch (final ConnectException e) {
+            e.printStackTrace();
+            this.plugin.logWarn("Couldn't connect to " + serverDescription);
+            this.plugin.logWarn("Check that the address is written correctly and no firewalls are blocking CraftIRC");
+            this.plugin.logWarn("If you're using a shared hosting provider, consider contacting tech support about this issue");
+        } catch (final UnknownHostException e){
+            e.printStackTrace();
+            this.plugin.logWarn("Couldn't connect to " + serverDescription);
+            this.plugin.logWarn("Check that the address is written correctly");
         } catch (final IOException e) {
             e.printStackTrace();
         } catch (final IrcException e) {
