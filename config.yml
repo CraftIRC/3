@@ -95,6 +95,8 @@ settings:
       generic: '%message%'
       say: '[Server] %message%'
       death: '%message%'
+      players-list: 'Online (%playerCount%/%maxPlayers%): %message%'
+      players-nobody: 'Nobody is minecrafting right now.'
     from-irc:
       chat: '[%srcChannel%] <%sender%> %message%'
       private: '%sender% whispers> %message%'
@@ -123,6 +125,8 @@ settings:
     #  generic: '%darkgrey%%message%'
     #  admin: '%prefix%%sender%%suffix% to online admins> %message%'
     #  death: '%red%%message%'
+    #  players-list: 'Online (%playerCount%/%maxPlayers%): %message%'
+    #  players-nobody: 'Nobody is minecrafting right now.'
     #from-irc:
     #  chat: '%grey%[%srcChannel%]%foreground% <%ircPrefix%%sender%> %message%'
     #  private: '%grey%[IRC]%foreground% %sender% whispers> %message%'

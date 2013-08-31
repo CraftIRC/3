@@ -173,6 +173,11 @@ public class CraftIRC extends JavaPlugin {
 
             this.loadTagGroups();
 
+            //Give these default values if they aren't defined
+            //Ugly but there is no better way with this non-bukkit config
+            this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
+            this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
+
             this.log("Enabled.");
 
             if (this.configuration.getNode("default-attributes").getBoolean("disable", false)) {
