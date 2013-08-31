@@ -197,9 +197,11 @@ public class CraftIRC extends JavaPlugin {
             //Ugly but there is no better way with this non-bukkit config
             this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
             this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
+            this.configuration.getBoolean("default-attributes.notices.admin", true);
+            this.configuration.getBoolean("default-attributes.notices.private", true);
 
 
-            if (this.configuration.getNode("default-attributes").getBoolean("disable", false)) {
+            if (this.configuration.getBoolean("default-attributes.disable", false)) {
                 this.logDerp("All communication paths disabled because the 'disable' attribute was found. Check the config.");
             } else {
                 this.log("Enabled.");
@@ -789,6 +791,10 @@ public class CraftIRC extends JavaPlugin {
                 continue;
             }
             msg.setField("target", targetTag);
+
+            //Whether the event should be sent as a NOTICE on irc endpoints or not (Ignored in others)
+            msg.setFlag("notice", this.cPathAttribute(sourceTag, targetTag, "notices." + msg.getEvent()));
+
             //Check against path filters
             if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
                 if (knownDestinations != null) {

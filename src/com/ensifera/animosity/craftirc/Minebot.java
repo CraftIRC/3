@@ -526,6 +526,29 @@ public final class Minebot extends PircBot implements Runnable {
     }
 
     @Override
+    protected void onNotice(String sender, String login, String hostname, String target, String notice) {
+        target = target.toLowerCase();
+        final RelayedMessage msg = this.plugin.newMsg(this.channels.get(target), null, "notice");
+        if (msg == null) {
+            return;
+        }
+        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+            return;
+        }
+        msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
+        msg.setField("realSender", sender);
+        msg.setField("srcChannel", target);
+        msg.setField("message", notice);
+        msg.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, target)));
+        msg.setField("username", login);
+        msg.setField("hostname", hostname);
+        msg.doNotColor("message");
+        msg.doNotColor("username");
+        msg.doNotColor("hostname");
+        msg.post();
+    }
+
+    @Override
     public void onAction(String sender, String login, String hostname, String target, String action) {
         target = target.toLowerCase();
         final RelayedMessage msg = this.plugin.newMsg(this.channels.get(target), null, "action");

@@ -108,6 +108,7 @@ settings:
       quit: '[%srcChannel%] * Quits: %sender% (%message%)'
       kick: '[%srcChannel%] * %sender% was kicked by %moderator% (%message%)'
       nick: '[%srcChannel%] * %sender% is now known as %message%'
+      notice: '[%srcChannel%] [NOTICE %sender%] %message%'
       generic: '%message%'
       mode: '[%srcChannel%] * %moderator% sets mode %message%'
     from-plain:
@@ -138,6 +139,7 @@ settings:
     #  quit: '%grey%[%srcChannel%]%blue% * Quits: %sender%'
     #  kick: '%grey%[%srcChannel%]%darkgreen% * %sender% was kicked by %ircModPrefix%%moderator%'
     #  nick: '%grey%[%srcChannel%]%darkgreen% * %sender% is now known as %message%'
+    #  notice: '%grey%[%srcChannel%]%foreground% [%purple%NOTICE%foreground% %ircPrefix%%sender%] %message%'
     #  generic: '%grey%%message%'
     #  mode: '%grey%[%srcChannel%]%darkgreen% * %moderator% sets mode %message%'
     #from-plain:
@@ -280,12 +282,18 @@ default-attributes:
     generic: true
     death: true
     mode: false
+    notice: false
     
     #Admin commands and /admins! can only be sent through a path where admin is set to true
     admin: false
     
     #True: Colors will be converted. False: Colors will be stripped.
     colors: true
+
+  # List of event types that should be sent as NOTICE on irc
+  notices:
+    admin: true
+    private: true
 
 
 # ******************* COLOR CONVERSION MAP *******************
