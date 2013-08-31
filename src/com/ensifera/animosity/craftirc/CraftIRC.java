@@ -34,6 +34,7 @@ public class CraftIRC extends JavaPlugin {
     private Timer holdTimer = new Timer();
     private Timer retryTimer = new Timer();
     private Map<HoldType, Boolean> hold;
+    private String firstChannelTag;
 
     //Bots and channels config storage
     private List<ConfigurationNode> bots;
@@ -163,11 +164,16 @@ public class CraftIRC extends JavaPlugin {
             if (this.bots.size() == 0) {
                 this.logWarn("No bots defined in the config file");
             }
+
+            this.firstChannelTag = null;
+
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
                 this.instances.add(new Minebot(this, i, this.cDebug()));
                 if (this.channodes.get(i).size() == 0) {
                     this.logWarn("No channels defined for bot #" + i);
+                } else if (this.firstChannelTag == null) {
+                    this.firstChannelTag = this.channodes.get(i).get(0).getString("tag");
                 }
             }
 
@@ -421,15 +427,13 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdGetUserList(CommandSender sender, String[] args) {
         try {
-            if (args.length == 0) {
-                return false;
-            }
-            final List<String> userlists = this.ircUserLists(args[0]);
+            final String tag = (args.length == 0) ? this.firstChannelTag : args[0];
+            final List<String> userlists = this.ircUserLists(tag);
             if (userlists == null) {
                 sender.sendMessage("Unknown tag");
                 return false;
             }
-            sender.sendMessage("Users in " + args[0] + " (" + userlists.size() + "):");
+            sender.sendMessage("Users in " + tag + " (" + userlists.size() + "):");
 
             StringBuilder builder = new StringBuilder();
             boolean first = true;
