@@ -824,6 +824,10 @@ public class CraftIRC extends JavaPlugin {
         return this.instances.get(bot);
     }
 
+    public int getNumBots() {
+        return this.instances.size();
+    }
+
     public void sendRawToBot(String rawMessage, int bot) {
         if (this.isDebug()) {
             this.log("sendRawToBot(bot=" + bot + ", message=" + rawMessage);
