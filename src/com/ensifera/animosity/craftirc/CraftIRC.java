@@ -34,6 +34,8 @@ public class CraftIRC extends JavaPlugin {
     private Timer holdTimer = new Timer();
     private Timer retryTimer = new Timer();
     private Map<HoldType, Boolean> hold;
+    private String firstChannelTag;
+    private boolean derpFakeExceptionSent = false;
 
     //Bots and channels config storage
     private List<ConfigurationNode> bots;
@@ -60,6 +62,15 @@ public class CraftIRC extends JavaPlugin {
         this.getLogger().warning(message);
     }
 
+    void logDerp(String message) {
+        this.getLogger().severe(message);
+        if (!this.derpFakeExceptionSent) {
+            // show a fake exception, and get the users to hopefully notice this poor error
+            (new Throwable("You made a mistake with your config. This is an error to get your attention. Don't report bugs for this.")).printStackTrace();
+            this.derpFakeExceptionSent = true;
+        }
+    }
+
     /***************************
      * Bukkit stuff
      ***************************/
@@ -74,6 +85,7 @@ public class CraftIRC extends JavaPlugin {
                 this.autoDisable();
                 return;
             }
+            this.derpFakeExceptionSent = false;
             this.configuration = new Configuration(configFile);
             this.configuration.load();
             this.cancelChat = this.configuration.getBoolean("settings.cancel-chat", false);
@@ -97,6 +109,9 @@ public class CraftIRC extends JavaPlugin {
                 if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !this.paths.containsKey(identifier)) {
                     this.paths.put(identifier, path);
                 }
+            }
+            if (this.cAutoPaths() && this.paths.size() > 0) {
+                this.logDerp("Auto-paths are enabled but there are paths defined in the paths section of the config - this may cause unexpected behavior!");
             }
 
             //Replace filters
@@ -141,7 +156,7 @@ public class CraftIRC extends JavaPlugin {
                     this.groupTag(this.cMinecraftTag(), this.cMinecraftTagGroup());
                 }
             } else {
-                this.logWarn("No minecraft tag defined");
+                this.logDerp("No minecraft tag defined in the config file (settings.minecraft-tag)");
             }
             if ((this.cCancelledTag() != null) && !this.cCancelledTag().equals("")) {
                 this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); //Handles cancelled chat
@@ -161,13 +176,18 @@ public class CraftIRC extends JavaPlugin {
 
             //Create bots
             if (this.bots.size() == 0) {
-                this.logWarn("No bots defined in the config file");
+                this.logDerp("No bots defined in the 'bots' section of the config file");
             }
+
+            this.firstChannelTag = null;
+
             this.instances = new ArrayList<Minebot>();
             for (int i = 0; i < this.bots.size(); i++) {
                 this.instances.add(new Minebot(this, i, this.cDebug()));
                 if (this.channodes.get(i).size() == 0) {
-                    this.logWarn("No channels defined for bot #" + i);
+                    this.logDerp("No channels defined for bot '" + this.cBotNickname(i) + "'. Check the config.");
+                } else if (this.firstChannelTag == null) {
+                    this.firstChannelTag = this.channodes.get(i).get(0).getString("tag");
                 }
             }
 
@@ -177,11 +197,14 @@ public class CraftIRC extends JavaPlugin {
             //Ugly but there is no better way with this non-bukkit config
             this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
             this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
+            this.configuration.getBoolean("default-attributes.notices.admin", true);
+            this.configuration.getBoolean("default-attributes.notices.private", true);
 
-            this.log("Enabled.");
 
-            if (this.configuration.getNode("default-attributes").getBoolean("disable", false)) {
-                this.logWarn("All communication paths disabled");
+            if (this.configuration.getBoolean("default-attributes.disable", false)) {
+                this.logDerp("All communication paths disabled because the 'disable' attribute was found. Check the config.");
+            } else {
+                this.log("Enabled.");
             }
 
             //Hold timers
@@ -421,15 +444,13 @@ public class CraftIRC extends JavaPlugin {
 
     private boolean cmdGetUserList(CommandSender sender, String[] args) {
         try {
-            if (args.length == 0) {
-                return false;
-            }
-            final List<String> userlists = this.ircUserLists(args[0]);
+            final String tag = (args.length == 0) ? this.firstChannelTag : args[0];
+            final List<String> userlists = this.ircUserLists(tag);
             if (userlists == null) {
                 sender.sendMessage("Unknown tag");
                 return false;
             }
-            sender.sendMessage("Users in " + args[0] + " (" + userlists.size() + "):");
+            sender.sendMessage("Users in " + tag + " (" + userlists.size() + "):");
 
             StringBuilder builder = new StringBuilder();
             boolean first = true;
@@ -770,6 +791,10 @@ public class CraftIRC extends JavaPlugin {
                 continue;
             }
             msg.setField("target", targetTag);
+
+            //Whether the event should be sent as a NOTICE on irc endpoints or not (Ignored in others)
+            msg.setFlag("notice", this.cPathAttribute(sourceTag, targetTag, "notices." + msg.getEvent()));
+
             //Check against path filters
             if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
                 if (knownDestinations != null) {

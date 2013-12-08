@@ -2,6 +2,8 @@ package com.ensifera.animosity.craftirc;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -193,14 +195,23 @@ public final class Minebot extends PircBot implements Runnable {
     }
 
     void connectToIrc() {
+        final String serverDescription = this.ircServer + ":" + this.ircPort + ((this.ssl) ? " [SSL]" : "");
+        this.plugin.log("Connecting to " + serverDescription);
         try {
             if (this.ssl) {
-                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort + " [SSL]");
                 this.connect(this.ircServer, this.ircPort, this.ircPass, new TrustingSSLSocketFactory());
             } else {
-                this.plugin.log("Connecting to " + this.ircServer + ":" + this.ircPort);
                 this.connect(this.ircServer, this.ircPort, this.ircPass);
             }
+        } catch (final ConnectException e) {
+            e.printStackTrace();
+            this.plugin.logWarn("Couldn't connect to " + serverDescription);
+            this.plugin.logWarn("Check that the address is written correctly and no firewalls are blocking CraftIRC");
+            this.plugin.logWarn("If you're using a shared hosting provider, consider contacting tech support about this issue");
+        } catch (final UnknownHostException e){
+            e.printStackTrace();
+            this.plugin.logWarn("Couldn't connect to " + serverDescription);
+            this.plugin.logWarn("Check that the address is written correctly");
         } catch (final IOException e) {
             e.printStackTrace();
         } catch (final IrcException e) {
@@ -512,6 +523,29 @@ public final class Minebot extends PircBot implements Runnable {
             e.printStackTrace();
             this.plugin.logWarn("error while relaying IRC message: " + message);
         }
+    }
+
+    @Override
+    protected void onNotice(String sender, String login, String hostname, String target, String notice) {
+        target = target.toLowerCase();
+        final RelayedMessage msg = this.plugin.newMsg(this.channels.get(target), null, "notice");
+        if (msg == null) {
+            return;
+        }
+        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+            return;
+        }
+        msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
+        msg.setField("realSender", sender);
+        msg.setField("srcChannel", target);
+        msg.setField("message", notice);
+        msg.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, target)));
+        msg.setField("username", login);
+        msg.setField("hostname", hostname);
+        msg.doNotColor("message");
+        msg.doNotColor("username");
+        msg.doNotColor("hostname");
+        msg.post();
     }
 
     @Override

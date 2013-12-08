@@ -1127,7 +1127,9 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
             Enumeration<String> enumeration = _channels.keys();
             while (enumeration.hasMoreElements()) {
                 String channel = (String) enumeration.nextElement();
-                this.onChannelNickChange(channel, sourceNick, sourceLogin, sourceHostname, newNick);
+                if (this.getUser(sourceNick, channel) != null) {
+                    this.onChannelNickChange(channel, sourceNick, sourceLogin, sourceHostname, newNick);
+                }
             }
             // Somebody is changing their nick.
             this.renameUser(sourceNick, newNick);
@@ -1144,7 +1146,9 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
             Enumeration<String> enumeration = _channels.keys();
             while (enumeration.hasMoreElements()) {
                 String channel = (String) enumeration.nextElement();
-                this.onChannelQuit(channel, sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));                
+                if (this.getUser(sourceNick, channel) != null) {
+                    this.onChannelQuit(channel, sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
+                }
             }
             // Someone has quit from the IRC server.
             if (sourceNick.equals(this.getNick())) {

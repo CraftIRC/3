@@ -5,8 +5,10 @@
 # Welcome, new user! Please read carefully:
 
 # CraftIRC is a very powerful and flexible tool for all your communication needs. Being fully customizable, it TAKES SOME TIME TO SET UP.
-# Please set aside half an hour to READ THIS FILE CAREFULLY and configure everything according to your needs. If you don't, CraftIRC
-#   will NOT WORK PROPERLY.
+# Please set aside half an hour to READ THIS FILE CAREFULLY and configure everything according to your needs.
+
+# If you don't follow these instructions, CraftIRC will NOT WORK PROPERLY! Pay special attention to sections marked as [CHANGES REQUIRED]
+
 # The CraftIRC developers can be found on #craftirc in irc.esper.net . Read the topic on arrival. If you have a specific issue you need
 #   help with and we are around, we will help. BUT WE WILL NOT SET UP CRAFTIRC FOR YOU. If you don't want to/can't do this yourself, try
 #   asking a friend or maybe if you're really lucky a user in #craftirc is feeling generous ;)
@@ -106,6 +108,7 @@ settings:
       quit: '[%srcChannel%] * Quits: %sender% (%message%)'
       kick: '[%srcChannel%] * %sender% was kicked by %moderator% (%message%)'
       nick: '[%srcChannel%] * %sender% is now known as %message%'
+      notice: '[%srcChannel%] [NOTICE %sender%] %message%'
       generic: '%message%'
       mode: '[%srcChannel%] * %moderator% sets mode %message%'
     from-plain:
@@ -136,6 +139,7 @@ settings:
     #  quit: '%grey%[%srcChannel%]%blue% * Quits: %sender%'
     #  kick: '%grey%[%srcChannel%]%darkgreen% * %sender% was kicked by %ircModPrefix%%moderator%'
     #  nick: '%grey%[%srcChannel%]%darkgreen% * %sender% is now known as %message%'
+    #  notice: '%grey%[%srcChannel%]%foreground% [%purple%NOTICE%foreground% %ircPrefix%%sender%] %message%'
     #  generic: '%grey%%message%'
     #  mode: '%grey%[%srcChannel%]%darkgreen% * %moderator% sets mode %message%'
     #from-plain:
@@ -210,7 +214,7 @@ bots:
 
 
 # ******************* COMMUNICATION PATHS *******************
-# (For most uses, only needed if settings.auto-paths is false)
+# (For most uses, only needed if settings.auto-paths is false. Skip this section otherwise.)
 # Declare here a path for every pair of endpoints between which you want messages to flow.
 # For each path you can filter the messages sent by event type or contents.
 # Paths are one-way, so you must declare A to B and B to A if you want a two-way channel.
@@ -278,12 +282,18 @@ default-attributes:
     generic: true
     death: true
     mode: false
+    notice: false
     
     #Admin commands and /admins! can only be sent through a path where admin is set to true
     admin: false
     
     #True: Colors will be converted. False: Colors will be stripped.
     colors: true
+
+  # List of event types that should be sent as NOTICE on irc
+  notices:
+    admin: true
+    private: true
 
 
 # ******************* COLOR CONVERSION MAP *******************

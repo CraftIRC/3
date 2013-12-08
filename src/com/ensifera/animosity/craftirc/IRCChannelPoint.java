@@ -55,12 +55,21 @@ public final class IRCChannelPoint implements SecuredEndPoint {
         return SecuredEndPoint.Security.UNSECURED;
     }
 
+    private void send(String target, String message, boolean isNotice) {
+        if (isNotice) {
+            this.bot.sendNotice(target, message);
+        } else {
+            this.bot.sendMessage(target, message);
+        }
+    }
+
     @Override
     public void messageIn(RelayedMessage msg) {
         String message = msg.getMessage(this);
         if (!this.allowColors) {
             message = Colors.removeFormattingAndColors(message);
         }
+        boolean isNotice = msg.getFlag("notice");
         if (message.length() > maxlen) {
             String[] messages;
             final StringBuilder builder = new StringBuilder(message.length());
@@ -80,19 +89,20 @@ public final class IRCChannelPoint implements SecuredEndPoint {
             }
             messages = builder.toString().split("\n");
             for (final String messagePart : messages) {
-                this.bot.sendMessage(this.channel, messagePart);
+                this.send(this.channel, messagePart, isNotice);
             }
         } else {
-            this.bot.sendMessage(this.channel, message);
+            this.send(this.channel, message, isNotice);
         }
     }
+
 
     @Override
     public boolean userMessageIn(String username, RelayedMessage msg) {
         if (this.bot.getChannelPrefixes().contains(username.substring(0, 1))) {
             return false;
         }
-        this.bot.sendNotice(username, msg.getMessage(this));
+        this.send(username, msg.getMessage(this), msg.getFlag("notice"));
         return true;
     }
 
@@ -100,10 +110,11 @@ public final class IRCChannelPoint implements SecuredEndPoint {
     public boolean adminMessageIn(RelayedMessage msg) {
         boolean success = false;
         final String message = msg.getMessage(this);
+        boolean isNotice = msg.getFlag("notice");
         for (final String nick : this.listDisplayUsers()) {
             if (this.bot.getPlugin().cBotAdminPrefixes(this.bot.getId()).contains(nick.substring(0, 1))) {
                 success = true;
-                this.bot.sendNotice(nick.substring(1), message);
+                this.send(nick.substring(1), message, isNotice);
             }
         }
         return success;
