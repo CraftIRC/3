@@ -1056,7 +1056,7 @@ public class CraftIRC extends JavaPlugin {
                 break;
             }
         }
-        if(c==null){
+        if (c == null) {
             c = this.cColorIrcFromName("foreground");
         }
         return c.equals("-1") ? Colors.NORMAL : "\u0003" + c;

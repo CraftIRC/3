@@ -9,9 +9,12 @@ import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationN
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 
 import org.bukkit.ChatColor;
+
 public class RelayedMessage {
     enum DeliveryMethod {
-        STANDARD, ADMINS, COMMAND
+        STANDARD,
+        ADMINS,
+        COMMAND
     }
 
     static String ircBold = Character.toString((char) 2);
@@ -128,11 +131,11 @@ public class RelayedMessage {
         //IRC color code aliases
         if (realTarget.getType() == EndPoint.Type.IRC) {
             //Replace named colours
-            for(ConfigurationNode node : plugin.getColorMap()) {
-                String colorName = node.getString("name", ""); 
+            for (ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name", "");
                 if (colorName.length() > 0) {
                     String c = plugin.cColorIrcNormalize(node.getString("irc", "01"));
-                    result = result.replace("%"+colorName+"%", c.equals("-1") ? Colors.NORMAL : "\u0003" + c);
+                    result = result.replace("%" + colorName + "%", c.equals("-1") ? Colors.NORMAL : "\u0003" + c);
                 }
             }
             result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
@@ -144,10 +147,10 @@ public class RelayedMessage {
             result = result.replace("%r%", ircReverse);
         } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
             //Replace named colours
-            for(ConfigurationNode node : plugin.getColorMap()) {
-                String colorName = node.getString("name", ""); 
+            for (ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name", "");
                 if (colorName.length() > 0)
-                    result = result.replace("%"+colorName+"%", plugin.cColorGameFromName(colorName));
+                    result = result.replace("%" + colorName + "%", plugin.cColorGameFromName(colorName));
             }
             result = result.replaceAll("%k([0-9]{1,2})%", "");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", "");
@@ -158,10 +161,10 @@ public class RelayedMessage {
             result = result.replace("%r%", "");
         } else { //EndPoint.Type.PLAIN
             //Replace named colours
-            for(ConfigurationNode node : plugin.getColorMap()) {
-                String colorName = node.getString("name", ""); 
+            for (ConfigurationNode node : plugin.getColorMap()) {
+                String colorName = node.getString("name", "");
                 if (colorName.length() > 0)
-                    result = result.replace("%"+colorName+"%", "");
+                    result = result.replace("%" + colorName + "%", "");
             }
             result = result.replaceAll("%k([0-9]{1,2})%", "");
             result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", "");
@@ -192,14 +195,14 @@ public class RelayedMessage {
                     try {
                         replacement = replacement.replaceAll(search, replaceFilters.get(fieldName).get(search));
                     } catch (PatternSyntaxException e) {
-                        this.plugin.logWarn("Pattern is invalid: "+e.getPattern());
-                    }
-                    catch (IllegalArgumentException e) {
+                        this.plugin.logWarn("Pattern is invalid: " + e.getPattern());
+                    } catch (IllegalArgumentException e) {
                         if ("Illegal group reference".equals(e.getMessage()))
                             this.plugin.logWarn("Invalid replacement - backreference not found.");
-                        else throw e;
+                        else
+                            throw e;
                     }
-            result = result.replace("%"+fieldName+"%", replacement);
+            result = result.replace("%" + fieldName + "%", replacement);
         }
 
         //Convert colors
