@@ -96,7 +96,6 @@ public final class IRCChannelPoint implements SecuredEndPoint {
         }
     }
 
-
     @Override
     public boolean userMessageIn(String username, RelayedMessage msg) {
         if (this.bot.getChannelPrefixes().contains(username.substring(0, 1))) {

@@ -208,7 +208,7 @@ public final class Minebot extends PircBot implements Runnable {
             this.plugin.logWarn("Couldn't connect to " + serverDescription);
             this.plugin.logWarn("Check that the address is written correctly and no firewalls are blocking CraftIRC");
             this.plugin.logWarn("If you're using a shared hosting provider, consider contacting tech support about this issue");
-        } catch (final UnknownHostException e){
+        } catch (final UnknownHostException e) {
             e.printStackTrace();
             this.plugin.logWarn("Couldn't connect to " + serverDescription);
             this.plugin.logWarn("Check that the address is written correctly");

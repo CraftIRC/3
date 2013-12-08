@@ -200,7 +200,6 @@ public class CraftIRC extends JavaPlugin {
             this.configuration.getBoolean("default-attributes.notices.admin", true);
             this.configuration.getBoolean("default-attributes.notices.private", true);
 
-
             if (this.configuration.getBoolean("default-attributes.disable", false)) {
                 this.logDerp("All communication paths disabled because the 'disable' attribute was found. Check the config.");
             } else {
