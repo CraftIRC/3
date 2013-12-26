@@ -1020,6 +1020,10 @@ public class CraftIRC extends JavaPlugin {
         return this.configuration.getBoolean("settings.debug", false);
     }
 
+    public String cStoppedRespondingMessage() {
+        return this.configuration.getString("settings.stopped-responding-message", "The server appears to have stopped responding.");
+    }
+
     public ArrayList<String> cConsoleCommands() {
         return new ArrayList<String>(this.configuration.getStringList("settings.console-commands", null));
     }

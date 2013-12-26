@@ -55,6 +55,8 @@ public final class Minebot extends PircBot implements Runnable {
     private List<String> ignores;
     private String cmdPrefix;
 
+    private final String stoppedRespondingMessage;
+
     Minebot(CraftIRC plugin, int botId, boolean debug) {
         super();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -64,7 +66,7 @@ public final class Minebot extends PircBot implements Runnable {
                 if (lasttime == gametime && gametime != alertedtime) {
                     alertedtime = gametime;
                     for (final String chan : Minebot.this.channels.keySet()) {
-                        Minebot.this.sendMessage(chan, "Server appears to have stopped responding");
+                        Minebot.this.sendMessage(chan, Minebot.this.stoppedRespondingMessage);
                     }
                 } else {
                     lasttime = gametime;
@@ -78,6 +80,7 @@ public final class Minebot extends PircBot implements Runnable {
             }
         }, 5, 5);
         this.plugin = plugin;
+        this.stoppedRespondingMessage = this.plugin.cStoppedRespondingMessage();
         this.botId = botId;
         this.debug = debug;
         this.thread = new Thread(this);
