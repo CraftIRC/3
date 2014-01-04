@@ -125,8 +125,9 @@ settings:
     #  join: '%darkgrey%[%sender% connected]'
     #  quit: '%darkgrey%[%sender% disconnected]'
     #  kick: '%red%[%sender% was KICKED (%message%)]'
-    #  generic: '%darkgrey%%message%'
     #  admin: '%prefix%%sender%%suffix% to online admins> %message%'
+    #  generic: '%darkgrey%%message%'
+    #  say: '%magenta%[Server] %message%'
     #  death: '%red%%message%'
     #  players-list: 'Online (%playerCount%/%maxPlayers%): %message%'
     #  players-nobody: 'Nobody is minecrafting right now.'
@@ -145,6 +146,7 @@ settings:
     #from-plain:
     #  action: '%purple%* %sender%%purple% %message%'
     #  say: '%magenta%[Server] %message%'
+    #  generic: '%darkgrey%%message%'
     #======================================
 
 
