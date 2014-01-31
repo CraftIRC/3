@@ -20,12 +20,12 @@
 settings:
 
   #These tags identify built-in endpoints (for the paths: section). Other endpoints may be provided by plugins.
-  minecraft-tag: 'minecraft'  #A basic game-side endpoint (a chat plugin may provide better functionality).
+  #Tag names must be unique, otherwise the endpoint won't work. An empty tag disables the endpoint, too.
+  minecraft-tag: 'minecraft'  #A basic game-side endpoint. You probably don't want to change this.
   cancelled-tag: ''           #Cancelled chat is sent here. Give this tag a name to handle messages cancelled by a chat plugin.
   console-tag: 'console'      #The minecraft server console. Handles /say and .cmd.
   
   #Automatically establish paths between unsecured communication endpoints. Turn off if you always want to configure every path manually.
-  #(Secured endpoints can still send messages through auto-paths, but not receive them)
   auto-paths: true
   
   # If set, this character will be inserted after each character ("abc" -> "a_b_c_") to prevent IRC highlights
@@ -191,6 +191,7 @@ bots:
         password: ''
         
         #Identifies this channel's endpoint (for the paths: section).
+        #If you set this to '' (empty) or an already existing tag, the channel won't work!
         tag: 'changeme'
         
         #Send raw IRC commands to the server every time I join this channel.
