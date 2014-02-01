@@ -197,6 +197,8 @@ public class CraftIRC extends JavaPlugin {
             //Ugly but there is no better way with this non-bukkit config
             this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
             this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
+            this.configuration.getString("settings.formatting.from-game.command-reply",
+                this.configuration.getString("settings.formatting.from-game.generic", "%message%"));
             this.configuration.getBoolean("default-attributes.notices.admin", true);
             this.configuration.getBoolean("default-attributes.notices.private", true);
 
@@ -1185,33 +1187,33 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public List<String> cCmdWordCmd(Integer bot) {
-        final List<String> init = new ArrayList<String>();
-        init.add("cmd");
-        final List<String> result = this.configuration.getStringList("settings.irc-commands.cmd", init);
-        if (bot != null) {
-            return this.bots.get(bot).getStringList("irc-commands.cmd", result);
-        }
-        return result;
+        return this.cCmdWord(bot, "cmd");
     }
 
     public List<String> cCmdWordSay(Integer bot) {
-        final List<String> init = new ArrayList<String>();
-        init.add("say");
-        final List<String> result = this.configuration.getStringList("settings.irc-commands.say", init);
+        return this.cCmdWord(bot, "say");
+    }
+
+    public List<String> cCmdWordPlayers(Integer bot) {
+        return this.cCmdWord(bot, "players");
+    }
+
+    public List<String> cCmdWord(Integer bot, String command) {
+        final List<String> result = this.cCmdWord(command);
         if (bot != null) {
-            return this.bots.get(bot).getStringList("irc-commands.say", result);
+            return this.bots.get(bot).getStringList("irc-commands." + command, result);
         }
         return result;
     }
 
-    public List<String> cCmdWordPlayers(Integer bot) {
+    public List<String> cCmdWord(String command) {
         final List<String> init = new ArrayList<String>();
-        init.add("players");
-        final List<String> result = this.configuration.getStringList("settings.irc-commands.players", init);
-        if (bot != null) {
-            return this.bots.get(bot).getStringList("irc-commands.players", result);
-        }
-        return result;
+        init.add(command);
+        return this.configuration.getStringList("settings.irc-commands." + command, init);
+    }
+
+    public boolean cCmdPrivate(String command) {
+        return this.configuration.getBoolean("settings.private-commands." + command, false);
     }
 
     public ArrayList<String> cBotAdminPrefixes(int bot) {

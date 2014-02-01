@@ -51,6 +51,9 @@ settings:
   # If true, any messages appearing to anyone in minecraft chat will be logged by the tag of the endpoint they came from
   log: true
   
+  #Output a LOT of crap to the console in case you're having problems or are a plugin developer.
+  debug: false
+
   #IRC commands start with this, for example '.players' (it's not part of the command name though)
   command-prefix: '.'
   
@@ -59,10 +62,12 @@ settings:
     say: ['say','mc']
     players: ['players']
     cmd: ['cmd','c']
-  
-  #Output a LOT of crap to the console in case you're having problems or are a plugin developer.
-  debug: false
-  
+
+  #Set these to true to send the replies of these commands privately
+  private-commands:
+    players: false
+    cmd: false
+
   #Console commands that can be called by an admin using .cmd/.c
   #This is restricted to:
   # - Any irc channel when admin is enabled in default-attributes
@@ -95,6 +100,7 @@ settings:
       kick: '[%sender% was KICKED (%message%)]'
       admin: '%sender% to online admins ->- %message%'
       generic: '%message%'
+      command-reply: '%message%'
       say: '[Server] %message%'
       death: '%message%'
       players-list: 'Online (%playerCount%/%maxPlayers%): %message%'

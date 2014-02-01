@@ -108,6 +108,7 @@ public class MinecraftPoint implements CommandEndPoint {
         } else if (this.plugin.cCmdWordPlayers(null).contains(command)) {
             final List<String> users = this.listDisplayUsers();
             final int playerCount = users.size();
+            final boolean isPrivate = this.plugin.cCmdPrivate("players");
 
             if (playerCount > 0) {
                 final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "players-list");
@@ -121,9 +122,13 @@ public class MinecraftPoint implements CommandEndPoint {
                 builder.setLength(builder.length() - 1);
 
                 response.setField("message", builder.toString());
+                response.setField("realSender", cmd.getField("realSender"));
+                response.setFlag("private", isPrivate);
                 response.post();
             } else {
                 final RelayedMessage response = this.plugin.newMsgToTag(this, cmd.getField("source"), "players-nobody");
+                response.setField("realSender", cmd.getField("realSender"));
+                response.setFlag("private", isPrivate);
                 response.post();
             }
         }

@@ -69,7 +69,13 @@ public final class IRCChannelPoint implements SecuredEndPoint {
         if (!this.allowColors) {
             message = Colors.removeFormattingAndColors(message);
         }
-        boolean isNotice = msg.getFlag("notice");
+        final boolean isNotice = msg.getFlag("notice");
+        final boolean isPrivate = msg.getFlag("private");
+        String target = this.channel;
+        if (msg.getFlag("private")) {
+            target = msg.getField("realSender");
+        }
+
         if (message.length() > maxlen) {
             String[] messages;
             final StringBuilder builder = new StringBuilder(message.length());
@@ -89,10 +95,10 @@ public final class IRCChannelPoint implements SecuredEndPoint {
             }
             messages = builder.toString().split("\n");
             for (final String messagePart : messages) {
-                this.send(this.channel, messagePart, isNotice);
+                this.send(target, messagePart, isNotice);
             }
         } else {
-            this.send(this.channel, message, isNotice);
+            this.send(target, message, isNotice);
         }
     }
 
