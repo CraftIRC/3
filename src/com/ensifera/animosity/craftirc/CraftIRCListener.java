@@ -99,13 +99,12 @@ final class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getJoinMessage() == null) {
-            return;
-        }
         if (this.plugin.isHeld(CraftIRC.HoldType.JOINS)) {
             return;
         }
-        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "join");
+        final boolean cancelled = (event.getJoinMessage() == null);
+        final String tag = (cancelled) ? this.plugin.cCancelledTag() : this.plugin.cMinecraftTag();
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(tag), null, "join");
         if (msg == null) {
             return;
         }
@@ -119,13 +118,12 @@ final class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (event.getQuitMessage() == null) {
-            return;
-        }
         if (this.plugin.isHeld(CraftIRC.HoldType.QUITS)) {
             return;
         }
-        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "quit");
+        final boolean cancelled = (event.getQuitMessage() == null);
+        final String tag = (cancelled) ? this.plugin.cCancelledTag() : this.plugin.cMinecraftTag();
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(tag), null, "quit");
         if (msg == null) {
             return;
         }
