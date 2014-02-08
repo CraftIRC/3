@@ -350,10 +350,13 @@ public class CraftIRC extends JavaPlugin {
     }
 
     private boolean cmdMsgSay(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            return false;
+        }
         try {
             RelayedMessage msg = this.newMsg(this.getEndPoint(this.cMinecraftTag()), null, "chat");
             if (msg == null) {
-                return true;
+                return false;
             }
             String senderName = sender.getName();
             String world = "";
