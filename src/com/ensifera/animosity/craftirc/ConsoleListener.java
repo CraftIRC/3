@@ -14,13 +14,14 @@ final class ConsoleListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onServerCommand(ServerCommandEvent event) {
+        final String[] split = event.getCommand().split(" ");
         String message = null;
         String eventType = null;
-        if (event.getCommand().toLowerCase().startsWith("say") && event.getCommand().length() > 4) {
+        if (split[0].equalsIgnoreCase("say") && event.getCommand().length() > 4) {
             message = event.getCommand().substring(4);
             eventType = "say";
         }
-        if (event.getCommand().toLowerCase().startsWith("me") && event.getCommand().length() > 3) {
+        if (split[0].equalsIgnoreCase("me") && event.getCommand().length() > 3) {
             message = event.getCommand().substring(3);
             eventType = "action";
         }
@@ -30,6 +31,9 @@ final class ConsoleListener implements Listener {
                 return;
             }
             msg.setField("sender", event.getSender().getName());
+            msg.setField("realSender", event.getSender().getName());
+            msg.setField("prefix", "");
+            msg.setField("suffix", "");
             msg.setField("message", message);
             msg.doNotColor("message");
             msg.post();

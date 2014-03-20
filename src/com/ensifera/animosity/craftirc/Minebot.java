@@ -55,16 +55,30 @@ public final class Minebot extends PircBot implements Runnable {
     private List<String> ignores;
     private String cmdPrefix;
 
+    private final String stoppedRespondingMessage;
+
     Minebot(CraftIRC plugin, int botId, boolean debug) {
         super();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        this.plugin = plugin;
+        this.botId = botId;
+        this.debug = debug;
+        this.thread = new Thread(this);
+        this.thread.start();
+        this.stoppedRespondingMessage = this.plugin.cStoppedRespondingMessage();
 
+        if (this.stoppedRespondingMessage != null && this.stoppedRespondingMessage != "") {
+            this.initStoppedRespondingCheckLoop();
+        }
+    }
+
+    private void initStoppedRespondingCheckLoop() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (lasttime == gametime && gametime != alertedtime) {
                     alertedtime = gametime;
                     for (final String chan : Minebot.this.channels.keySet()) {
-                        Minebot.this.sendMessage(chan, "Server appears to have stopped responding");
+                        Minebot.this.sendMessage(chan, Minebot.this.stoppedRespondingMessage);
                     }
                 } else {
                     lasttime = gametime;
@@ -72,16 +86,11 @@ public final class Minebot extends PircBot implements Runnable {
             }
 
         }, 30000, 30000);
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+        this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
             public void run() {
                 gametime++;
             }
         }, 5, 5);
-        this.plugin = plugin;
-        this.botId = botId;
-        this.debug = debug;
-        this.thread = new Thread(this);
-        this.thread.start();
     }
 
     @Override
