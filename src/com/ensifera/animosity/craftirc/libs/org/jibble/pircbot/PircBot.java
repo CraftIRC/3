@@ -88,6 +88,7 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
     public static final String VERSION = "1.5.1-ppf-ssl";
 
     private static final String PREFIX_DEF = "PREFIX=";
+    private static final String NETWORK_DEF = "NETWORK="; // CrapIRC
     private SocketFactory _socketFactory = null;
     private SocketAddress bindLocalAddr = null; // CraftIRC
 
@@ -1332,6 +1333,8 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
                         }
                     }
                     log("*** SERVER SUPPORTS PREFIXES: " + _userPrefixes.toString() + " | Order: " + _userPrefixOrder);
+                } else if (split[i].startsWith(NETWORK_DEF)) {
+                    this.networkName = split[i].substring(split[i].indexOf("=") + 1);
                 }
             }
         } else if (code == RPL_CHANNELMODEIS) {
@@ -3665,6 +3668,10 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
         }
     }
 
+    public String getNetworkName() {
+        return this.networkName;
+    }
+
     // Connection stuff.
     private InputThread _inputThread = null;
     private OutputThread _outputThread = null;
@@ -3712,4 +3719,6 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
     private String _channelPrefixes = "#&+!";
     private List<String> supportedPrefixes = new ArrayList<String>(Arrays.asList("~", "&", "@", "%", "+"));
     private List<String> supportedModes = new ArrayList<String>(Arrays.asList("q", "a", "o", "h", "v"));
+
+    private String networkName;
 }

@@ -324,6 +324,7 @@ public final class Minebot extends PircBot implements Runnable {
                 msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 msg.setField("realSender", sender);
                 msg.setField("srcChannel", channel);
+                msg.setField("srcNetwork", this.getNetworkName());
                 msg.setField("username", login);
                 msg.setField("hostname", hostname);
                 msg.doNotColor("username");
@@ -358,6 +359,7 @@ public final class Minebot extends PircBot implements Runnable {
             msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
             msg.setField("realSender", sender);
             msg.setField("srcChannel", channel);
+            msg.setField("srcNetwork", this.getNetworkName());
             msg.setField("message", reason);
             msg.setField("username", login);
             msg.setField("hostname", hostname);
@@ -385,6 +387,7 @@ public final class Minebot extends PircBot implements Runnable {
             msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
             msg.setField("realSender", sender);
             msg.setField("srcChannel", channel);
+            msg.setField("srcNetwork", this.getNetworkName());
             msg.setField("message", reason);
             msg.setField("username", login);
             msg.setField("hostname", hostname);
@@ -415,6 +418,7 @@ public final class Minebot extends PircBot implements Runnable {
             msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, recipientNick));
             msg.setField("realSender", recipientNick);
             msg.setField("srcChannel", channel);
+            msg.setField("srcNetwork", this.getNetworkName());
             msg.setField("message", reason);
             msg.setField("moderator", this.plugin.cIrcDisplayName(this.botId, kickerNick));
             msg.setField("realModerator", kickerNick);
@@ -445,6 +449,7 @@ public final class Minebot extends PircBot implements Runnable {
             msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, oldNick));
             msg.setField("realSender", oldNick);
             msg.setField("srcChannel", channel);
+            msg.setField("srcNetwork", this.getNetworkName());
             msg.setField("message", this.plugin.cIrcDisplayName(this.botId, newNick));
             msg.setField("realMessage", newNick);
             msg.setField("username", login);
@@ -491,6 +496,7 @@ public final class Minebot extends PircBot implements Runnable {
                 cmd.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 cmd.setField("realSender", sender);
                 cmd.setField("srcChannel", channel);
+                cmd.setField("srcNetwork", this.getNetworkName());
                 cmd.setField("message", message);
                 cmd.setField("args", args);
                 cmd.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, channel)));
@@ -519,6 +525,7 @@ public final class Minebot extends PircBot implements Runnable {
                 msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 msg.setField("realSender", sender);
                 msg.setField("srcChannel", channel);
+                msg.setField("srcNetwork", this.getNetworkName());
                 msg.setField("message", message);
                 msg.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, channel)));
                 msg.setField("username", login);
@@ -547,6 +554,7 @@ public final class Minebot extends PircBot implements Runnable {
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
         msg.setField("realSender", sender);
         msg.setField("srcChannel", target);
+        msg.setField("srcNetwork", this.getNetworkName());
         msg.setField("message", notice);
         msg.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, target)));
         msg.setField("username", login);
@@ -570,6 +578,7 @@ public final class Minebot extends PircBot implements Runnable {
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
         msg.setField("realSender", sender);
         msg.setField("srcChannel", target);
+        msg.setField("srcNetwork", this.getNetworkName());
         msg.setField("message", action);
         msg.setField("ircPrefix", this.getHighestUserPrefix(this.getUser(sender, target)));
         msg.setField("username", login);
@@ -593,6 +602,7 @@ public final class Minebot extends PircBot implements Runnable {
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
         msg.setField("realSender", sender);
         msg.setField("srcChannel", channel);
+        msg.setField("srcNetwork", this.getNetworkName());
         msg.setField("message", topic);
         msg.doNotColor("message");
         msg.doNotColor("username");
@@ -613,6 +623,7 @@ public final class Minebot extends PircBot implements Runnable {
         msg.setField("moderator", this.plugin.cIrcDisplayName(this.botId, moderator));
         msg.setField("realModerator", moderator);
         msg.setField("srcChannel", channel);
+        msg.setField("srcNetwork", this.getNetworkName());
         msg.setField("message", mode);
         msg.setField("username", sourceLogin);
         msg.setField("hostname", sourceHostname);
