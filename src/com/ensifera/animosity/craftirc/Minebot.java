@@ -307,6 +307,11 @@ public final class Minebot extends PircBot implements Runnable {
         }
     }
 
+    boolean isThisIgnored(String sender) {
+        return (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) ||
+               (this.ignores.contains(sender));
+    }
+
     @Override
     public void onJoin(String channel, String sender, String login, String hostname) {
         channel = channel.toLowerCase();
@@ -314,7 +319,7 @@ public final class Minebot extends PircBot implements Runnable {
             if (sender.equals(this.getNick())) {
                 this.amNowInChannel(channel);
             } else {
-                if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+                if (this.isThisIgnored(sender)) {
                     return;
                 }
                 final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "join");
@@ -349,7 +354,7 @@ public final class Minebot extends PircBot implements Runnable {
             this.noLongerInChannel(channel, true);
         }
         if (this.channels.containsKey(channel)) {
-            if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+            if (this.isThisIgnored(sender)) {
                 return;
             }
             final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "part");
@@ -377,7 +382,7 @@ public final class Minebot extends PircBot implements Runnable {
             this.noLongerInChannel(channel, false);
         }
         if (this.channels.containsKey(channel)) {
-            if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+            if (this.isThisIgnored(sender)) {
                 return;
             }
             final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "quit");
@@ -408,7 +413,7 @@ public final class Minebot extends PircBot implements Runnable {
             if (recipientNick.equalsIgnoreCase(this.getNick())) {
                 this.joinChannel(channel, this.plugin.cChanPassword(this.botId, channel));
             }
-            if (this.plugin.cUseMapAsWhitelist(this.botId) && (!this.plugin.cNicknameIsInIrcMap(this.botId, kickerNick) || !this.plugin.cNicknameIsInIrcMap(this.botId, recipientNick))) {
+            if (this.isThisIgnored(kickerNick) || this.isThisIgnored(recipientNick)) {
                 return;
             }
             final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "kick");
@@ -439,7 +444,7 @@ public final class Minebot extends PircBot implements Runnable {
             this.nickname = newNick;
         }
         if (this.channels.containsKey(channel)) {
-            if (this.plugin.cUseMapAsWhitelist(this.botId) && (!this.plugin.cNicknameIsInIrcMap(this.botId, oldNick) || !this.plugin.cNicknameIsInIrcMap(this.botId, newNick))) {
+            if (this.isThisIgnored(oldNick) || this.isThisIgnored(newNick)) {
                 return;
             }
             final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "nick");
@@ -463,13 +468,10 @@ public final class Minebot extends PircBot implements Runnable {
     @Override
     public void onMessage(String channel, String sender, String login, String hostname, String message) {
         channel = channel.toLowerCase();
-        if (this.ignores.contains(sender)) {
+        if (this.isThisIgnored(sender)) {
             return;
         }
         try {
-            if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
-                return;
-            }
             final String[] splitMessage = message.split(" ");
             final String command = splitMessage.length > 0 ? splitMessage[0] : "";
             final String args = Util.combineSplit(1, splitMessage, " ");
@@ -548,7 +550,7 @@ public final class Minebot extends PircBot implements Runnable {
         if (msg == null) {
             return;
         }
-        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+        if (this.isThisIgnored(sender)) {
             return;
         }
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
@@ -572,7 +574,7 @@ public final class Minebot extends PircBot implements Runnable {
         if (msg == null) {
             return;
         }
-        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+        if (this.isThisIgnored(sender)) {
             return;
         }
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
@@ -596,7 +598,7 @@ public final class Minebot extends PircBot implements Runnable {
         if (msg == null) {
             return;
         }
-        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) {
+        if (this.isThisIgnored(sender)) {
             return;
         }
         msg.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
@@ -617,7 +619,7 @@ public final class Minebot extends PircBot implements Runnable {
         if (msg == null) {
             return;
         }
-        if (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, moderator)) {
+        if (this.isThisIgnored(moderator)) {
             return;
         }
         msg.setField("moderator", this.plugin.cIrcDisplayName(this.botId, moderator));
