@@ -24,9 +24,6 @@ final class CraftIRCListener implements Listener {
             // ACTION/EMOTE can't be claimed, so use onPlayerCommandPreprocess
             if (split[0].equalsIgnoreCase("/me") && event.getMessage().length() > 4) {
                 eventType = "action";
-                if (!event.getPlayer().hasPermission("bukkit.command.me")) {
-                    return;
-                }
                 message = Util.combineSplit(1, split, " ");
             }
             if (split[0].equalsIgnoreCase("/say") && event.getMessage().length() > 5) {
@@ -171,6 +168,28 @@ final class CraftIRCListener implements Listener {
         msg.setField("realSender", event.getEntity().getName());
         msg.setField("prefix", this.plugin.getPrefix(event.getEntity()));
         msg.setField("suffix", this.plugin.getSuffix(event.getEntity()));
+        msg.post();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerAchievement(PlayerAchievementAwardedEvent event) {
+        if (this.plugin.isHeld(CraftIRC.HoldType.ACHIEVEMENTS)) {
+            return;
+        }
+        if (event.getAchievement() == null) {
+            return;
+        }
+        final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, "achievement");
+        if (msg == null) {
+            return;
+        }
+        msg.setField("sender", event.getPlayer().getDisplayName());
+        msg.setField("message", event.getAchievement().name());
+        msg.setField("world", event.getPlayer().getWorld().getName());
+        msg.setField("realSender", event.getPlayer().getName());
+        msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+        msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+        msg.doNotColor("message");
         msg.post();
     }
 }
