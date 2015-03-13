@@ -291,6 +291,7 @@ default-attributes:
     say: true
     generic: true
     death: true
+    achievement: true
     mode: false
     notice: false
     
