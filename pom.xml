@@ -1,71 +1,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.ensifera</groupId>
-  <artifactId>CraftIRC</artifactId>
-  <packaging>jar</packaging>
-  <version>3.9.7-SNAPSHOT</version>
-  <name>CraftIRC</name>
-  <url>http://www.github.com/CraftIRC/CraftIRC3</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ensifera</groupId>
+    <artifactId>CraftIRC</artifactId>
+    <packaging>jar</packaging>
+    <version>3.9.7-SNAPSHOT</version>
+    <name>CraftIRC</name>
+    <url>http://www.github.com/CraftIRC/CraftIRC3</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <repositories>
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
-    <repository>
-      <id>vault-repo</id>
-      <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>vault-repo</id>
+            <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+        </repository>
+    </repositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.7.2-R0.3</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>net.milkbowl.vault</groupId>
-      <artifactId>Vault</artifactId>
-      <version>1.2.23-SNAPSHOT</version>
-      <type>jar</type>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.7.2-R0.3</version>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.23-SNAPSHOT</version>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 
-  <distributionManagement>
-    <repository>
-      <id>kittehReleases</id>
-      <name>Kitteh Releases</name>
-      <url>http://repo.kitteh.org/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>kittehSnapshots</id>
-      <name>Kitteh Snapshots</name>
-      <url>http://repo.kitteh.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>kittehReleases</id>
+            <name>Kitteh Releases</name>
+            <url>http://repo.kitteh.org/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>kittehSnapshots</id>
+            <name>Kitteh Snapshots</name>
+            <url>http://repo.kitteh.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <defaultGoal>clean install</defaultGoal>
-    <resources>
-      <resource>
-        <targetPath>.</targetPath>
-        <filtering>true</filtering>
-        <directory>${basedir}</directory>
-        <includes>
-          <include>plugin.yml</include>
-          <include>config.yml</include>
-          <include>NOTICE</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <defaultGoal>clean install</defaultGoal>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                    <include>config.yml</include>
+                    <include>NOTICE</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>
