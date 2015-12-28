@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +65,7 @@ public final class Minebot extends PircBot implements Runnable {
         this.thread.start();
         this.stoppedRespondingMessage = this.plugin.cStoppedRespondingMessage();
 
-        if (this.stoppedRespondingMessage != null && this.stoppedRespondingMessage != "") {
+        if (this.stoppedRespondingMessage != null && !this.stoppedRespondingMessage.isEmpty()) {
             this.initStoppedRespondingCheckLoop();
         }
     }
@@ -118,8 +117,8 @@ public final class Minebot extends PircBot implements Runnable {
 
         this.localBindPort = this.plugin.cBotBindPort(this.botId);
 
-        this.whereAmI = new HashSet<String>();
-        this.channels = new HashMap<String, IRCChannelPoint>();
+        this.whereAmI = new HashSet<>();
+        this.channels = new HashMap<>();
         for (final ConfigurationNode channelNode : this.plugin.cChannels(this.botId)) {
             final String name = channelNode.getString("name").toLowerCase();
             if (this.channels.containsKey(name)) {
@@ -196,8 +195,6 @@ public final class Minebot extends PircBot implements Runnable {
             this.connectToIrc();
             this.plugin.scheduleForRetry(this, null);
 
-        } catch (final NumberFormatException e) {
-            e.printStackTrace();
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -221,9 +218,7 @@ public final class Minebot extends PircBot implements Runnable {
             e.printStackTrace();
             this.plugin.logWarn("Couldn't connect to " + serverDescription);
             this.plugin.logWarn("Check that the address is written correctly");
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final IrcException e) {
+        } catch (final IOException | IrcException e) {
             e.printStackTrace();
         }
     }
@@ -250,9 +245,8 @@ public final class Minebot extends PircBot implements Runnable {
         this.authenticateBot();
 
         final ArrayList<String> onConnect = this.plugin.cBotOnConnect(this.botId);
-        final Iterator<String> it = onConnect.iterator();
-        while (it.hasNext()) {
-            this.sendRawLineViaQueue(it.next());
+        for (String anOnConnect : onConnect) {
+            this.sendRawLineViaQueue(anOnConnect);
         }
 
         for (final String chan : this.channels.keySet()) {
@@ -480,7 +474,7 @@ public final class Minebot extends PircBot implements Runnable {
             final boolean loopbackAdmin = this.plugin.cPathAttribute(localTag, localTag, "attributes.admin");
             final boolean userAdmin = this.plugin.cBotAdminPrefixes(this.botId).contains(this.getHighestUserPrefix(this.getUser(sender, channel)));
             if (this.cmdPrefix.equals("")) {
-                final List<String> allCommands = new ArrayList<String>();
+                final List<String> allCommands = new ArrayList<>();
                 allCommands.addAll(this.plugin.cCmdWordCmd(this.botId));
                 allCommands.addAll(this.plugin.cCmdWordSay(this.botId));
                 allCommands.addAll(this.plugin.cCmdWordPlayers(this.botId));
@@ -509,14 +503,8 @@ public final class Minebot extends PircBot implements Runnable {
                 cmd.setFlag("admin", userAdmin);
                 cmd.act();
             } else if (command.toLowerCase().equals(this.cmdPrefix + "botsay") && loopbackAdmin && userAdmin) {
-                if (args == null) {
-                    return;
-                }
                 this.sendMessage(args.substring(0, args.indexOf(" ")), args.substring(args.indexOf(" ") + 1));
             } else if (command.toLowerCase().equals(this.cmdPrefix + "raw") && loopbackAdmin && userAdmin) {
-                if (args == null) {
-                    return;
-                }
                 this.sendRawLine(args);
             } else {
                 //Not a command
@@ -636,7 +624,7 @@ public final class Minebot extends PircBot implements Runnable {
 
     public ArrayList<String> getChannelList() {
         try {
-            return new ArrayList<String>(Arrays.asList(this.getChannels()));
+            return new ArrayList<>(Arrays.asList(this.getChannels()));
         } catch (final Exception e) {
             e.printStackTrace();
             return null;

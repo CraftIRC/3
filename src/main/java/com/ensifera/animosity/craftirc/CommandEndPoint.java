@@ -6,5 +6,5 @@ public interface CommandEndPoint extends SecuredEndPoint {
      *
      * @param cmd
      */
-    public void commandIn(RelayedCommand cmd);
+    void commandIn(RelayedCommand cmd);
 }

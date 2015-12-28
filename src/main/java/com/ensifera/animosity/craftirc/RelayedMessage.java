@@ -24,12 +24,12 @@ public class RelayedMessage {
         COMMAND
     }
 
-    static String ircBold = Character.toString((char) 2);
-    static String ircColor = Character.toString((char) 3);
-    static String ircReset = Character.toString((char) 15);
-    static String ircReverse = Character.toString((char) 22);
-    static String ircUnderline = Character.toString((char) 31);
-    static String typeString = "MSG";
+    static final String ircBold = Character.toString((char) 2);
+    static final String ircColor = Character.toString((char) 3);
+    static final String ircReset = Character.toString((char) 15);
+    static final String ircReverse = Character.toString((char) 22);
+    static final String ircUnderline = Character.toString((char) 31);
+    static final String typeString = "MSG";
 
     private final CraftIRC plugin;
     private final EndPoint source; //Origin endpoint of the message
@@ -58,12 +58,12 @@ public class RelayedMessage {
         }
         this.eventType = eventType;
         this.template = "%message%";
-        if ((eventType != null) && (!eventType.equals("")) && !eventType.equals("command") && (target != null)) {
+        if ((!eventType.equals("")) && !eventType.equals("command") && (target != null)) {
             this.template = plugin.cFormatting(eventType, this);
         }
-        this.fields = new HashMap<String, String>();
-        this.doNotColorFields = new HashSet<String>();
-        this.flags = new HashMap<String, Boolean>();
+        this.fields = new HashMap<>();
+        this.doNotColorFields = new HashSet<>();
+        this.flags = new HashMap<>();
     }
 
     public CraftIRC getPlugin() {
@@ -268,9 +268,9 @@ public class RelayedMessage {
     boolean post(DeliveryMethod dm, String username) {
         List<EndPoint> destinations;
         if (this.cc != null) {
-            destinations = new LinkedList<EndPoint>(this.cc);
+            destinations = new LinkedList<>(this.cc);
         } else {
-            destinations = new LinkedList<EndPoint>();
+            destinations = new LinkedList<>();
         }
         if (this.target != null) {
             destinations.add(this.target);
@@ -286,15 +286,15 @@ public class RelayedMessage {
     @Override
     public String toString() {
         // create an ordered set so the most important keys are always first
-        LinkedHashSet<String> orderedKeys = new LinkedHashSet<String>();
+        LinkedHashSet<String> orderedKeys = new LinkedHashSet<>();
         orderedKeys.addAll(Arrays.asList("source", "target", "sender", "message"));
         orderedKeys.addAll(this.fields.keySet());
 
         StringBuilder builder = new StringBuilder();
-        builder.append("{TYPE: " + this.eventType + "}");
+        builder.append("{TYPE: ").append(this.eventType).append("}");
 
         for (final String key : orderedKeys) {
-            builder.append(" (" + key + ": " + this.fields.get(key) + ")");
+            builder.append(" (").append(key).append(": ").append(this.fields.get(key)).append(")");
         }
         return builder.toString();
     }

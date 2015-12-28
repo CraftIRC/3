@@ -23,6 +23,7 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @author Animosity
@@ -96,20 +97,20 @@ public class CraftIRC extends JavaPlugin {
             this.configuration.load();
             this.cancelChat = this.configuration.getBoolean("settings.cancel-chat", false);
 
-            this.endpoints = new HashMap<String, EndPoint>();
-            this.tags = new HashMap<EndPoint, String>();
-            this.irccmds = new HashMap<String, CommandEndPoint>();
-            this.taggroups = new HashMap<String, List<String>>();
+            this.endpoints = new HashMap<>();
+            this.tags = new HashMap<>();
+            this.irccmds = new HashMap<>();
+            this.taggroups = new HashMap<>();
 
-            this.bots = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("bots", null));
-            this.channodes = new HashMap<Integer, List<ConfigurationNode>>();
+            this.bots = new ArrayList<>(this.configuration.getNodeList("bots", null));
+            this.channodes = new HashMap<>();
             for (int botID = 0; botID < this.bots.size(); botID++) {
-                this.channodes.put(botID, new ArrayList<ConfigurationNode>(this.bots.get(botID).getNodeList("channels", null)));
+                this.channodes.put(botID, new ArrayList<>(this.bots.get(botID).getNodeList("channels", null)));
             }
 
-            this.colormap = new ArrayList<ConfigurationNode>(this.configuration.getNodeList("colormap", null));
+            this.colormap = new ArrayList<>(this.configuration.getNodeList("colormap", null));
 
-            this.paths = new HashMap<Path, ConfigurationNode>();
+            this.paths = new HashMap<>();
             for (final ConfigurationNode path : this.configuration.getNodeList("paths", new LinkedList<ConfigurationNode>())) {
                 final Path identifier = new Path(path.getString("source"), path.getString("target"));
                 if (!identifier.getSourceTag().equals(identifier.getTargetTag()) && !this.paths.containsKey(identifier)) {
@@ -121,11 +122,11 @@ public class CraftIRC extends JavaPlugin {
             }
 
             //Replace filters
-            this.replaceFilters = new HashMap<String, Map<String, String>>();
+            this.replaceFilters = new HashMap<>();
             try {
                 for (String key : this.configuration.getNode("filters").getKeys()) {
                     //Map key to regex pattern, value to replacement.
-                    Map<String, String> replaceMap = new HashMap<String, String>();
+                    Map<String, String> replaceMap = new HashMap<>();
                     this.replaceFilters.put(key, replaceMap);
                     for (ConfigurationNode fieldNode : this.configuration.getNodeList("filters." + key, null)) {
                         Map<String, Object> patterns = fieldNode.getAll();
@@ -187,7 +188,7 @@ public class CraftIRC extends JavaPlugin {
 
             this.firstChannelTag = null;
 
-            this.instances = new ArrayList<Minebot>();
+            this.instances = new ArrayList<>();
             for (int i = 0; i < this.bots.size(); i++) {
                 this.instances.add(new Minebot(this, i, this.cDebug()));
                 if (this.channodes.get(i).size() == 0) {
@@ -215,7 +216,7 @@ public class CraftIRC extends JavaPlugin {
             }
 
             //Hold timers
-            this.hold = new HashMap<HoldType, Boolean>();
+            this.hold = new HashMap<>();
             this.holdTimer = new Timer();
             if (this.cHold("chat") > 0) {
                 this.hold.put(HoldType.CHAT, true);
@@ -315,45 +316,28 @@ public class CraftIRC extends JavaPlugin {
 
         try {
             if (commandName.equals("ircsay")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
-                    return false;
-                }
-                return this.cmdMsgSay(sender, args);
+                return sender.hasPermission("craftirc." + commandName) && this.cmdMsgSay(sender, args);
             }
-            if (commandName.equals("ircmsg")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
+            switch (commandName) {
+                case "ircmsg":
+                    return sender.hasPermission("craftirc." + commandName) && this.cmdMsgToTag(sender, args);
+                case "ircmsguser":
+                    return sender.hasPermission("craftirc." + commandName) && this.cmdMsgToUser(sender, args);
+                case "ircusers":
+                    return sender.hasPermission("craftirc." + commandName) && this.cmdGetUserList(sender, args);
+                case "admins!":
+                    return sender.hasPermission("craftirc.admins") && this.cmdNotifyIrcAdmins(sender, args);
+                case "ircraw":
+                    return sender.hasPermission("craftirc." + commandName) && this.cmdRawIrcCommand(sender, args);
+                case "ircreload":
+                    if (!sender.hasPermission("craftirc." + commandName)) {
+                        return false;
+                    }
+                    this.getServer().getPluginManager().disablePlugin(this);
+                    this.getServer().getPluginManager().enablePlugin(this);
+                    return true;
+                default:
                     return false;
-                }
-                return this.cmdMsgToTag(sender, args);
-            } else if (commandName.equals("ircmsguser")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
-                    return false;
-                }
-                return this.cmdMsgToUser(sender, args);
-            } else if (commandName.equals("ircusers")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
-                    return false;
-                }
-                return this.cmdGetUserList(sender, args);
-            } else if (commandName.equals("admins!")) {
-                if (!sender.hasPermission("craftirc.admins")) {
-                    return false;
-                }
-                return this.cmdNotifyIrcAdmins(sender, args);
-            } else if (commandName.equals("ircraw")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
-                    return false;
-                }
-                return this.cmdRawIrcCommand(sender, args);
-            } else if (commandName.equals("ircreload")) {
-                if (!sender.hasPermission("craftirc." + commandName)) {
-                    return false;
-                }
-                this.getServer().getPluginManager().disablePlugin(this);
-                this.getServer().getPluginManager().enablePlugin(this);
-                return true;
-            } else {
-                return false;
             }
         } catch (final Exception e) {
             e.printStackTrace();
@@ -606,7 +590,7 @@ public class CraftIRC extends JavaPlugin {
             this.log("Couldn't register an endpoint tagged '" + tag + "' because either the tag or the endpoint already exist.");
             return false;
         }
-        if (tag == "*") {
+        if (tag.equals("*")) {
             this.log("Couldn't register an endpoint - the character * can't be used as a tag.");
             return false;
         }
@@ -687,7 +671,7 @@ public class CraftIRC extends JavaPlugin {
         }
         List<String> tags = this.taggroups.get(group);
         if (tags == null) {
-            tags = new ArrayList<String>();
+            tags = new ArrayList<>();
             this.taggroups.put(group, tags);
         }
         tags.add(tag);
@@ -748,7 +732,7 @@ public class CraftIRC extends JavaPlugin {
         //If we weren't explicitly given a recipient for the message, let's try to find one (or more)
         if (knownDestinations.size() < 1) {
             //Use all possible destinations (auto-targets)
-            destinations = new LinkedList<EndPoint>();
+            destinations = new LinkedList<>();
             for (final String targetTag : this.cPathsFrom(sourceTag)) {
                 final EndPoint ep = this.getEndPoint(targetTag);
                 if (ep == null) {
@@ -794,7 +778,7 @@ public class CraftIRC extends JavaPlugin {
                 }
             }
         } else {
-            destinations = new LinkedList<EndPoint>(knownDestinations);
+            destinations = new LinkedList<>(knownDestinations);
         }
         if (destinations.size() < 1) {
             return false;
@@ -813,9 +797,7 @@ public class CraftIRC extends JavaPlugin {
 
             //Check against path filters
             if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
-                if (knownDestinations != null) {
-                    success = false;
-                }
+                success = false;
                 continue;
             }
             //Finally deliver!
@@ -845,8 +827,10 @@ public class CraftIRC extends JavaPlugin {
         newFilter:
         for (final ConfigurationNode filter : filters) {
             for (final String key : filter.getKeys()) {
-                final Pattern condition = Pattern.compile(filter.getString(key, ""));
-                if (condition == null) {
+                final Pattern condition;
+                try {
+                    condition = Pattern.compile(filter.getString(key, ""));
+                } catch (PatternSyntaxException e) {
                     continue newFilter;
                 }
                 final String subject = msg.getField(key);
@@ -941,10 +925,7 @@ public class CraftIRC extends JavaPlugin {
 
     boolean checkPerms(String pl, String path) {
         final Player pit = this.getServer().getPlayer(pl);
-        if (pit != null) {
-            return pit.hasPermission(path);
-        }
-        return false;
+        return pit != null && pit.hasPermission(path);
     }
 
     protected void enqueueConsoleCommand(String cmd) {
@@ -1038,7 +1019,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public ArrayList<String> cConsoleCommands() {
-        return new ArrayList<String>(this.configuration.getStringList("settings.console-commands", null));
+        return new ArrayList<>(this.configuration.getStringList("settings.console-commands", null));
     }
 
     public int cHold(String eventType) {
@@ -1110,9 +1091,8 @@ public class CraftIRC extends JavaPlugin {
 
     public String cColorIrcFromName(String name) {
         ConfigurationNode color;
-        final Iterator<ConfigurationNode> it = this.colormap.iterator();
-        while (it.hasNext()) {
-            color = it.next();
+        for (ConfigurationNode aColormap : this.colormap) {
+            color = aColormap;
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("irc") != null)) {
                 return this.cColorIrcNormalize(color.getString("irc", "01"));
             }
@@ -1127,9 +1107,8 @@ public class CraftIRC extends JavaPlugin {
     public String cColorGameFromIrc(String irc) {
         irc = this.cColorIrcNormalize(irc);
         ConfigurationNode color;
-        final Iterator<ConfigurationNode> it = this.colormap.iterator();
-        while (it.hasNext()) {
-            color = it.next();
+        for (ConfigurationNode aColormap : this.colormap) {
+            color = aColormap;
             //Enforce two digit comparisons.
             if (color.getString("irc", "").equals(irc) || "0".concat(color.getString("irc", "")).equals(irc)) {
                 return color.getString("game", this.cColorGameFromName("foreground"));
@@ -1140,9 +1119,8 @@ public class CraftIRC extends JavaPlugin {
 
     public String cColorGameFromName(String name) {
         ConfigurationNode color;
-        final Iterator<ConfigurationNode> it = this.colormap.iterator();
-        while (it.hasNext()) {
-            color = it.next();
+        for (ConfigurationNode aColormap : this.colormap) {
+            color = aColormap;
             if (color.getString("name").equalsIgnoreCase(name) && (color.getProperty("game") != null)) {
                 return color.getString("game", "\u00C2\u00A7f");
             }
@@ -1227,7 +1205,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public List<String> cCmdWord(String command) {
-        final List<String> init = new ArrayList<String>();
+        final List<String> init = new ArrayList<>();
         init.add(command);
         return this.configuration.getStringList("settings.irc-commands." + command, init);
     }
@@ -1237,11 +1215,11 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public ArrayList<String> cBotAdminPrefixes(int bot) {
-        return new ArrayList<String>(this.bots.get(bot).getStringList("admin-prefixes", null));
+        return new ArrayList<>(this.bots.get(bot).getStringList("admin-prefixes", null));
     }
 
     public ArrayList<String> cBotIgnoredUsers(int bot) {
-        return new ArrayList<String>(this.bots.get(bot).getStringList("ignored-users", null));
+        return new ArrayList<>(this.bots.get(bot).getStringList("ignored-users", null));
     }
 
     public String cBotAuthMethod(int bot) {
@@ -1265,7 +1243,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public ArrayList<String> cBotOnConnect(int bot) {
-        return new ArrayList<String>(this.bots.get(bot).getStringList("on-connect", null));
+        return new ArrayList<>(this.bots.get(bot).getStringList("on-connect", null));
     }
 
     public boolean cChanForceColors(int bot, String channel) {
@@ -1285,11 +1263,11 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public ArrayList<String> cChanOnJoin(int bot, String channel) {
-        return new ArrayList<String>(this.getChanNode(bot, channel).getStringList("on-join", null));
+        return new ArrayList<>(this.getChanNode(bot, channel).getStringList("on-join", null));
     }
 
     public List<String> cPathsFrom(String source) {
-        final List<String> results = new LinkedList<String>();
+        final List<String> results = new LinkedList<>();
         for (final Path path : this.paths.keySet()) {
             if (!path.getSourceTag().equals(source)) {
                 continue;
@@ -1303,7 +1281,7 @@ public class CraftIRC extends JavaPlugin {
     }
 
     List<String> cPathsTo(String target) {
-        final List<String> results = new LinkedList<String>();
+        final List<String> results = new LinkedList<>();
         for (final Path path : this.paths.keySet()) {
             if (!path.getTargetTag().equals(target)) {
                 continue;

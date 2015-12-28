@@ -1,7 +1,7 @@
 package com.ensifera.animosity.craftirc;
 
 public interface SecuredEndPoint extends EndPoint {
-    public enum Security {
+    enum Security {
         /**
          * Paths can be established automatically by auto-paths (default if EndPoint or BasePoint are used)
          */
@@ -16,5 +16,5 @@ public interface SecuredEndPoint extends EndPoint {
         REQUIRE_TARGET
     }
 
-    public Security getSecurity();
+    Security getSecurity();
 }

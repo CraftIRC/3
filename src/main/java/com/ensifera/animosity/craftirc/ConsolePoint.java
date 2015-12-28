@@ -5,8 +5,8 @@ import org.bukkit.Server;
 import java.util.List;
 
 public final class ConsolePoint implements CommandEndPoint {
-    private Server server;
-    private CraftIRC plugin;
+    private final Server server;
+    private final CraftIRC plugin;
 
     ConsolePoint(CraftIRC plugin, Server server) {
         this.server = server;
@@ -25,7 +25,6 @@ public final class ConsolePoint implements CommandEndPoint {
 
     @Override
     public void messageIn(RelayedMessage msg) {
-        return;
     }
 
     @Override

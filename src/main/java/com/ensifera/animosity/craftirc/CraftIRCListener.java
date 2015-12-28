@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 final class CraftIRCListener implements Listener {
-    private CraftIRC plugin = null;
+    private final CraftIRC plugin;
 
     CraftIRCListener(CraftIRC plugin) {
         this.plugin = plugin;
@@ -22,38 +22,34 @@ final class CraftIRCListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        try {
-            final String[] split = event.getMessage().split(" ");
-            String message = null;
-            String eventType = null;
-            // ACTION/EMOTE can't be claimed, so use onPlayerCommandPreprocess
-            if (split[0].equalsIgnoreCase("/me") && event.getMessage().length() > 4) {
-                eventType = "action";
-                message = Util.combineSplit(1, split, " ");
+        final String[] split = event.getMessage().split(" ");
+        String message = null;
+        String eventType = null;
+        // ACTION/EMOTE can't be claimed, so use onPlayerCommandPreprocess
+        if (split[0].equalsIgnoreCase("/me") && event.getMessage().length() > 4) {
+            eventType = "action";
+            message = Util.combineSplit(1, split, " ");
+        }
+        if (split[0].equalsIgnoreCase("/say") && event.getMessage().length() > 5) {
+            eventType = "say";
+            if (!(event.getPlayer().hasPermission("bukkit.command.say") && event.getPlayer().hasPermission(Server.BROADCAST_CHANNEL_USERS))) {
+                return;
             }
-            if (split[0].equalsIgnoreCase("/say") && event.getMessage().length() > 5) {
-                eventType = "say";
-                if (!(event.getPlayer().hasPermission("bukkit.command.say") && event.getPlayer().hasPermission(Server.BROADCAST_CHANNEL_USERS))) {
-                    return;
-                }
-                message = event.getMessage().substring(5);
+            message = event.getMessage().substring(5);
+        }
+        if (message != null) {
+            final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, eventType);
+            if (msg == null) {
+                return;
             }
-            if (message != null) {
-                final RelayedMessage msg = this.plugin.newMsg(this.plugin.getEndPoint(this.plugin.cMinecraftTag()), null, eventType);
-                if (msg == null) {
-                    return;
-                }
-                msg.setField("sender", event.getPlayer().getDisplayName());
-                msg.setField("message", message);
-                msg.setField("world", event.getPlayer().getWorld().getName());
-                msg.setField("realSender", event.getPlayer().getName());
-                msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
-                msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
-                msg.doNotColor("message");
-                msg.post();
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
+            msg.setField("sender", event.getPlayer().getDisplayName());
+            msg.setField("message", message);
+            msg.setField("world", event.getPlayer().getWorld().getName());
+            msg.setField("realSender", event.getPlayer().getName());
+            msg.setField("prefix", this.plugin.getPrefix(event.getPlayer()));
+            msg.setField("suffix", this.plugin.getSuffix(event.getPlayer()));
+            msg.doNotColor("message");
+            msg.post();
         }
     }
 

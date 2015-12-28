@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MinecraftPoint implements CommandEndPoint {
-    private Server server;
-    private CraftIRC plugin;
+    private final Server server;
+    private final CraftIRC plugin;
 
     MinecraftPoint(CraftIRC plugin, Server server) {
         this.server = server;
@@ -70,7 +70,7 @@ public class MinecraftPoint implements CommandEndPoint {
 
     @Override
     public List<String> listUsers() {
-        final LinkedList<String> users = new LinkedList<String>();
+        final LinkedList<String> users = new LinkedList<>();
         for (final Player p : this.server.getOnlinePlayers()) {
             users.add(p.getName());
         }
@@ -80,7 +80,7 @@ public class MinecraftPoint implements CommandEndPoint {
     @Override
     public List<String> listDisplayUsers() {
         final boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
-        final LinkedList<String> users = new LinkedList<String>();
+        final LinkedList<String> users = new LinkedList<>();
         playerLoop:
         for (final Player p : this.server.getOnlinePlayers()) {
             if (isVanishEnabled) {

@@ -20,7 +20,7 @@ public final class Util {
         final StringBuilder result = new StringBuilder();
         result.append(parts[initialPos]);
         for (int i = initialPos + 1; i < parts.length; i++) {
-            result.append(delimiter + parts[i]);
+            result.append(delimiter).append(parts[i]);
         }
         return result.toString();
     }

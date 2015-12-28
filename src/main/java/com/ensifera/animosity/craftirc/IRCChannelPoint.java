@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 
 public final class IRCChannelPoint implements SecuredEndPoint {
     private class NicknameComparator implements Comparator<String> {
-        private Minebot bot;
+        private final Minebot bot;
 
         private NicknameComparator(Minebot bot) {
             this.bot = bot;
@@ -35,10 +35,10 @@ public final class IRCChannelPoint implements SecuredEndPoint {
 
     }
 
-    private Minebot bot;
-    private String channel;
+    private final Minebot bot;
+    private final String channel;
     private boolean allowColors = true;
-    private final int maxlen = 400;
+    private static final int MAXLEN = 400;
 
     IRCChannelPoint(Minebot bot, String channel) {
         this.bot = bot;
@@ -72,18 +72,18 @@ public final class IRCChannelPoint implements SecuredEndPoint {
         final boolean isNotice = msg.getFlag("notice");
         final boolean isPrivate = msg.getFlag("private");
         String target = this.channel;
-        if (msg.getFlag("private")) {
+        if (isPrivate) {
             target = msg.getField("realSender");
         }
 
-        if (message.length() > maxlen) {
+        if (message.length() > MAXLEN) {
             String[] messages;
             final StringBuilder builder = new StringBuilder(message.length());
             final StringTokenizer tokenizer = new StringTokenizer(message, " ");
             int currentLine = 0;
             while (tokenizer.hasMoreTokens()) {
                 final String nextWord = tokenizer.nextToken();
-                if ((currentLine + nextWord.length()) > maxlen) {
+                if ((currentLine + nextWord.length()) > MAXLEN) {
                     builder.append("\n");
                     currentLine = 0;
                 } else {
@@ -127,7 +127,7 @@ public final class IRCChannelPoint implements SecuredEndPoint {
 
     @Override
     public List<String> listUsers() {
-        final List<String> users = new LinkedList<String>();
+        final List<String> users = new LinkedList<>();
         for (final User user : this.bot.getUsers(this.channel)) {
             users.add(user.getNick());
         }
@@ -136,7 +136,7 @@ public final class IRCChannelPoint implements SecuredEndPoint {
 
     @Override
     public List<String> listDisplayUsers() {
-        final List<String> users = new LinkedList<String>();
+        final List<String> users = new LinkedList<>();
         for (final User user : this.bot.getUsers(this.channel)) {
             users.add(this.bot.getHighestUserPrefix(user) + user.getNick());
         }

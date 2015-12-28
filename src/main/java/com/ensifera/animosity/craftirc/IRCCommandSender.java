@@ -130,7 +130,6 @@ public final class IRCCommandSender implements ConsoleCommandSender {
     public void sendMessage(String[] messages) {
         try {
             final boolean isPrivate = this.cmd.getPlugin().cCmdPrivate("cmd");
-            final String sender = this.cmd.getField("sender");
             for (final String message : messages) {
                 final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
                 msg.setField("message", message);
