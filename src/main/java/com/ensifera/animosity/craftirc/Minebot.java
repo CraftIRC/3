@@ -54,6 +54,10 @@ public final class Minebot extends PircBot implements Runnable {
     private List<String> ignores;
     private String cmdPrefix;
 
+    // Exception spam minimization
+    private Class<? extends Exception> lastConnectionException;
+    private String lastConnectionMessage;
+
     private final String stoppedRespondingMessage;
 
     Minebot(CraftIRC plugin, int botId, boolean debug) {
@@ -199,6 +203,7 @@ public final class Minebot extends PircBot implements Runnable {
     void connectToIrc() {
         final String serverDescription = this.ircServer + ":" + this.ircPort + ((this.ssl) ? " [SSL]" : "");
         this.plugin.log("Connecting to " + serverDescription);
+        Exception exception = null;
         try {
             if (this.ssl) {
                 this.connect(this.ircServer, this.ircPort, this.ircPass, new TrustingSSLSocketFactory());
@@ -206,16 +211,25 @@ public final class Minebot extends PircBot implements Runnable {
                 this.connect(this.ircServer, this.ircPort, this.ircPass);
             }
         } catch (final ConnectException e) {
-            e.printStackTrace();
+            exception = e;
             this.plugin.logWarn("Couldn't connect to " + serverDescription);
             this.plugin.logWarn("Check that the address is written correctly and no firewalls are blocking CraftIRC");
             this.plugin.logWarn("If you're using a shared hosting provider, consider contacting tech support about this issue");
         } catch (final UnknownHostException e) {
-            e.printStackTrace();
+            exception = e;
             this.plugin.logWarn("Couldn't connect to " + serverDescription);
             this.plugin.logWarn("Check that the address is written correctly");
         } catch (final IOException | IrcException e) {
-            e.printStackTrace();
+            exception = e;
+        }
+        if (exception != null) {
+            if (exception.getClass() == lastConnectionException && exception.getMessage() != null && exception.getMessage().equals(lastConnectionMessage)) {
+                System.out.println(exception.getClass().getSimpleName() + ": " + exception.getMessage())
+            } else {
+                exception.printStackTrace();
+            }
+            lastConnectionException = exception.getClass();
+            lastConnectionMessage = exception.getMessage();
         }
     }
 
