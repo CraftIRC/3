@@ -1,6 +1,6 @@
 name: CraftIRC
 main: com.ensifera.animosity.craftirc.CraftIRC
-authors: [Animosity, Protected, mbaxter]
+authors: [Animosity, Protected, mbaxter, dequis]
 version: '${project.version}'
 softdepend: ['VanishNoPacket','Vault']
 commands:
