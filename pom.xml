@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>3.9.7-SNAPSHOT</version>
     <name>CraftIRC</name>
-    <url>http://www.github.com/CraftIRC/CraftIRC3</url>
+    <url>http://www.github.com/CraftIRC/3</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -28,6 +28,7 @@
             <artifactId>bukkit</artifactId>
             <version>1.7.2-R0.3</version>
             <type>jar</type>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -35,6 +36,7 @@
             <artifactId>Vault</artifactId>
             <version>1.2.23-SNAPSHOT</version>
             <type>jar</type>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -67,5 +69,31 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
