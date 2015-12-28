@@ -6,7 +6,7 @@ package com.ensifera.animosity.craftirc;
 public final class Util {
     /**
      * Combine string array with delimiter
-     * 
+     *
      * @param initialPos
      * @param parts
      * @param delimiter

@@ -1,29 +1,35 @@
 package com.ensifera.animosity.craftirc;
 
-import java.io.*;
-import java.lang.StringBuilder;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 import net.milkbowl.vault.chat.Chat;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
-import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Animosity
  * @author ricin
  * @author Protected
  * @author mbaxter
+ * @author dequis
  */
 public class CraftIRC extends JavaPlugin {
     private Configuration configuration;
@@ -198,7 +204,7 @@ public class CraftIRC extends JavaPlugin {
             this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
             this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
             this.configuration.getString("settings.formatting.from-game.command-reply",
-                this.configuration.getString("settings.formatting.from-game.generic", "%message%"));
+                    this.configuration.getString("settings.formatting.from-game.generic", "%message%"));
             this.configuration.getBoolean("default-attributes.notices.admin", true);
             this.configuration.getBoolean("default-attributes.notices.private", true);
 
@@ -433,7 +439,7 @@ public class CraftIRC extends JavaPlugin {
                 msg.setField("sender", ((Player) sender).getDisplayName());
             } else {
                 msg.setField("sender", sender.getName());
-            };
+            }
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
             boolean sameEndPoint = this.getEndPoint(this.cMinecraftTag()).equals(this.getEndPoint(args[0]));
@@ -530,7 +536,7 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * Null target: Sends message through all possible paths.
-     * 
+     *
      * @param source
      * @param target
      * @param eventType
@@ -725,7 +731,7 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * Only successful if all known targets (or if there is none at least one possible target) are successful!
-     * 
+     *
      * @param msg
      * @param knownDestinations
      * @param username
@@ -836,7 +842,8 @@ public class CraftIRC extends JavaPlugin {
         if (filters == null) {
             return false;
         }
-        newFilter: for (final ConfigurationNode filter : filters) {
+        newFilter:
+        for (final ConfigurationNode filter : filters) {
             for (final String key : filter.getKeys()) {
                 final Pattern condition = Pattern.compile(filter.getString(key, ""));
                 if (condition == null) {
@@ -950,7 +957,7 @@ public class CraftIRC extends JavaPlugin {
 
     /**
      * If the channel is null it's a reconnect, otherwise a rejoin
-     * 
+     *
      * @param bot
      * @param channel
      */

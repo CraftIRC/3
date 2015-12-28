@@ -1,13 +1,13 @@
 package com.ensifera.animosity.craftirc;
 
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.User;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.User;
 
 public final class IRCChannelPoint implements SecuredEndPoint {
     private class NicknameComparator implements Comparator<String> {

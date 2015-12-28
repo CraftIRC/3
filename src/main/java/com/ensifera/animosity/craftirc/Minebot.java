@@ -1,5 +1,10 @@
 package com.ensifera.animosity.craftirc;
 
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -15,11 +20,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
-
-import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.IrcException;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.PircBot;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.TrustingSSLSocketFactory;
 
 public final class Minebot extends PircBot implements Runnable {
     private CraftIRC plugin = null;
@@ -309,7 +309,7 @@ public final class Minebot extends PircBot implements Runnable {
 
     boolean isThisIgnored(String sender) {
         return (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) ||
-               (this.ignores.contains(sender));
+                (this.ignores.contains(sender));
     }
 
     @Override

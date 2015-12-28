@@ -1,7 +1,5 @@
 package com.ensifera.animosity.craftirc;
 
-import java.util.Set;
-
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -10,6 +8,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Set;
 
 public final class IRCCommandSender implements ConsoleCommandSender {
     private final RelayedCommand cmd;

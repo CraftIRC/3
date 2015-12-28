@@ -1,13 +1,13 @@
 package com.ensifera.animosity.craftirc;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MinecraftPoint implements CommandEndPoint {
     private Server server;
@@ -81,7 +81,8 @@ public class MinecraftPoint implements CommandEndPoint {
     public List<String> listDisplayUsers() {
         final boolean isVanishEnabled = this.server.getPluginManager().isPluginEnabled("VanishNoPacket");
         final LinkedList<String> users = new LinkedList<String>();
-        playerLoop: for (final Player p : this.server.getOnlinePlayers()) {
+        playerLoop:
+        for (final Player p : this.server.getOnlinePlayers()) {
             if (isVanishEnabled) {
                 for (final MetadataValue value : p.getMetadata("vanished")) {
                     if (value.getOwningPlugin().getName().equals("VanishNoPacket") && value.asBoolean()) {

@@ -1,8 +1,8 @@
 package com.ensifera.animosity.craftirc;
 
-import java.util.List;
-
 import org.bukkit.Server;
+
+import java.util.List;
 
 public final class ConsolePoint implements CommandEndPoint {
     private Server server;

@@ -1,18 +1,17 @@
 package com.ensifera.animosity.craftirc.example;
 
-import java.util.List;
-
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.ensifera.animosity.craftirc.CraftIRC;
 import com.ensifera.animosity.craftirc.EndPoint;
 import com.ensifera.animosity.craftirc.RelayedMessage;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public class PluginExample extends JavaPlugin implements EndPoint {
 
     private final String exampletag = "exampletag";
-    
+
     @Override
     public void onEnable() {
         final Plugin plugin = this.getServer().getPluginManager().getPlugin("CraftIRC");

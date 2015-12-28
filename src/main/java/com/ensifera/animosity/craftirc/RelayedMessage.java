@@ -1,14 +1,21 @@
 package com.ensifera.animosity.craftirc;
 
-import java.util.*;
+import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
+import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
+import org.bukkit.ChatColor;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
-import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
-
-import org.bukkit.ChatColor;
 
 public class RelayedMessage {
     enum DeliveryMethod {

@@ -1,12 +1,5 @@
 package com.ensifera.animosity.craftirc.libs.com.sk89q.util.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -20,6 +13,14 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * YAML configuration loader. To use this class, construct it with path to
@@ -51,7 +52,6 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * <p>This class is currently incomplete. It is not yet possible to get a node.
  * </p>
- *
  */
 
 public class Configuration extends ConfigurationNode {
@@ -90,7 +90,8 @@ public class Configuration extends ConfigurationNode {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
     }
 
@@ -157,12 +158,14 @@ public class Configuration extends ConfigurationNode {
             }
             yaml.dump(root, writer);
             return true;
-        } catch (IOException e) {} finally {
+        } catch (IOException e) {
+        } finally {
             try {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
 
         return false;
@@ -184,6 +187,7 @@ public class Configuration extends ConfigurationNode {
     /**
      * This method returns an empty ConfigurationNode for using as a
      * default in methods that select a node from a node list.
+     *
      * @return The empty node.
      */
     public static ConfigurationNode getEmptyNode() {
