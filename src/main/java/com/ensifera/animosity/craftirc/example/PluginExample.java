@@ -41,7 +41,7 @@ public class PluginExample extends JavaPlugin implements EndPoint {
 
     @Override
     public void messageIn(RelayedMessage msg) {
-        if (msg.getEvent() == "join") {
+        if (msg.getEvent().equals("join")) {
             this.getServer().broadcastMessage(msg.getField("sender") + " joined da game!");
         }
     }
