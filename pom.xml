@@ -54,7 +54,6 @@
 
   <build>
     <finalName>${project.artifactId}</finalName>
-    <sourceDirectory>src</sourceDirectory>
     <defaultGoal>clean install</defaultGoal>
     <resources>
       <resource>
