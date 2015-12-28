@@ -128,31 +128,23 @@ public final class IRCCommandSender implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(String[] messages) {
-        try {
-            final boolean isPrivate = this.cmd.getPlugin().cCmdPrivate("cmd");
-            for (final String message : messages) {
-                final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
-                msg.setField("message", message);
-                msg.setField("realSender", this.cmd.getField("realSender"));
-                msg.setFlag("private", isPrivate);
-                msg.post();
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final boolean isPrivate = this.cmd.getPlugin().cCmdPrivate("cmd");
+        for (final String message : messages) {
+            final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
+            msg.setField("message", message);
+            msg.setField("realSender", this.cmd.getField("realSender"));
+            msg.setFlag("private", isPrivate);
+            msg.post();
         }
     }
 
     @Override
     public void sendRawMessage(String message) {
-        try {
-            final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
-            msg.setField("message", message);
-            msg.setField("realSender", this.cmd.getField("realSender"));
-            msg.setFlag("private", this.cmd.getPlugin().cCmdPrivate("cmd"));
-            msg.post();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
+        msg.setField("message", message);
+        msg.setField("realSender", this.cmd.getField("realSender"));
+        msg.setFlag("private", this.cmd.getPlugin().cCmdPrivate("cmd"));
+        msg.post();
     }
 
     @Override

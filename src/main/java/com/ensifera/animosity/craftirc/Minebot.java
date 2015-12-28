@@ -143,11 +143,7 @@ public final class Minebot extends PircBot implements Runnable {
             this.plugin.getLogger().log(Level.SEVERE, "Unsupported encoding in bot " + this.nickname + " on " + this.ircServer, e);
         }
 
-        try {
-            this.start();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        this.start();
     }
 
     public void delChannel(String tag) {
@@ -640,9 +636,7 @@ public final class Minebot extends PircBot implements Runnable {
 
                 //this.connectToIrc();
                 this.plugin.scheduleForRetry(this, null);
-
             }
-
         } catch (final Exception e) {
             e.printStackTrace();
         }
