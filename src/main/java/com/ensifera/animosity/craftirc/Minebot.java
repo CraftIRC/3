@@ -224,7 +224,7 @@ public final class Minebot extends PircBot implements Runnable {
         }
         if (exception != null) {
             if (exception.getClass() == lastConnectionException && exception.getMessage() != null && exception.getMessage().equals(lastConnectionMessage)) {
-                System.out.println(exception.getClass().getSimpleName() + ": " + exception.getMessage())
+                System.out.println(exception.getClass().getSimpleName() + ": " + exception.getMessage());
             } else {
                 exception.printStackTrace();
             }
