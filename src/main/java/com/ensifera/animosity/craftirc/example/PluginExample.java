@@ -3,13 +3,13 @@ package com.ensifera.animosity.craftirc.example;
 import com.ensifera.animosity.craftirc.CraftIRC;
 import com.ensifera.animosity.craftirc.EndPoint;
 import com.ensifera.animosity.craftirc.RelayedMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
 public class PluginExample extends JavaPlugin implements EndPoint {
-
     private final String exampletag = "exampletag";
 
     @Override
@@ -42,7 +42,7 @@ public class PluginExample extends JavaPlugin implements EndPoint {
     @Override
     public void messageIn(RelayedMessage msg) {
         if (msg.getEvent().equals("join")) {
-            this.getServer().broadcastMessage(msg.getField("sender") + " joined da game!");
+            this.getServer().broadcastMessage(msg.getField("sender") + ChatColor.RESET + " joined da game!");
         }
     }
 
@@ -65,5 +65,4 @@ public class PluginExample extends JavaPlugin implements EndPoint {
     public List<String> listDisplayUsers() {
         return null;
     }
-
 }

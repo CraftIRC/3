@@ -24,21 +24,20 @@ public class RelayedMessage {
         COMMAND
     }
 
-    static final String ircBold = Character.toString((char) 2);
-    static final String ircColor = Character.toString((char) 3);
-    static final String ircReset = Character.toString((char) 15);
-    static final String ircReverse = Character.toString((char) 22);
-    static final String ircUnderline = Character.toString((char) 31);
-    static final String typeString = "MSG";
+    private static final String IRC_BOLD = Character.toString((char) 2);
+    private static final String IRC_COLOR = Character.toString((char) 3);
+    private static final String IRC_RESET = Character.toString((char) 15);
+    private static final String IRC_REVERSE = Character.toString((char) 22);
+    private static final String IRC_UNDERLINE = Character.toString((char) 31);
 
     private final CraftIRC plugin;
-    private final EndPoint source; //Origin endpoint of the message
-    private final EndPoint target; //Target endpoint of the message
-    private final String eventType; //Event type
-    private LinkedList<EndPoint> cc; //Multiple extra targets for the message
-    private String template; //Formatting string
-    private final Map<String, String> fields; //All message attributes
-    private final Set<String> doNotColorFields; //Do not allow color codes on these fields
+    private final EndPoint source; // Origin endpoint of the message
+    private final EndPoint target; // Target endpoint of the message
+    private final String eventType; // Event type
+    private final LinkedList<EndPoint> cc = new LinkedList<>(); // Multiple extra targets for the message
+    private String template; // Formatting string
+    private final Map<String, String> fields; // All message attributes
+    private final Set<String> doNotColorFields; // Do not allow color codes on these fields
     private final Map<String, Boolean> flags;
 
     RelayedMessage(CraftIRC plugin, EndPoint source) {
@@ -133,7 +132,7 @@ public class RelayedMessage {
         String result = this.template;
         EndPoint realTarget;
 
-        //Resolve target
+        // Resolve target
         realTarget = this.target;
         if (realTarget == null) {
             if (currentTarget == null) {
@@ -146,9 +145,9 @@ public class RelayedMessage {
             }
         }
 
-        //IRC color code aliases
+        // IRC color code aliases
         if (realTarget.getType() == EndPoint.Type.IRC) {
-            //Replace named colours
+            // Replace named colours
             for (ConfigurationNode node : plugin.getColorMap()) {
                 String colorName = node.getString("name", "");
                 if (colorName.length() > 0) {
@@ -156,15 +155,15 @@ public class RelayedMessage {
                     result = result.replace("%" + colorName + "%", c.equals("-1") ? Colors.NORMAL : "\u0003" + c);
                 }
             }
-            result = result.replaceAll("%k([0-9]{1,2})%", ircColor + "$1");
-            result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", ircColor + "$1,$2");
-            result = result.replace("%k%", ircColor);
-            result = result.replace("%o%", ircReset);
-            result = result.replace("%b%", ircBold);
-            result = result.replace("%u%", ircUnderline);
-            result = result.replace("%r%", ircReverse);
+            result = result.replaceAll("%k([0-9]{1,2})%", IRC_COLOR + "$1");
+            result = result.replaceAll("%k([0-9]{1,2}),([0-9]{1,2})%", IRC_COLOR + "$1,$2");
+            result = result.replace("%k%", IRC_COLOR);
+            result = result.replace("%o%", IRC_RESET);
+            result = result.replace("%b%", IRC_BOLD);
+            result = result.replace("%u%", IRC_UNDERLINE);
+            result = result.replace("%r%", IRC_REVERSE);
         } else if (realTarget.getType() == EndPoint.Type.MINECRAFT) {
-            //Replace named colours
+            // Replace named colours
             for (ConfigurationNode node : plugin.getColorMap()) {
                 String colorName = node.getString("name", "");
                 if (colorName.length() > 0)
@@ -177,8 +176,8 @@ public class RelayedMessage {
             result = result.replace("%b%", "");
             result = result.replace("%u%", "");
             result = result.replace("%r%", "");
-        } else { //EndPoint.Type.PLAIN
-            //Replace named colours
+        } else { // EndPoint.Type.PLAIN
+            // Replace named colours
             for (ConfigurationNode node : plugin.getColorMap()) {
                 String colorName = node.getString("name", "");
                 if (colorName.length() > 0)
@@ -193,7 +192,7 @@ public class RelayedMessage {
             result = result.replace("%r%", "");
         }
 
-        //Fields
+        // Fields
         for (String fieldName : this.fields.keySet()) {
             String replacement = this.fields.get(fieldName);
             if (replacement == null) {
@@ -206,7 +205,7 @@ public class RelayedMessage {
                 // if anti-highlight isn't set (disabled), this function returns the same value as the input
                 replacement = plugin.processAntiHighlight(replacement);
             }
-            //Global find/replacements with regular expressions.
+            // Global find/replacements with regular expressions.
             Map<String, Map<String, String>> replaceFilters = this.plugin.cReplaceFilters();
             if (replaceFilters.containsKey(fieldName))
                 for (String search : replaceFilters.get(fieldName).keySet())
@@ -223,7 +222,7 @@ public class RelayedMessage {
             result = result.replace("%" + fieldName + "%", replacement);
         }
 
-        //Convert colors
+        // Convert colors
         final boolean colors = this.plugin.cPathAttribute(this.fields.get("source"), this.fields.get("target"), "attributes.colors");
         if (this.source.getType() == EndPoint.Type.MINECRAFT) {
             if ((realTarget.getType() == EndPoint.Type.IRC) && colors) {
@@ -234,7 +233,7 @@ public class RelayedMessage {
                     find_colors = color_codes.matcher(result);
                 }
             } else if ((realTarget.getType() != EndPoint.Type.MINECRAFT) || !colors) {
-                //Strip colors
+                // Strip colors
                 result = result.replaceAll("(\u00A7([A-FK-Ra-fk-r0-9])?)", "");
             }
         }
@@ -249,7 +248,7 @@ public class RelayedMessage {
                 }
                 result = result.replaceAll(Character.toString((char) 15) + "|" + Character.toString((char) 3), this.plugin.cColorGameFromName("foreground"));
             } else if ((realTarget.getType() != EndPoint.Type.IRC) || !colors) {
-                //Strip colors
+                // Strip colors
                 result = result.replaceAll("(" + Character.toString((char) 2) + "|" + Character.toString((char) 15) + "|" + Character.toString((char) 22) + Character.toString((char) 31) + "|" + Character.toString((char) 3) + "[0-9]{0,2}(,[0-9]{1,2})?)", "");
             }
         }

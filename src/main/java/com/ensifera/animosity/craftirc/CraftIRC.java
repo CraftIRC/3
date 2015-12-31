@@ -35,7 +35,7 @@ import java.util.regex.PatternSyntaxException;
 public class CraftIRC extends JavaPlugin {
     private Configuration configuration;
 
-    //Misc class attributes
+    // Misc class attributes
     private List<Minebot> instances;
     private boolean debug;
     private Timer holdTimer = new Timer();
@@ -44,20 +44,20 @@ public class CraftIRC extends JavaPlugin {
     private String firstChannelTag;
     private boolean derpFakeExceptionSent = false;
 
-    //Bots and channels config storage
+    // Bots and channels config storage
     private List<ConfigurationNode> bots;
     private List<ConfigurationNode> colormap;
     private Map<Integer, List<ConfigurationNode>> channodes;
     private Map<Path, ConfigurationNode> paths;
 
-    //Endpoints
+    // Endpoints
     private Map<String, EndPoint> endpoints;
     private Map<EndPoint, String> tags;
     private Map<String, CommandEndPoint> irccmds;
     private Map<String, List<String>> taggroups;
     private Chat vault;
 
-    //Replacement Filters
+    // Replacement Filters
     private Map<String, Map<String, String>> replaceFilters;
     private boolean cancelChat;
 
@@ -69,7 +69,7 @@ public class CraftIRC extends JavaPlugin {
         this.getLogger().warning(message);
     }
 
-    void logDerp(String message) {
+    private void logDerp(String message) {
         this.getLogger().severe(message);
         if (!this.derpFakeExceptionSent) {
             // show a fake exception, and get the users to hopefully notice this poor error
@@ -85,7 +85,7 @@ public class CraftIRC extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            //Checking if the configuration file exists and imports the default one from the .jar if it doesn't
+            // Checking if the configuration file exists and imports the default one from the .jar if it doesn't
             final File configFile = new File(this.getDataFolder(), "config.yml");
             if (!configFile.exists()) {
                 this.saveDefaultConfig();
@@ -121,11 +121,11 @@ public class CraftIRC extends JavaPlugin {
                 this.logDerp("Auto-paths are enabled but there are paths defined in the paths section of the config - this may cause unexpected behavior!");
             }
 
-            //Replace filters
+            // Replace filters
             this.replaceFilters = new HashMap<>();
             try {
                 for (String key : this.configuration.getNode("filters").getKeys()) {
-                    //Map key to regex pattern, value to replacement.
+                    // Map key to regex pattern, value to replacement.
                     Map<String, String> replaceMap = new HashMap<>();
                     this.replaceFilters.put(key, replaceMap);
                     for (ConfigurationNode fieldNode : this.configuration.getNodeList("filters." + key, null)) {
@@ -135,24 +135,24 @@ public class CraftIRC extends JavaPlugin {
                                 replaceMap.put(pattern, patterns.get(pattern).toString());
                     }
 
-                    //Also supports non-map entries.
+                    // Also supports non-map entries.
                     for (String unMappedEntry : this.configuration.getStringList("filters." + key, null))
-                        if (unMappedEntry.length() > 0 && unMappedEntry.charAt(0) != '{') //mapped toString() begins with {, but regex can't begin with {.
+                        if (unMappedEntry.length() > 0 && unMappedEntry.charAt(0) != '{') // mapped toString() begins with {, but regex can't begin with {.
                             replaceMap.put(unMappedEntry, "");
                 }
-            } catch (NullPointerException e) {
+            } catch (NullPointerException ignored) {
             }
 
-            //Retry timers
+            // Retry timers
             this.retryTimer = new Timer();
 
-            //Event listeners
+            // Event listeners
             this.getServer().getPluginManager().registerEvents(new CraftIRCListener(this), this);
             this.getServer().getPluginManager().registerEvents(new ConsoleListener(this), this);
 
-            //Native endpoints!
+            // Native endpoints!
             if ((this.cMinecraftTag() != null) && !this.cMinecraftTag().equals("")) {
-                this.registerEndPoint(this.cMinecraftTag(), new MinecraftPoint(this, this.getServer())); //The minecraft server, no bells and whistles
+                this.registerEndPoint(this.cMinecraftTag(), new MinecraftPoint(this, this.getServer())); // The minecraft server, no bells and whistles
                 for (final String cmd : this.cCmdWordSay(null)) {
                     this.registerCommand(this.cMinecraftTag(), cmd);
                 }
@@ -166,13 +166,13 @@ public class CraftIRC extends JavaPlugin {
                 this.logDerp("No minecraft tag defined in the config file (settings.minecraft-tag)");
             }
             if ((this.cCancelledTag() != null) && !this.cCancelledTag().equals("")) {
-                this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); //Handles cancelled chat
+                this.registerEndPoint(this.cCancelledTag(), new MinecraftPoint(this, this.getServer())); // Handles cancelled chat
                 if (!this.cMinecraftTagGroup().equals("")) {
                     this.groupTag(this.cCancelledTag(), this.cMinecraftTagGroup());
                 }
             }
             if ((this.cConsoleTag() != null) && !this.cConsoleTag().equals("")) {
-                this.registerEndPoint(this.cConsoleTag(), new ConsolePoint(this, this.getServer())); //The minecraft console
+                this.registerEndPoint(this.cConsoleTag(), new ConsolePoint(this, this.getServer())); // The minecraft console
                 for (final String cmd : this.cCmdWordCmd(null)) {
                     this.registerCommand(this.cConsoleTag(), cmd);
                 }
@@ -181,7 +181,7 @@ public class CraftIRC extends JavaPlugin {
                 }
             }
 
-            //Create bots
+            // Create bots
             if (this.bots.size() == 0) {
                 this.logDerp("No bots defined in the 'bots' section of the config file");
             }
@@ -200,8 +200,8 @@ public class CraftIRC extends JavaPlugin {
 
             this.loadTagGroups();
 
-            //Give these default values if they aren't defined
-            //Ugly but there is no better way with this non-bukkit config
+            // Give these default values if they aren't defined
+            // Ugly but there is no better way with this non-bukkit config
             this.configuration.getString("settings.formatting.from-game.players-list", "Online (%playerCount%/%maxPlayers%): %message%");
             this.configuration.getString("settings.formatting.from-game.players-nobody", "Nobody is minecrafting right now.");
             this.configuration.getString("settings.formatting.from-game.command-reply",
@@ -215,7 +215,7 @@ public class CraftIRC extends JavaPlugin {
                 this.log("Enabled.");
             }
 
-            //Hold timers
+            // Hold timers
             this.hold = new HashMap<>();
             this.holdTimer = new Timer();
             if (this.cHold("chat") > 0) {
@@ -272,7 +272,7 @@ public class CraftIRC extends JavaPlugin {
         try {
             new Metrics(this).start();
         } catch (final IOException e) {
-            //Meh.
+            // Meh.
         }
     }
 
@@ -293,7 +293,7 @@ public class CraftIRC extends JavaPlugin {
         try {
             this.retryTimer.cancel();
             this.holdTimer.cancel();
-            //Disconnect bots
+            // Disconnect bots
             if (this.bots != null) {
                 for (int i = 0; i < this.bots.size(); i++) {
                     this.instances.get(i).disconnect();
@@ -427,7 +427,7 @@ public class CraftIRC extends JavaPlugin {
             msg.setField("message", msgToSend);
             msg.doNotColor("message");
             boolean sameEndPoint = this.getEndPoint(this.cMinecraftTag()).equals(this.getEndPoint(args[0]));
-            //Don't actually deliver the message if the user is invisible to the sender.
+            // Don't actually deliver the message if the user is invisible to the sender.
             if (sameEndPoint && sender instanceof Player) {
                 Player recipient = getServer().getPlayer(args[1]);
                 if (recipient != null && recipient.isOnline() && ((Player) sender).canSee(recipient))
@@ -521,10 +521,10 @@ public class CraftIRC extends JavaPlugin {
     /**
      * Null target: Sends message through all possible paths.
      *
-     * @param source
-     * @param target
-     * @param eventType
-     * @return
+     * @param source source endpoint
+     * @param target target endpoint
+     * @param eventType type of event
+     * @return the message to send
      */
     public RelayedMessage newMsg(EndPoint source, EndPoint target, String eventType) {
         if (source == null) {
@@ -697,30 +697,14 @@ public class CraftIRC extends JavaPlugin {
         return false;
     }
 
-    /***************************
-     * Heart of the beast! Unified method with no special cases that replaces the old sendMessage
-     ***************************/
-
-    boolean delivery(RelayedMessage msg) {
-        return this.delivery(msg, null, null, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-
-    boolean delivery(RelayedMessage msg, List<EndPoint> destinations) {
-        return this.delivery(msg, destinations, null, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-
-    boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username) {
-        return this.delivery(msg, knownDestinations, username, RelayedMessage.DeliveryMethod.STANDARD);
-    }
-
     /**
      * Only successful if all known targets (or if there is none at least one possible target) are successful!
      *
-     * @param msg
-     * @param knownDestinations
-     * @param username
-     * @param dm
-     * @return
+     * @param msg message to send
+     * @param knownDestinations destinations
+     * @param username username
+     * @param dm method of delivery
+     * @return true if successful
      */
     boolean delivery(RelayedMessage msg, List<EndPoint> knownDestinations, String username, RelayedMessage.DeliveryMethod dm) {
         final String sourceTag = this.getTag(msg.getSource());
@@ -729,9 +713,9 @@ public class CraftIRC extends JavaPlugin {
         if (this.isDebug()) {
             this.log("X->" + (knownDestinations.size() > 0 ? knownDestinations.toString() : "*") + ": " + msg.toString());
         }
-        //If we weren't explicitly given a recipient for the message, let's try to find one (or more)
+        // If we weren't explicitly given a recipient for the message, let's try to find one (or more)
         if (knownDestinations.size() < 1) {
-            //Use all possible destinations (auto-targets)
+            // Use all possible destinations (auto-targets)
             destinations = new LinkedList<>();
             for (final String targetTag : this.cPathsFrom(sourceTag)) {
                 final EndPoint ep = this.getEndPoint(targetTag);
@@ -749,7 +733,7 @@ public class CraftIRC extends JavaPlugin {
                 }
                 destinations.add(ep);
             }
-            //Default paths to unsecured destinations (auto-paths)
+            // Default paths to unsecured destinations (auto-paths)
             if (this.cAutoPaths()) {
                 for (final EndPoint ep : this.endpoints.values()) {
                     if (ep == null) {
@@ -783,7 +767,7 @@ public class CraftIRC extends JavaPlugin {
         if (destinations.size() < 1) {
             return false;
         }
-        //Deliver the message
+        // Deliver the message
         boolean success = true;
         for (final EndPoint destination : destinations) {
             final String targetTag = this.getTag(destination);
@@ -792,15 +776,15 @@ public class CraftIRC extends JavaPlugin {
             }
             msg.setField("target", targetTag);
 
-            //Whether the event should be sent as a NOTICE on irc endpoints or not (Ignored in others)
+            // Whether the event should be sent as a NOTICE on irc endpoints or not (Ignored in others)
             msg.setFlag("notice", this.cPathAttribute(sourceTag, targetTag, "notices." + msg.getEvent()));
 
-            //Check against path filters
+            // Check against path filters
             if (this.matchesFilter(msg, this.cPathFilters(sourceTag, targetTag))) {
                 success = false;
                 continue;
             }
-            //Finally deliver!
+            // Finally deliver!
             if (this.isDebug()) {
                 this.log("-->X: " + msg.toString());
             }
@@ -820,7 +804,7 @@ public class CraftIRC extends JavaPlugin {
         return success;
     }
 
-    boolean matchesFilter(RelayedMessage msg, List<ConfigurationNode> filters) {
+    private boolean matchesFilter(RelayedMessage msg, List<ConfigurationNode> filters) {
         if (filters == null) {
             return false;
         }
@@ -881,7 +865,7 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
-    void setDebug(boolean d) {
+    private void setDebug(boolean d) {
         this.debug = d;
 
         for (int i = 0; i < this.bots.size(); i++) {
@@ -896,8 +880,7 @@ public class CraftIRC extends JavaPlugin {
         if (this.vault != null) {
             try {
                 result = this.vault.getPlayerPrefix(p);
-            } catch (final Exception e) {
-
+            } catch (final Exception ignored) {
             }
         }
         return result;
@@ -908,8 +891,7 @@ public class CraftIRC extends JavaPlugin {
         if (this.vault != null) {
             try {
                 result = this.vault.getPlayerSuffix(p);
-            } catch (final Exception e) {
-
+            } catch (final Exception ignored) {
             }
         }
         return result;
@@ -919,28 +901,11 @@ public class CraftIRC extends JavaPlugin {
         return this.debug;
     }
 
-    boolean checkPerms(Player pl, String path) {
-        return pl.hasPermission(path);
-    }
-
-    boolean checkPerms(String pl, String path) {
-        final Player pit = this.getServer().getPlayer(pl);
-        return pit != null && pit.hasPermission(path);
-    }
-
-    protected void enqueueConsoleCommand(String cmd) {
-        try {
-            this.getServer().dispatchCommand(this.getServer().getConsoleSender(), cmd);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * If the channel is null it's a reconnect, otherwise a rejoin
      *
-     * @param bot
-     * @param channel
+     * @param bot bot
+     * @param channel channel
      */
     void scheduleForRetry(Minebot bot, String channel) {
         this.retryTimer.schedule(new RetryTask(this, bot, channel), this.cRetryDelay());
@@ -1067,8 +1032,8 @@ public class CraftIRC extends JavaPlugin {
     }
 
     public String cColorIrcNormalize(String color) {
-        //Forces sending two digit colour codes.
-        //As a function because it's more handy to use like this.
+        // Forces sending two digit colour codes.
+        // As a function because it's more handy to use like this.
         return (color.length() == 1 ? "0" : "") + color;
     }
 
@@ -1109,7 +1074,7 @@ public class CraftIRC extends JavaPlugin {
         ConfigurationNode color;
         for (ConfigurationNode aColormap : this.colormap) {
             color = aColormap;
-            //Enforce two digit comparisons.
+            // Enforce two digit comparisons.
             if (color.getString("irc", "").equals(irc) || "0".concat(color.getString("irc", "")).equals(irc)) {
                 return color.getString("game", this.cColorGameFromName("foreground"));
             }
@@ -1280,20 +1245,6 @@ public class CraftIRC extends JavaPlugin {
         return results;
     }
 
-    List<String> cPathsTo(String target) {
-        final List<String> results = new LinkedList<>();
-        for (final Path path : this.paths.keySet()) {
-            if (!path.getTargetTag().equals(target)) {
-                continue;
-            }
-            if (this.paths.get(path).getBoolean("disable", false)) {
-                continue;
-            }
-            results.add(path.getSourceTag());
-        }
-        return results;
-    }
-
     public boolean cPathExists(String source, String target) {
         final ConfigurationNode pathNode = this.getPathNode(source, target);
         return (pathNode != null) && !pathNode.getBoolean("disable", false);
@@ -1316,7 +1267,7 @@ public class CraftIRC extends JavaPlugin {
         return this.replaceFilters;
     }
 
-    void loadTagGroups() {
+    private void loadTagGroups() {
         final List<String> groups = this.configuration.getKeys("settings.tag-groups");
         if (groups == null) {
             return;
@@ -1354,7 +1305,7 @@ public class CraftIRC extends JavaPlugin {
         private final CraftIRC plugin;
         private final HoldType ht;
 
-        protected RemoveHoldTask(CraftIRC plugin, HoldType ht) {
+        RemoveHoldTask(CraftIRC plugin, HoldType ht) {
             super();
             this.plugin = plugin;
             this.ht = ht;

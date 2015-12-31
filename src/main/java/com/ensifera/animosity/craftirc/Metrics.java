@@ -48,8 +48,7 @@ import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Metrics {
-
+class Metrics {
     /**
      * The current revision number
      */
@@ -81,11 +80,6 @@ public class Metrics {
     private final YamlConfiguration configuration;
 
     /**
-     * The plugin configuration file
-     */
-    private final File configurationFile;
-
-    /**
      * Unique server id
      */
     private final String guid;
@@ -113,7 +107,10 @@ public class Metrics {
         this.plugin = plugin;
 
         // load the config
-        configurationFile = getConfigFile();
+        /*
+      The plugin configuration file
+     */
+        File configurationFile = getConfigFile();
         configuration = YamlConfiguration.loadConfiguration(configurationFile);
 
         // add some defaults
@@ -136,19 +133,17 @@ public class Metrics {
      * Start measuring statistics. This will immediately create an async repeating task as the plugin and send
      * the initial data to the metrics backend, and then after that it will post in increments of
      * PING_INTERVAL * 1200 ticks.
-     *
-     * @return True if statistics measuring is running, otherwise false.
      */
-    public boolean start() {
+    public void start() {
         synchronized (optOutLock) {
             // Did we opt out?
             if (isOptOut()) {
-                return false;
+                return;
             }
 
             // Is metrics already running?
             if (task != null) {
-                return true;
+                return;
             }
 
             // Begin hitting the server with glorious data
@@ -182,8 +177,6 @@ public class Metrics {
                     }
                 }
             }, 0, PING_INTERVAL * 1200);
-
-            return true;
         }
     }
 
@@ -192,7 +185,7 @@ public class Metrics {
      *
      * @return true if metrics should be opted out of it
      */
-    public boolean isOptOut() {
+    private boolean isOptOut() {
         synchronized (optOutLock) {
             try {
                 // Reload the metrics file
@@ -213,54 +206,11 @@ public class Metrics {
     }
 
     /**
-     * Enables metrics for the server by setting "opt-out" to false in the config file and starting the metrics task.
-     *
-     * @throws java.io.IOException
-     */
-    public void enable() throws IOException {
-        // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
-            // Check if the server owner has already set opt-out, if not, set it.
-            if (isOptOut()) {
-                configuration.set("opt-out", false);
-                configuration.save(configurationFile);
-            }
-
-            // Enable Task, if it is not running
-            if (task == null) {
-                start();
-            }
-        }
-    }
-
-    /**
-     * Disables metrics for the server by setting "opt-out" to true in the config file and canceling the metrics task.
-     *
-     * @throws java.io.IOException
-     */
-    public void disable() throws IOException {
-        // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
-            // Check if the server owner has already set opt-out, if not, set it.
-            if (!isOptOut()) {
-                configuration.set("opt-out", true);
-                configuration.save(configurationFile);
-            }
-
-            // Disable Task, if it is running
-            if (task != null) {
-                task.cancel();
-                task = null;
-            }
-        }
-    }
-
-    /**
      * Gets the File object of the config file that should be used to store data such as the GUID and opt-out status
      *
      * @return the File object for the config file
      */
-    public File getConfigFile() {
+    private File getConfigFile() {
         // I believe the easiest way to get the base folder (e.g craftbukkit set via -P) for plugins to use
         // is to abuse the plugin object we already have
         // plugin.getDataFolder() => base/plugins/PluginA/
@@ -350,7 +300,7 @@ public class Metrics {
         reader.close();
 
         if (response == null || response.startsWith("ERR")) {
-            throw new IOException(response); //Throw the exception
+            throw new IOException(response); // Throw the exception
         }
     }
 
@@ -394,5 +344,4 @@ public class Metrics {
     private static String encode(final String text) throws UnsupportedEncodingException {
         return URLEncoder.encode(text, "UTF-8");
     }
-
 }

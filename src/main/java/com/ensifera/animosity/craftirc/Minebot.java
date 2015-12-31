@@ -21,7 +21,7 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 
 public final class Minebot extends PircBot implements Runnable {
-    private CraftIRC plugin = null;
+    private final CraftIRC plugin;
     private final boolean debug;
     private final int botId;
     private String nickname;
@@ -180,7 +180,7 @@ public final class Minebot extends PircBot implements Runnable {
     /**
      * Thread start
      */
-    void start() {
+    private void start() {
         try {
             this.setAutoNickChange(true);
 
@@ -264,7 +264,7 @@ public final class Minebot extends PircBot implements Runnable {
         }
     }
 
-    void authenticateBot() {
+    private void authenticateBot() {
         if (this.authMethod.equalsIgnoreCase("nickserv") && !this.authPass.isEmpty()) {
             this.plugin.log("Using Nickserv authentication.");
             this.sendMessage("nickserv", "GHOST " + this.nickname + " " + this.authPass);
@@ -293,12 +293,12 @@ public final class Minebot extends PircBot implements Runnable {
         if (!this.authMethod.equalsIgnoreCase("none") && (this.authDelay > 0)) {
             try {
                 Thread.sleep(this.authDelay);
-            } catch (final InterruptedException e) {
+            } catch (final InterruptedException ignored) {
             }
         }
     }
 
-    void amNowInChannel(String channel) {
+    private void amNowInChannel(String channel) {
         channel = channel.toLowerCase();
         this.plugin.log("Joined channel: " + channel);
         this.whereAmI.add(channel);
@@ -311,7 +311,7 @@ public final class Minebot extends PircBot implements Runnable {
         }
     }
 
-    boolean isThisIgnored(String sender) {
+    private boolean isThisIgnored(String sender) {
         return (this.plugin.cUseMapAsWhitelist(this.botId) && !this.plugin.cNicknameIsInIrcMap(this.botId, sender)) ||
                 (this.ignores.contains(sender));
     }
@@ -343,7 +343,7 @@ public final class Minebot extends PircBot implements Runnable {
         }
     }
 
-    void noLongerInChannel(String channel, boolean rejoin) {
+    private void noLongerInChannel(String channel, boolean rejoin) {
         this.whereAmI.remove(channel);
         this.plugin.unregisterEndPoint(this.plugin.cChanTag(this.botId, channel));
         if (rejoin) {
@@ -498,7 +498,7 @@ public final class Minebot extends PircBot implements Runnable {
                 cmd = this.plugin.newCmd(this.channels.get(channel), command.substring(this.cmdPrefix.length()));
             }
             if (cmd != null) {
-                //Normal command
+                // Normal command
                 cmd.setField("sender", this.plugin.cIrcDisplayName(this.botId, sender));
                 cmd.setField("realSender", sender);
                 cmd.setField("srcChannel", channel);
@@ -517,7 +517,7 @@ public final class Minebot extends PircBot implements Runnable {
             } else if (command.toLowerCase().equals(this.cmdPrefix + "raw") && loopbackAdmin && userAdmin) {
                 this.sendRawLine(args);
             } else {
-                //Not a command
+                // Not a command
                 final RelayedMessage msg = this.plugin.newMsg(this.channels.get(channel), null, "chat");
                 if (msg == null) {
                     return;
@@ -648,7 +648,6 @@ public final class Minebot extends PircBot implements Runnable {
             if (this.plugin.isEnabled()) {
                 this.plugin.log("disconnected from IRC server... reconnecting!");
 
-                //this.connectToIrc();
                 this.plugin.scheduleForRetry(this, null);
             }
         } catch (final Exception e) {

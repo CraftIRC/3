@@ -7,10 +7,10 @@ public final class Util {
     /**
      * Combine string array with delimiter
      *
-     * @param initialPos
-     * @param parts
-     * @param delimiter
-     * @return
+     * @param initialPos initial position
+     * @param parts parts to combine
+     * @param delimiter delimiter
+     * @return combined string
      * @throws ArrayIndexOutOfBoundsException
      */
     public static String combineSplit(int initialPos, String[] parts, String delimiter) throws ArrayIndexOutOfBoundsException {
