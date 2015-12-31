@@ -11,9 +11,9 @@ import java.util.TreeMap;
  * Represents a configuration node.
  */
 public class ConfigurationNode {
-    protected Map<String, Object> root;
+    Map<String, Object> root;
 
-    protected ConfigurationNode(Map<String, Object> root) {
+    ConfigurationNode(Map<String, Object> root) {
         this.root = root;
     }
 
@@ -36,8 +36,8 @@ public class ConfigurationNode {
      * @return The fully pathed map for that point in the tree, with the path as the key
      */
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> recursiveBuilder(Map<String, Object> node) {
-        Map<String, Object> map = new TreeMap<String, Object>();
+    private Map<String, Object> recursiveBuilder(Map<String, Object> node) {
+        Map<String, Object> map = new TreeMap<>();
 
         Set<String> keys = node.keySet();
         for (String k : keys) {
@@ -110,7 +110,7 @@ public class ConfigurationNode {
      * @param value The new value
      */
     @SuppressWarnings("unchecked")
-    public void setProperty(String path, Object value) {
+    private void setProperty(String path, Object value) {
         if (!path.contains(".")) {
             root.put(path, value);
             return;
@@ -247,14 +247,14 @@ public class ConfigurationNode {
     @SuppressWarnings("unchecked")
     public List<String> getKeys(String path) {
         if (path == null) {
-            return new ArrayList<String>(root.keySet());
+            return new ArrayList<>(root.keySet());
         }
         Object o = getProperty(path);
 
         if (o == null) {
             return null;
         } else if (o instanceof Map) {
-            return new ArrayList<String>(((Map<String, Object>) o).keySet());
+            return new ArrayList<>(((Map<String, Object>) o).keySet());
         } else {
             return null;
         }
@@ -266,7 +266,7 @@ public class ConfigurationNode {
      * @return List of keys
      */
     public List<String> getKeys() {
-        return new ArrayList<String>(root.keySet());
+        return new ArrayList<>(root.keySet());
     }
 
     /**
@@ -277,7 +277,7 @@ public class ConfigurationNode {
      * @return boolean or default
      */
     @SuppressWarnings("unchecked")
-    public List<Object> getList(String path) {
+    private List<Object> getList(String path) {
         Object o = getProperty(path);
 
         if (o == null) {
@@ -308,7 +308,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<String>();
         }
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         for (Object o : raw) {
             if (o == null) {
@@ -339,7 +339,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Integer>();
         }
 
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
 
         for (Object o : raw) {
             Integer i = castInt(o);
@@ -370,7 +370,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Double>();
         }
 
-        List<Double> list = new ArrayList<Double>();
+        List<Double> list = new ArrayList<>();
 
         for (Object o : raw) {
             Double i = castDouble(o);
@@ -401,7 +401,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<Boolean>();
         }
 
-        List<Boolean> list = new ArrayList<Boolean>();
+        List<Boolean> list = new ArrayList<>();
 
         for (Object o : raw) {
             Boolean tetsu = castBoolean(o);
@@ -433,7 +433,7 @@ public class ConfigurationNode {
             return def != null ? def : new ArrayList<ConfigurationNode>();
         }
 
-        List<ConfigurationNode> list = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> list = new ArrayList<>();
 
         for (Object o : raw) {
             if (o instanceof Map) {
@@ -477,7 +477,7 @@ public class ConfigurationNode {
         if (o == null) {
             return null;
         } else if (o instanceof Map) {
-            Map<String, ConfigurationNode> nodes = new HashMap<String, ConfigurationNode>();
+            Map<String, ConfigurationNode> nodes = new HashMap<>();
 
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
                 if (entry.getValue() instanceof Map) {
@@ -494,8 +494,8 @@ public class ConfigurationNode {
     /**
      * Casts a value to an integer. May return null.
      *
-     * @param o
-     * @return
+     * @param o object to cast
+     * @return casted object or null if not a number
      */
     private static Integer castInt(Object o) {
         if (o == null) {
@@ -518,8 +518,8 @@ public class ConfigurationNode {
     /**
      * Casts a value to a double. May return null.
      *
-     * @param o
-     * @return
+     * @param o object to cast
+     * @return casted object or null if not a number
      */
     private static Double castDouble(Object o) {
         if (o == null) {
@@ -542,8 +542,8 @@ public class ConfigurationNode {
     /**
      * Casts a value to a boolean. May return null.
      *
-     * @param o
-     * @return
+     * @param o object to cast
+     * @return casted object or null if not a number
      */
     private static Boolean castBoolean(Object o) {
         if (o == null) {
