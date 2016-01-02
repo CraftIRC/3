@@ -1,5 +1,11 @@
 package com.ensifera.animosity.craftirc.libs.org.jibble.pircbot;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -8,13 +14,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * An SSLSocketFactory implementation that treats all certificates as valid. Use with care.
@@ -27,6 +26,7 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
     /**
      * Create a new SSLSocketFactory factory that will create Sockets regardless of what certificate
      * is used.
+     *
      * @throws SSLException if it cannot initialize correctly.
      */
     public TrustingSSLSocketFactory() throws SSLException {
@@ -35,7 +35,7 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
         try {
             SSLContext sslContext;
             sslContext = SSLContext.getInstance("SSLv3");
-            sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() }, null);
+            sslContext.init(null, new TrustManager[]{new TrustingX509TrustManager()}, null);
             factory = sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException nsae) {
             throw new SSLException("Unable to initialize the SSL context:  ", nsae);
@@ -68,17 +68,17 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
      * @see javax.net.SocketFactory#createSocket()
      */
     @Override
-    public Socket createSocket() throws IOException, UnknownHostException {
-        return prepare((SSLSocket)factory.createSocket());
+    public Socket createSocket() throws IOException {
+        return prepare((SSLSocket) factory.createSocket());
     }
-    
+
     /*
      * (non-Javadoc)
      * @see javax.net.SocketFactory#createSocket(java.lang.String, int)
      */
     @Override
-    public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-        return prepare((SSLSocket)factory.createSocket(host, port));
+    public Socket createSocket(String host, int port) throws IOException {
+        return prepare((SSLSocket) factory.createSocket(host, port));
     }
 
     /*
@@ -87,8 +87,8 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
      */
     @Override
     public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-            throws IOException, UnknownHostException {
-        return prepare((SSLSocket)factory.createSocket(host, port, localHost, localPort));
+            throws IOException {
+        return prepare((SSLSocket) factory.createSocket(host, port, localHost, localPort));
     }
 
     /*
@@ -97,7 +97,7 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
      */
     @Override
     public Socket createSocket(InetAddress address, int port) throws IOException {
-        return prepare((SSLSocket)factory.createSocket(address, port));
+        return prepare((SSLSocket) factory.createSocket(address, port));
     }
 
     /*
@@ -107,8 +107,8 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
      */
     @Override
     public Socket createSocket(InetAddress address, int port, InetAddress localAddress,
-            int localPort) throws IOException {
-        return prepare((SSLSocket)factory.createSocket(address, port, localAddress, localPort));
+                               int localPort) throws IOException {
+        return prepare((SSLSocket) factory.createSocket(address, port, localAddress, localPort));
     }
 
     /*
@@ -119,12 +119,13 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket(Socket s, String host, int port, boolean autoClose)
             throws IOException {
-        return prepare((SSLSocket)factory.createSocket(s, host, port, autoClose));
+        return prepare((SSLSocket) factory.createSocket(s, host, port, autoClose));
     }
 
     /**
      * Setup the socket with ciphers. Add code here to do things to all created Sockets.
-     * @param baseSocket
+     *
+     * @param baseSocket the socket
      * @return &lt;code&gt;baseSocket&lt;/code&gt; all set up.
      */
     private SSLSocket prepare(SSLSocket baseSocket) {
@@ -145,7 +146,6 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
         public void checkClientTrusted(X509Certificate[] arg0, String arg1)
                 throws CertificateException {
             // no Exception implies acceptance
-            return;
         }
 
         /*
@@ -156,7 +156,6 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
         public void checkServerTrusted(X509Certificate[] arg0, String arg1)
                 throws CertificateException {
             // no Exception implies acceptance
-            return;
         }
 
         /*

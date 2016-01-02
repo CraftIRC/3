@@ -10,8 +10,6 @@ a commercial license is also provided. Full license information can be
 found at http://www.jibble.org/licenses/
 
 */
-
-
 package com.ensifera.animosity.craftirc.libs.org.jibble.pircbot;
 
 /**
@@ -19,19 +17,18 @@ package com.ensifera.animosity.craftirc.libs.org.jibble.pircbot;
  * thrown when the PircBot attempts to join an IRC server
  * with a user name that is already in use.
  *
- * @since   0.9
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
+ * @since 0.9
  */
 public class NickAlreadyInUseException extends IrcException {
-    
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Constructs a new IrcException.
      *
      * @param e The error message to report.
@@ -39,5 +36,4 @@ public class NickAlreadyInUseException extends IrcException {
     public NickAlreadyInUseException(String e) {
         super(e);
     }
-    
 }

@@ -16,19 +16,18 @@ package com.ensifera.animosity.craftirc.libs.org.jibble.pircbot;
 /**
  * An IrcException class.
  *
- * @since   0.9
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.5.0 (Build time: Mon Dec 14 20:07:17 2009)
+ * @since 0.9
  */
 public class IrcException extends Exception {
-    
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Constructs a new IrcException.
      *
      * @param e The error message to report.
@@ -36,5 +35,4 @@ public class IrcException extends Exception {
     public IrcException(String e) {
         super(e);
     }
-    
 }
