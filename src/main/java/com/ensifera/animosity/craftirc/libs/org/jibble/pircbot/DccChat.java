@@ -190,10 +190,10 @@ public class DccChat {
         return _address;
     }
 
-    private PircBot _bot;
-    private String _nick;
-    private String _login = null;
-    private String _hostname = null;
+    private final PircBot _bot;
+    private final String _nick;
+    private String _login;
+    private String _hostname;
     private BufferedReader _reader;
     private BufferedWriter _writer;
     private Socket _socket;

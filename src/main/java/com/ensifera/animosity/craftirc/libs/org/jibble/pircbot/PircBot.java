@@ -2985,7 +2985,7 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
      * in.
      */
     public final String[] getChannels() {
-        String[] channels = new String[0];
+        String[] channels;
         synchronized (_channels) {
             channels = new String[_channels.size()];
             Enumeration<String> enumeration = _channels.keys();
@@ -3326,19 +3326,19 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
     }
 
     // Connection stuff.
-    private InputThread _inputThread = null;
-    private OutputThread _outputThread = null;
-    private String _charset = null;
-    private String _fallbackCharset = null;
-    private InetAddress _inetAddress = null;
+    private InputThread _inputThread;
+    private OutputThread _outputThread;
+    private String _charset;
+    private String _fallbackCharset;
+    private InetAddress _inetAddress;
 
     // Details about the last server that we connected to.
-    private String _server = null;
+    private String _server;
     private int _port = -1;
-    private String _password = null;
+    private String _password;
 
     // Outgoing message stuff.
-    private Queue _outQueue = new Queue();
+    private final Queue _outQueue = new Queue();
     private long _messageDelay = 1000;
     private long _queueSize = 5;
 
@@ -3348,12 +3348,12 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
 
     // A Hashtable to temporarily store channel topics when we join them
     // until we find out who set that topic.
-    private Hashtable<String, String> _topics = new Hashtable<>();
+    private final Hashtable<String, String> _topics = new Hashtable<>();
 
     // DccManager to process and handle all DCC events.
-    private DccManager _dccManager = new DccManager(this);
-    private int[] _dccPorts = null;
-    private InetAddress _dccInetAddress = null;
+    private final DccManager _dccManager = new DccManager(this);
+    private int[] _dccPorts;
+    private InetAddress _dccInetAddress;
 
     // Default settings for the PircBot.
     private boolean _autoNickChange = false;
@@ -3365,13 +3365,13 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
     private String _finger = "You ought to be arrested for fingering a bot!";
 
     // A Hashtable to store the available prefixes and associated mode operator
-    private Map<String, String> _userPrefixes = new HashMap<>();
+    private final Map<String, String> _userPrefixes = new HashMap<>();
     // prefixes as delivered from the server .. highest to lowest - default to
     // op/voice
     private String _userPrefixOrder = "~&@%+";
-    private String _channelPrefixes = "#&+!";
-    private List<String> supportedPrefixes = new ArrayList<>(Arrays.asList("~", "&", "@", "%", "+"));
-    private List<String> supportedModes = new ArrayList<>(Arrays.asList("q", "a", "o", "h", "v"));
+    private final String _channelPrefixes = "#&+!";
+    private final List<String> supportedPrefixes = new ArrayList<>(Arrays.asList("~", "&", "@", "%", "+"));
+    private final List<String> supportedModes = new ArrayList<>(Arrays.asList("q", "a", "o", "h", "v"));
 
     private String networkName;
 }

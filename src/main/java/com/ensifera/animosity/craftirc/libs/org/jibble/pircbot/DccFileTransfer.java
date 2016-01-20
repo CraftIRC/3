@@ -125,7 +125,7 @@ public class DccFileTransfer {
 
                     byte[] inBuffer = new byte[BUFFER_SIZE];
                     byte[] outBuffer = new byte[4];
-                    int bytesRead = 0;
+                    int bytesRead;
                     while ((bytesRead = input.read(inBuffer, 0, inBuffer.length)) != -1) {
                         foutput.write(inBuffer, 0, bytesRead);
                         _progress += bytesRead;
@@ -438,22 +438,22 @@ public class DccFileTransfer {
         return _address;
     }
 
-    private PircBot _bot;
-    private DccManager _manager;
-    private String _nick;
-    private String _login = null;
-    private String _hostname = null;
+    private final PircBot _bot;
+    private final DccManager _manager;
+    private final String _nick;
+    private String _login;
+    private String _hostname;
     private String _type;
     private long _address;
     private int _port;
-    private long _size;
+    private final long _size;
     private boolean _received;
 
-    private Socket _socket = null;
+    private Socket _socket;
     private long _progress = 0;
-    private File _file = null;
+    private File _file;
     private int _timeout = 0;
-    private boolean _incoming;
+    private final boolean _incoming;
     private long _packetDelay = 0;
 
     private long _startTime = 0;

@@ -74,7 +74,7 @@ public class Queue {
      */
     public Object next() {
 
-        Object o = null;
+        Object o;
 
         // Block if the Queue is empty.
         synchronized (_queue) {
@@ -128,6 +128,5 @@ public class Queue {
         return _queue.size();
     }
 
-    private Vector<Object> _queue = new Vector<>();
-
+    private final Vector<Object> _queue = new Vector<>();
 }

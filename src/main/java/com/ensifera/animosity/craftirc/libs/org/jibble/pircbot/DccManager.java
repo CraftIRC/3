@@ -141,7 +141,7 @@ public class DccManager {
         _awaitingResume.removeElement(transfer);
     }
 
-    private PircBot _bot;
-    private Vector<DccFileTransfer> _awaitingResume = new Vector<>();
+    private final PircBot _bot;
+    private final Vector<DccFileTransfer> _awaitingResume = new Vector<>();
 
 }
