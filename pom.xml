@@ -4,7 +4,7 @@
     <groupId>com.ensifera</groupId>
     <artifactId>CraftIRC</artifactId>
     <packaging>jar</packaging>
-    <version>3.9.7-SNAPSHOT</version>
+    <version>3.9.7</version>
     <name>CraftIRC</name>
     <url>http://www.github.com/CraftIRC/3</url>
     <properties>
