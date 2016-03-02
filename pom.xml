@@ -4,7 +4,7 @@
     <groupId>com.ensifera</groupId>
     <artifactId>CraftIRC</artifactId>
     <packaging>jar</packaging>
-    <version>3.9.7</version>
+    <version>3.9.8</version>
     <name>CraftIRC</name>
     <url>http://www.github.com/CraftIRC/3</url>
     <properties>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.2-R0.3</version>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
             <optional>true</optional>
