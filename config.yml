@@ -105,7 +105,7 @@ settings:
       death: '%message%'
       players-list: 'Online (%playerCount%/%maxPlayers%): %message%'
       players-nobody: 'Nobody is minecrafting right now.'
-      achievement: '%sender% earned achievement %green%[%message%]'
+      advancement: '%sender% earned advancement %green%[%message%]'
     from-irc:
       chat: '[%srcChannel%] <%sender%> %message%'
       private: '%sender% whispers> %message%'
@@ -291,7 +291,7 @@ default-attributes:
     say: true
     generic: true
     death: true
-    achievement: true
+    advancement: true
     mode: false
     notice: false
     
