@@ -4,6 +4,7 @@ import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.Configuration;
 import com.ensifera.animosity.craftirc.libs.com.sk89q.util.config.ConfigurationNode;
 import com.ensifera.animosity.craftirc.libs.org.jibble.pircbot.Colors;
 import net.milkbowl.vault.chat.Chat;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -78,6 +79,19 @@ public class CraftIRC extends JavaPlugin {
         }
     }
 
+    private static final Pattern versionPattern = Pattern.compile("(\\d).(\\d+).*");
+    private boolean versionGreaterorEqualThan(int major, int minor) {
+        String bukkitVersion = Bukkit.getBukkitVersion();
+        Matcher versionMatcher = versionPattern.matcher(bukkitVersion);
+        if (versionMatcher.find()) {
+            int majorV = Integer.parseInt(versionMatcher.group(1));
+            int minorV = Integer.parseInt(versionMatcher.group(2));
+            if (majorV > major || (majorV == major && minorV >= minor))
+                return true;
+        }
+        return false;
+    }
+
     /***************************
      * Bukkit stuff
      ***************************/
@@ -148,6 +162,9 @@ public class CraftIRC extends JavaPlugin {
 
             // Event listeners
             this.getServer().getPluginManager().registerEvents(new CraftIRCListener(this), this);
+            // Check for advancements api
+            if (this.versionGreaterorEqualThan(1, 12))
+                this.getServer().getPluginManager().registerEvents(new AdvancementsListener(this), this);
             this.getServer().getPluginManager().registerEvents(new ConsoleListener(this), this);
 
             // Native endpoints!

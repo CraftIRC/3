@@ -14,11 +14,11 @@
     <repositories>
         <repository>
             <id>bukkit-repo</id>
-	    <url>http://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+            <url>http://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
         <repository>
             <id>vault-repo</id>
-	    <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
     </repositories>
 
