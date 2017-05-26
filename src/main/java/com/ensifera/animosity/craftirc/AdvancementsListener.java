@@ -24,6 +24,9 @@ final class AdvancementsListener implements Listener {
         if (msg == null) {
             return;
         }
+        if (event.getAdvancement().getKey().getKey().startsWith("recipes/")) {
+            return;
+        }
         msg.setField("sender", event.getPlayer().getDisplayName());
         msg.setField("message", event.getAdvancement().getKey().getKey());
         msg.setField("world", event.getPlayer().getWorld().getName());
