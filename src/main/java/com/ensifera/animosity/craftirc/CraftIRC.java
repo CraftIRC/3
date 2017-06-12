@@ -165,6 +165,8 @@ public class CraftIRC extends JavaPlugin {
             // Check for advancements api
             if (this.versionGreaterorEqualThan(1, 12))
                 this.getServer().getPluginManager().registerEvents(new AdvancementsListener(this), this);
+            else
+                this.getServer().getPluginManager().registerEvents(new AchievementsListener(this), this);
             this.getServer().getPluginManager().registerEvents(new ConsoleListener(this), this);
 
             // Native endpoints!
