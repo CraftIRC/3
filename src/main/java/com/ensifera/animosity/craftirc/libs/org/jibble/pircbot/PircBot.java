@@ -1554,6 +1554,12 @@ public abstract class PircBot implements ReplyConstants, PircBotLogger {
                 t++;
             }
 
+            // treat last param as a middle param
+            // section 2.3.1 of RFC 1459 
+            if (params[params.length - 1].startsWith(":")) {
+                params[params.length - 1] = params[params.length - 1].substring(1);
+            }
+
             char pn = ' ';
             int p = 1;
 
