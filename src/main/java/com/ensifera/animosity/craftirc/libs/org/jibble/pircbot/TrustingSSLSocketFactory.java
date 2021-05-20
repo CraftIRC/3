@@ -33,7 +33,7 @@ public class TrustingSSLSocketFactory extends SSLSocketFactory {
         System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
         try {
             SSLContext sslContext;
-            sslContext = SSLContext.getInstance("SSLv3");
+            sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(null, new TrustManager[]{new TrustingX509TrustManager()}, null);
             factory = sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException nsae) {
