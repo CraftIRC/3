@@ -254,11 +254,11 @@ public class CraftIRC extends JavaPlugin {
             } else {
                 this.hold.put(HoldType.DEATHS, false);
             }
-            if (this.cHold("achievements") > 0) {
-                this.hold.put(HoldType.ACHIEVEMENTS, true);
-                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.ACHIEVEMENTS), this.cHold("achievements"));
+            if (this.cHold("advancements") > 0) {
+                this.hold.put(HoldType.ADVANCEMENTS, true);
+                this.holdTimer.schedule(new RemoveHoldTask(this, HoldType.ADVANCEMENTS), this.cHold("advancements"));
             } else {
-                this.hold.put(HoldType.ACHIEVEMENTS, false);
+                this.hold.put(HoldType.ADVANCEMENTS, false);
             }
 
             if (CraftIRC.this.getServer().getPluginManager().isPluginEnabled("Vault")) {
@@ -1298,7 +1298,7 @@ public class CraftIRC extends JavaPlugin {
         KICKS,
         BANS,
         DEATHS,
-        ACHIEVEMENTS
+        ADVANCEMENTS
     }
 
     class RemoveHoldTask extends TimerTask {
