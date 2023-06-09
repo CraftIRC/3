@@ -10,6 +10,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
+import java.util.UUID;
 
 public final class IRCCommandSender implements ConsoleCommandSender {
     private final RelayedCommand cmd;
@@ -77,6 +78,11 @@ public final class IRCCommandSender implements ConsoleCommandSender {
     }
 
     @Override
+    public Spigot spigot() {
+        return this.sender.spigot();
+    }
+
+    @Override
     public Server getServer() {
         return this.sender.getServer();
     }
@@ -139,12 +145,27 @@ public final class IRCCommandSender implements ConsoleCommandSender {
     }
 
     @Override
+    public void sendMessage(UUID uuid, String message) {
+        sendMessage(message);
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String... messages) {
+        sendMessage(messages);
+    }
+
+    @Override
     public void sendRawMessage(String message) {
         final RelayedMessage msg = this.cmd.getPlugin().newMsgToTag(this.console, this.cmd.getField("source"), "command-reply");
         msg.setField("message", message);
         msg.setField("realSender", this.cmd.getField("realSender"));
         msg.setFlag("private", this.cmd.getPlugin().cCmdPrivate("cmd"));
         msg.post();
+    }
+
+    @Override
+    public void sendRawMessage(UUID uuid, String message) {
+        sendRawMessage(message);
     }
 
     @Override
