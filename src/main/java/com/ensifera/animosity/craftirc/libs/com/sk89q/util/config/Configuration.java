@@ -1,6 +1,7 @@
 package com.ensifera.animosity.craftirc.libs.com.sk89q.util.config;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
@@ -52,7 +53,7 @@ public class Configuration extends ConfigurationNode {
         options.setIndent(4);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
+        yaml = new Yaml(new SafeConstructor(new LoaderOptions()), new EmptyNullRepresenter(), options);
 
         this.file = file;
     }

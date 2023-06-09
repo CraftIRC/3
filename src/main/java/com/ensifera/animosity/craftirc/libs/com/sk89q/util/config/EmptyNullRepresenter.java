@@ -1,5 +1,6 @@
 package com.ensifera.animosity.craftirc.libs.com.sk89q.util.config;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -12,7 +13,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 class EmptyNullRepresenter extends Representer {
     public EmptyNullRepresenter() {
-        super();
+        super(new DumperOptions());
         this.nullRepresenter = new EmptyRepresentNull();
     }
 
